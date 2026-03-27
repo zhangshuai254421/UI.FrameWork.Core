@@ -1,0 +1,8 @@
+﻿<core:FrameworkAppBase x:Class="UI.FrameWork.Core.App"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:local="clr-namespace:UI.FrameWork.Core"
+                        xmlns:prism="clr-namespace:Prism;assembly=Prism.Wpf"
+                        xmlns:core="clr-namespace:UI.FrameWork.Core;assembly=UI.FrameWork.Core"
+                       >
+</core:FrameworkAppBase>
