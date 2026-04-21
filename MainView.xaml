@@ -1,12 +1,64 @@
-﻿<UserControl x:Class="UI.FrameWork.MainView"
+﻿<UserControl x:Class="SemiAppliaction.MainView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:UI.FrameWork"
+             xmlns:local="clr-namespace:SemiAppliaction"
              mc:Ignorable="d" 
+              xmlns:regions="http://prismlibrary.com/"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            <Label Content="this is Main View"></Label>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="165"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="180"/>
+        </Grid.RowDefinitions>
+
+        <Border BorderThickness="0 0 2 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+
+                <!--<s:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F1" Content="全自动操作" IconGeometry="{StaticResource HomePageF1Geometry}" Command="{s:Action AutoCutStandByViewCmd}"/>
+                <s:IconButton Grid.Row="1" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F2" Content="手动操作" IconGeometry="{StaticResource HomePageF2Geometry}" Command="{s:Action ShowManualOperation}"/>
+                <s:IconButton Grid.Row="1" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F3" Content="切割参数" IconGeometry="{StaticResource HomePageF3Geometry}" Command="{s:Action ShowRecipe}" attach:UserRightAttach.Id ="ShowRecipeRightId" attach:UserRightAttach.FullId ="ShowRecipeRightId" />
+                <s:IconButton Grid.Row="1" Grid.Column="7" Style="{StaticResource MainButtonStyle}" TopLeftContent="F4" Content="刀片维护" IconGeometry="{StaticResource HomePageF4Geometry}" Command="{s:Action ShowBladeMaintenance}" />
+                <s:IconButton Grid.Row="1" Grid.Column="9" Style="{StaticResource MainButtonStyle}" TopLeftContent="F5" Content="参数维护" IconGeometry="{StaticResource HomePageF5Geometry}" Command="{s:Action ShowParameterSetting}" />
+                <s:IconButton Grid.Row="3" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F6" Content="设备维护" IconGeometry="{StaticResource HomePageF6Geometry}" Command="{s:Action ShowEquipmentMaintenance}" />
+                <s:IconButton Grid.Row="3" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F7" Content="工程维护" IconGeometry="{StaticResource HomePageF7Geometry}" Command="{s:Action ShowProjectMaintenance}"/>
+                <s:IconButton Grid.Row="3" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F8" Content="制造商维护" IconGeometry="{StaticResource HomePageF8Geometry}" Command="{s:Action ShowManufacturerMaintenanceHome}"
+                              Visibility="{Binding ManufacturerMaintenanceVisibility}" />-->
+
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" BorderThickness="0 0 2 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch">
+
+        </Border>
+
     </Grid>
 </UserControl>

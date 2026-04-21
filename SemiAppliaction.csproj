@@ -16,4 +16,8 @@
     <ProjectReference Include="..\UI.FrameWork.Core\UI.FrameWork.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Language\" />
+  </ItemGroup>
+
 </Project>

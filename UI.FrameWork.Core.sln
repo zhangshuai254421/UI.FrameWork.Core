@@ -1,11 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.4.11612.150 stable
+VisualStudioVersion = 18.4.11612.150
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.FrameWork", "UI.FrameWork.csproj", "{7E06CFEC-BA6A-4E70-ABD0-FD5AC20B223B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemiAppliaction", "SemiAppliaction.csproj", "{7E06CFEC-BA6A-4E70-ABD0-FD5AC20B223B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.FrameWork.Core", "..\UI.FrameWork.Core\UI.FrameWork.Core.csproj", "{0319E817-84E2-492B-84FD-0A9484AA5D16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controls", "Controls", "{6943684C-A2E5-49DF-B72E-926242DE8447}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shard", "Shard", "{D17FD4B1-44F6-4566-9BC1-32060FEC7E33}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SemiControl_Shard", "..\SemiControl_Shard\SemiControl_Shard.shproj", "{49B5F67A-91CD-4A0C-B0DE-43C01BEB8D60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemiControl_Net", "..\SemiControl_Net\SemiControl_Net.csproj", "{11406ADD-F9E5-437C-AA1B-B4758D626EE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemiControlDemo_Net", "..\SemiControlDemo_Net\SemiControlDemo_Net.csproj", "{B2154952-3CDE-4D8E-86A9-0B855DA04BAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,11 +31,28 @@ Global
 		{0319E817-84E2-492B-84FD-0A9484AA5D16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0319E817-84E2-492B-84FD-0A9484AA5D16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0319E817-84E2-492B-84FD-0A9484AA5D16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11406ADD-F9E5-437C-AA1B-B4758D626EE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11406ADD-F9E5-437C-AA1B-B4758D626EE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11406ADD-F9E5-437C-AA1B-B4758D626EE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11406ADD-F9E5-437C-AA1B-B4758D626EE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2154952-3CDE-4D8E-86A9-0B855DA04BAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2154952-3CDE-4D8E-86A9-0B855DA04BAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2154952-3CDE-4D8E-86A9-0B855DA04BAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2154952-3CDE-4D8E-86A9-0B855DA04BAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D17FD4B1-44F6-4566-9BC1-32060FEC7E33} = {6943684C-A2E5-49DF-B72E-926242DE8447}
+		{49B5F67A-91CD-4A0C-B0DE-43C01BEB8D60} = {D17FD4B1-44F6-4566-9BC1-32060FEC7E33}
+		{11406ADD-F9E5-437C-AA1B-B4758D626EE8} = {6943684C-A2E5-49DF-B72E-926242DE8447}
+		{B2154952-3CDE-4D8E-86A9-0B855DA04BAA} = {6943684C-A2E5-49DF-B72E-926242DE8447}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B6E4E7F7-6B4D-43B5-94D9-5DFA60AA4AF2}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\SemiControl_Shard\SemiControl_Shard.projitems*{49b5f67a-91cd-4a0c-b0de-43c01beb8d60}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

@@ -2,8 +2,9 @@
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using UI.FrameWork.Core;
 
-namespace UI.FrameWork.Core
+namespace SemiAppliaction.Core
 {
     /// <summary>
     /// Interaction logic for App.xaml
