@@ -1,15 +1,15 @@
 ﻿<core:FrameworkAppBase x:Class="SemiAppliaction.Core.App"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:local="clr-namespace:SemiAppliaction.Core"
                         xmlns:prism="clr-namespace:Prism;assembly=Prism.Wpf"
                       
                         xmlns:core="clr-namespace:UI.FrameWork.Core;assembly=UI.FrameWork.Core">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/SemiAppliaction.Core;component/Skin.xaml" />
+                <!--<ResourceDictionary Source="/SemiAppliaction.Core;component/Skin.xaml" />-->
                 <ResourceDictionary Source="pack://application:,,,/SemiControl;component/Themes/Skin.xaml" />
+                <!--<ResourceDictionary Source="pack://application:,,,/SemiControl;component/Themes/Styles/ButtonStyle.xaml" />-->
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

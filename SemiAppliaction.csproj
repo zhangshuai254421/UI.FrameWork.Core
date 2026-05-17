@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Language\" />
+    <Folder Include="UI.FrameWork.Core\Common\" />
   </ItemGroup>
 
 </Project>
