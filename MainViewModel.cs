@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 
 namespace SemiAppliaction
 {
+    // 作者：Zhang Shuai
+    // 描述：Main 视图模型，负责与主界面交互的逻辑（示例：记录日志）。
     public class MainViewModel
     {
         private readonly ILogger<MainViewModel> _logger;

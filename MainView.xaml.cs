@@ -15,9 +15,8 @@ using System.Windows.Shapes;
 
 namespace SemiAppliaction
 {
-    /// <summary>
-    /// MainView.xaml 的交互逻辑
-    /// </summary>
+    // 作者：Zhang Shuai
+    // 描述：主视图的代码隐藏（View），与 MainView.xaml 配合显示应用主要 UI。
     public partial class MainView : UserControl
     {
         public MainView()

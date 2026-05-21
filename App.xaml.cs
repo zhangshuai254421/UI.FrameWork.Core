@@ -6,9 +6,8 @@ using UI.FrameWork.Core;
 
 namespace SemiAppliaction.Core
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
+    // 作者：Zhang Shuai
+    // 描述：应用程序入口，继承自 FrameworkAppBase 用于初始化框架、模块目录和依赖注入配置。
     public partial class App : FrameworkAppBase
     {
         public App()
