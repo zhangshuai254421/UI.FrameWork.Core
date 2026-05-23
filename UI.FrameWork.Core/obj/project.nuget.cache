@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "dgSpecHash": "7dhLNwRAemg=",
+  "success": true,
+  "projectFilePath": "D:\\CodeSource\\01-UI框架\\UI.FrameWork.Core\\UI.FrameWork.Core.csproj",
+  "expectedPackageFiles": [
+    "D:\\Program Files (x86)\\NuGetPackages\\dryioc.dll\\5.4.3\\dryioc.dll.5.4.3.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\microsoft.extensions.dependencyinjection\\10.0.0\\microsoft.extensions.dependencyinjection.10.0.0.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\microsoft.extensions.logging\\10.0.0\\microsoft.extensions.logging.10.0.0.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\microsoft.extensions.logging.abstractions\\10.0.0\\microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\microsoft.extensions.options\\10.0.0\\microsoft.extensions.options.10.0.0.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\microsoft.extensions.primitives\\10.0.0\\microsoft.extensions.primitives.10.0.0.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\microsoft.xaml.behaviors.wpf\\1.1.122\\microsoft.xaml.behaviors.wpf.1.1.122.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\prism.container.abstractions\\9.0.107\\prism.container.abstractions.9.0.107.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\prism.container.dryioc\\9.0.107\\prism.container.dryioc.9.0.107.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\prism.core\\9.0.537\\prism.core.9.0.537.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\prism.events\\9.0.537\\prism.events.9.0.537.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\prism.wpf\\9.0.537\\prism.wpf.9.0.537.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\serilog\\4.3.1\\serilog.4.3.1.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\serilog.extensions.logging\\10.0.0\\serilog.extensions.logging.10.0.0.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\serilog.sinks.file\\7.0.0\\serilog.sinks.file.7.0.0.nupkg.sha512",
+    "D:\\Program Files (x86)\\NuGetPackages\\system.diagnostics.diagnosticsource\\10.0.0\\system.diagnostics.diagnosticsource.10.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

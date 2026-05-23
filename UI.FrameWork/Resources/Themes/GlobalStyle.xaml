@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="https://github.io/semicontrol">
+    
+    <Style x:Key="MainButtonStyle" TargetType="s:IconButton" BasedOn="{StaticResource IconButtonBaseStyle}">
+        <Setter Property="Width" Value="160"/>
+        <Setter Property="Height" Value="150"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="IconHeight" Value="70"/>
+        <Setter Property="IconWidth" Value="55"/>
+        <Setter Property="s:BorderElement.CornerRadius" Value="3"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource DefaultButton_DefaultBackBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DefaultButton_DefaultBorderBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DefaultButton_DefaultTextBrush}"/>
+    </Style>
+</ResourceDictionary>

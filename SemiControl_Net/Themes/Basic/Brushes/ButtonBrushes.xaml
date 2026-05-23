@@ -1,0 +1,158 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+
+    <!--  ****** 普通按钮 ******  -->
+
+    <!--  默认状态  -->
+    <LinearGradientBrush x:Key="DefaultButton_DefaultBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryDefaultColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="DefaultButton_DefaultBorderBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryControlToolColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryTextColor}" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="DefaultButton_DefaultTextBrush" Color="{DynamicResource PrimaryTextColor}" />
+
+    <!--  悬停状态  -->
+    <LinearGradientBrush x:Key="DefaultButton_HoverBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryDefaultColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="DefaultButton_HoverBorderBrush" Color="{DynamicResource PrimaryToolColor}" />
+    <SolidColorBrush x:Key="DefaultButton_HoverTextBrush" Color="{DynamicResource PrimaryTextColor}" />
+
+    <!--  选中状态  -->
+    <SolidColorBrush x:Key="DefaultButton_SelectBackBrush" Color="{DynamicResource PrimaryControlToolColor}" />
+    <SolidColorBrush x:Key="DefaultButton_SelectBorderBrush" Color="{DynamicResource PrimaryTextColor}" />
+    <SolidColorBrush x:Key="DefaultButton_SelectTextBrush" Color="{DynamicResource PrimaryTextColor}" />
+
+    <!--  禁用状态  -->
+    <LinearGradientBrush x:Key="DefaultButton_DisabledBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryDefaultColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+
+
+    <!--  ****** 控制按钮 ******  -->
+
+    <!--  默认状态  -->
+    <LinearGradientBrush x:Key="ControlButton_DefaultBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryControlToolColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryColor}" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ControlButton_DefaultBorderBrush" Color="{DynamicResource PrimaryTextColor}" />
+    <SolidColorBrush x:Key="ControlButton_DefaultTextBrush" Color="{DynamicResource PrimaryDefaultColor}" />
+    <SolidColorBrush x:Key="ControlButton_DefaultIconBrush" Color="{DynamicResource BackgroundLightColor}" />
+
+    <!--  悬停状态  -->
+    <LinearGradientBrush x:Key="ControlButton_HoverBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryControlToolColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryColor}" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ControlButton_HoverBorderBrush" Color="{DynamicResource PrimaryToolColor}" />
+    <SolidColorBrush x:Key="ControlButton_HoverTextBrush" Color="{DynamicResource PrimaryDefaultColor}" />
+
+    <!--  选中状态  -->
+    <SolidColorBrush x:Key="ControlButton_SelectBackBrush" Color="{DynamicResource PrimaryColor}" />
+    <SolidColorBrush x:Key="ControlButton_SelectBorderBrush" Color="{DynamicResource PrimaryTextColor}" />
+    <SolidColorBrush x:Key="ControlButton_SelectTextBrush" Color="{DynamicResource PrimaryDefaultColor}" />
+
+    <!--  禁用状态  -->
+    <LinearGradientBrush x:Key="ControlButton_DisabledBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryControlToolColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryColor}" />
+    </LinearGradientBrush>
+
+
+    <!--  默认状态  -->
+    <LinearGradientBrush x:Key="IconButton_DefaultBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource BackgroundLightColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="IconButton_DefaultBorderBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryDefaultColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryTextColor}" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="IconButton_DefaultTextBrush" Color="{DynamicResource MenuTextColor}" />
+    <SolidColorBrush x:Key="IconButton_DefaultIconBrush" Color="{DynamicResource PrimaryColor}" />
+
+    <!--  悬停状态  -->
+    <LinearGradientBrush x:Key="IconButton_HoverBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource BackgroundLightColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="IconButton_HoverBorderBrush" StartPoint="0,0" EndPoint="0,1" >
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryDeepToolColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryColor}" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="IconButton_HoverTextBrush" Color="{DynamicResource MenuTextColor}" />
+    <SolidColorBrush x:Key="IconButton_HoverIconBrush" Color="{DynamicResource PrimaryColor}" />
+
+    <!--  选中状态  -->
+    <LinearGradientBrush x:Key="IconButton_SelectBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryDeepColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryLightColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="IconButton_SelectBorderBrush" StartPoint="0,0" EndPoint="0,1" >
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryTextColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryDefaultColor}" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="IconButton_SelectTextBrush" Color="{DynamicResource PrimaryDefaultColor}" />
+    <SolidColorBrush x:Key="IconButton_SelectIconBrush" Color="{DynamicResource PrimaryDefaultColor}" />
+
+    <!--  禁用状态  -->
+    <LinearGradientBrush x:Key="IconButton_DisabledBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource BackgroundLightColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+
+
+    <!--  ****** 切换按钮 ******  -->
+
+    <!--  默认状态  -->
+    <LinearGradientBrush x:Key="ToggleButton_DefaultBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource BackgroundLightColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryDefaultColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ToggleButton_DefaultBorderBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryTextColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ToggleButton_DefaultSquareBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryDefaultColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ToggleButton_DefaultSquareBorderBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryControlToolColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryTextColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ToggleButton_DefaultCircleBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryControlToolColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryDefaultColor}" />
+    </LinearGradientBrush>
+    <!--  选中状态  -->
+    <LinearGradientBrush x:Key="ToggleButton_SelectBackBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource SecondaryDeepColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource SecondaryLightColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ToggleButton_SelectBorderBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryTextColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ToggleButton_SelectSquareBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryDefaultColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryControlToolColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ToggleButton_SelectSquareBorderBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryControlToolColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryTextColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ToggleButton_SelectCircleBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource PrimaryControlToolColor}" />
+        <GradientStop Offset="1" Color="{DynamicResource PrimaryDefaultColor}" />
+    </LinearGradientBrush>
+
+</ResourceDictionary>

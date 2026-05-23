@@ -1,0 +1,25 @@
+﻿<Window x:Class="SemiControlDemo_Net.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SemiControlDemo_Net"
+        xmlns:semicontrol="https://github.io/semicontrol"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+
+ 
+        <semicontrol:IconButton  Content="切割深度校正" IconGeometry="{StaticResource CuttingStatusViewF2Geometry}" TopLeftContent="F2" Style="{StaticResource IconButtonBaseStyle}"   IsNeedRedMark="True"/>
+      
+    </Grid>
+</Window>

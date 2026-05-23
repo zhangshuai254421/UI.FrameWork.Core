@@ -1,0 +1,106 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+	<system:Double x:Key="ButtonWidth">100</system:Double>
+	<system:Double x:Key="ButtonHeight">35</system:Double>
+
+	<system:Double x:Key="Button_ArrowButtonWidth">28</system:Double>
+	<system:Double x:Key="Button_ArrowButtonHeight">28</system:Double>
+	<system:Double x:Key="Button_ArrowButtonTriangleWidth">10</system:Double>
+	<system:Double x:Key="Button_ArrowButtonTriangleHeight">16</system:Double>
+
+	<system:Double x:Key="Button_PreviousButtonWidth">28</system:Double>
+	<system:Double x:Key="Button_PreviousButtonHeight">28</system:Double>
+	<system:Double x:Key="Button_PreviousButton_PathWidth">10</system:Double>
+	<system:Double x:Key="Button_PreviousButton_PathHeight">16</system:Double>
+
+	<system:Double x:Key="Button_CrystalButtonWidth">120</system:Double>
+	<system:Double x:Key="Button_CrystalButtonHeight">55</system:Double>
+
+	<system:Double x:Key="Button_ControlButtonWidth">65</system:Double>
+	<system:Double x:Key="Button_ControlButtonHeight">65</system:Double>
+	<system:Double x:Key="ButtonGroupHeight">40</system:Double>
+
+	<system:Double x:Key="Button_IconButtonWidth">140</system:Double>
+	<system:Double x:Key="Button_IconButtonHeight">75</system:Double>
+	<system:Double x:Key="Button_IconWidth">20</system:Double>
+	<system:Double x:Key="Button_IconHeight">20</system:Double>
+
+	<system:Double x:Key="CalendarExtend_BottomButtonHeight">30</system:Double>
+
+	<system:Double x:Key="ComboBoxWidth">100</system:Double>
+	<system:Double x:Key="ComboBoxHeight">35</system:Double>
+	<system:Double x:Key="ComboBoxItemWidth">200</system:Double>
+	<system:Double x:Key="ComboBoxItemHeight">35</system:Double>
+
+	<system:Double x:Key="TextBoxWidth">100</system:Double>
+	<system:Double x:Key="TextBoxHeight">35</system:Double>
+
+	<system:Double x:Key="DataGridItemHeight">45</system:Double>
+
+	<system:Double x:Key="ExpanderHeight">30</system:Double>
+
+	<system:Double x:Key="GroupBoxBaseHeader">40</system:Double>
+	<system:Double x:Key="GroupBoxSecondaryHeader">35</system:Double>
+	<system:Double x:Key="GroupBoxThirdlyHeader">25</system:Double>
+
+	<system:Double x:Key="HeaderMenuWidth">100</system:Double>
+	<system:Double x:Key="HeaderMenuHeight">70</system:Double>
+	<system:Double x:Key="HeaderMenuIconWidth">23</system:Double>
+	<system:Double x:Key="HeaderMenuIconHeight">23</system:Double>
+
+	<system:Double x:Key="ListBoxTitleHeight">35</system:Double>
+	<system:Double x:Key="ListBoxTitleSecondaryHeight">35</system:Double>
+	<system:Double x:Key="ListBoxTitleThirdlyHeight">30</system:Double>
+	<system:Double x:Key="ListBoxItemHeight">30</system:Double>
+
+	<system:Double x:Key="MainMenuRadioButtonWidth">150</system:Double>
+	<system:Double x:Key="MainMenuRadioButtonHeight">65</system:Double>
+
+	<system:Double x:Key="MessageBoxHeaderHeight">40</system:Double>
+	<system:Double x:Key="MessageBoxHeaderCloseButtonWidth">40</system:Double>
+
+	<system:Double x:Key="SideMenuBoxWidth">400</system:Double>
+	<system:Double x:Key="SideMenuBoxHeight">780</system:Double>
+	<system:Double x:Key="SideMenuSecondaryWidth">150</system:Double>
+	<system:Double x:Key="SideMenuSecondaryHeight">50</system:Double>
+	<system:Double x:Key="SideMenuThirdlyWidth">150</system:Double>
+	<system:Double x:Key="SideMenuThirdlyHeight">50</system:Double>
+
+	<system:Double x:Key="SearchBoxWidth">130</system:Double>
+	<system:Double x:Key="SearchBoxHeight">35</system:Double>
+	<system:Double x:Key="SearchBoxIconBackgroundWidth">35</system:Double>
+	<system:Double x:Key="SearchBoxIconBackgroundHeight">35</system:Double>
+	<system:Double x:Key="SearchBoxIconWidth">15</system:Double>
+	<system:Double x:Key="SearchBoxIconHeight">15</system:Double>
+
+	<system:Double x:Key="StatusLightWidth">13</system:Double>
+	<system:Double x:Key="StatusLightHeight">13</system:Double>
+
+	<system:Double x:Key="StatusButtonWidth">102</system:Double>
+	<system:Double x:Key="StatusButtonHeight">35</system:Double>
+
+	<system:Double x:Key="TabControlHeaderHeight">40</system:Double>
+	<system:Double x:Key="TabControlHeaderWidth">100</system:Double>
+	<system:Double x:Key="TabControlSecondaryHeaderHeight">35</system:Double>
+	<system:Double x:Key="TabControlSecondaryHeaderWidth">110</system:Double>
+	<system:Double x:Key="TabControlThirdlyHeaderHeight">25</system:Double>
+
+
+	<system:Double x:Key="ToggleButtonWidth">55</system:Double>
+	<system:Double x:Key="ToggleButtonHeight">25</system:Double>
+	<system:Double x:Key="ToggleButtonSquareWidth">25</system:Double>
+	<system:Double x:Key="ToggleButtonSquareHeight">25</system:Double>
+	<system:Double x:Key="ToggleButtonCircularWidth">15</system:Double>
+	<system:Double x:Key="ToggleButtonCircularHeight">15</system:Double>
+
+	<system:Double x:Key="ScrollViewWidth">10</system:Double>
+	<system:Double x:Key="ScrollViewHeight">10</system:Double>
+
+	<system:Double x:Key="CheckBoxWidth">18</system:Double>
+	<system:Double x:Key="CheckBoxHeight">18</system:Double>
+
+	<system:Double x:Key="TreeItemHeight">45</system:Double>
+
+</ResourceDictionary>

@@ -1,0 +1,262 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:o="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
+
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryDeepBrush" Color="{DynamicResource PrimaryDeepColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryBrush" Color="{DynamicResource PrimaryColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryToolBrush" Color="{DynamicResource PrimaryToolColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryLightBrush" Color="{DynamicResource PrimaryLightColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryLightToolBrush" Color="{DynamicResource PrimaryLightToolColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryDefaultBrush" Color="{DynamicResource PrimaryDefaultColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryDeepToolBrush" Color="{DynamicResource PrimaryDeepToolColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryControlToolBrush" Color="{DynamicResource PrimaryControlToolColor}"></SolidColorBrush>
+
+    <SolidColorBrush o:Freeze="True" x:Key="SecondaryDeepBrush" Color="{DynamicResource SecondaryDeepColor}"></SolidColorBrush>
+    <!--<SolidColorBrush o:Freeze="True" x:Key="SecondaryBrush" Color="{DynamicResource SecondaryColor}"></SolidColorBrush>-->
+    <LinearGradientBrush o:Freeze="true" x:Key="SecondaryBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="SecondaryLightBrush" Color="{DynamicResource SecondaryLightColor}"></SolidColorBrush>
+
+    <SolidColorBrush o:Freeze="True" x:Key="BackgroundDeepBrush" Color="{DynamicResource BackgroundDeepColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="BackgroundLightBrush" Color="{DynamicResource BackgroundLightColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="BackgroundLightToolBrush" Color="{DynamicResource BackgroundLightToolColor}"></SolidColorBrush>
+
+    <SolidColorBrush o:Freeze="True" x:Key="ThirdlyDeepBrush" Color="{DynamicResource ThirdlyDeepColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="ThirdlyBrush" Color="{DynamicResource ThirdlyColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="ThirdlyLightBrush" Color="{DynamicResource ThirdlyLightColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="ThirdlyLightToolBrush" Color="{DynamicResource ThirdlyLightToolColor}"></SolidColorBrush>
+
+    <SolidColorBrush o:Freeze="True" x:Key="HoverBrush" Color="{DynamicResource HoverColor}"></SolidColorBrush>
+
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryBorderBrush" Color="{DynamicResource PrimaryBorderColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="BorderBrush" Color="{DynamicResource BorderColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="SecondaryBorderBrush" Color="{DynamicResource SecondaryBorderColor}"></SolidColorBrush>
+
+    <SolidColorBrush o:Freeze="True" x:Key="SpecialTextBrush" Color="{DynamicResource SpecialTextColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="PrimaryTextBrush" Color="{DynamicResource PrimaryTextColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="TextBrush" Color="{DynamicResource TextColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="SecondaryTextBrush" Color="{DynamicResource SecondaryTextColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="DisableTextBrush" Color="{DynamicResource DisableTextColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="MenuTextBrush" Color="{DynamicResource MenuTextColor}"></SolidColorBrush>
+
+    <SolidColorBrush o:Freeze="True" x:Key="WarningBrush" Color="{DynamicResource WarningColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="WarningToolBrush" Color="{DynamicResource WarningToolColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="NormalBrush" Color="{DynamicResource NormalColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="NormalToolBrush" Color="{DynamicResource NormalToolColor}"></SolidColorBrush>
+
+    <SolidColorBrush o:Freeze="True" x:Key="MessageBoxSuccessBrush" Color="{DynamicResource NormalColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="MessageBoxDangerBrush" Color="{DynamicResource WarningColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="MessageBoxAccentBrush" Color="{DynamicResource PrimaryLightColor}"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="MessageBoxWarningBrush" Color="#f39700"></SolidColorBrush>
+    <SolidColorBrush o:Freeze="True" x:Key="MessageBoxInfoBrush" Color="{DynamicResource PrimaryLightColor}"></SolidColorBrush>
+
+    <SolidColorBrush o:Freeze="True" x:Key="LightTextBrush" Color="{DynamicResource PrimaryDefaultColor}"></SolidColorBrush>
+
+    <!--新添渐进色-->
+    <LinearGradientBrush o:Freeze="true" x:Key="PrimarySecondGradientBrush" EndPoint="1,0" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDeepToolColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryLightToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="MainMenuGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="BorderDefaultGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryTextColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="TabSecondDefaultGradient" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="HeaderMenuGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDeepToolColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryLightColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="HeaderTextGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundLightColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="ButtonBorderGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryTextColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="ToggleButtonBorderGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="1"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryTextColor}" Offset="0"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="NextButtonGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryToolColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryLightToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="CalenderButtonGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryDeepColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="PrimaryGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="PrimaryLightGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryLightToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="ThirdlyLightGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyLightToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="WarningGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource WarningColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource WarningToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="NormalGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource NormalColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource NormalToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="ThirdlyDeepGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyDeepColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="ThirdlyDeepGradientBrushRevert" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyDeepColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="BackgroundDeepGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundDeepColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="BackgroundDeepGradientBrushRevert" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundDeepColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="LightCrystalGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="0.5"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundColor}" Offset="0.5"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="DarkCrystalGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryTextColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="#787878" Offset="0.47"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryTextColor}" Offset="0.55"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryTextColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="GreenCrystalGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource NormalToolColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="#6bbc83" Offset="0.47"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource NormalColor}" Offset="0.55"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource NormalColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="RedCrystalGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource WarningToolColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="#dc5959" Offset="0.47"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource WarningColor}" Offset="0.55"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource WarningColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="ToggleButtonBackgroundBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="1"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundLightColor}" Offset="0"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="ButtonPressGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDeepColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="ButtonPressGradientBrushRevert" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyDeepColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="ToggleButtonThumbBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryLightColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="ToggleButtonCircleBrush" EndPoint="0,1" StartPoint="0,0">
+        <!--<GradientStop o:Freeze="True" Color="{DynamicResource PrimaryBorderColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="1"/>-->
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="1"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="0"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="ButtonGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <!--<GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyLightToolColor}" Offset="1"/>-->
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="StatusButtonBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundDeepColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="BackgroundLightGradientBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource DisableTextColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="BackgroundLightDefaultGradientBrushRevert" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="WindowTitleBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyLightToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="SliderThumbBackgroundBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryLightColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="SliderThumbPathBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryBorderColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="SliderThumbVerticalBackgroundBrush" EndPoint="1,0" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryLightColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush o:Freeze="true" x:Key="SliderThumbVerticalPathBrush" EndPoint="1,0" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryBorderColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="SliderIncreaseBackgroundBrush" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="SliderSelectionBackgroundBrush" EndPoint="0,1" StartPoint="0,0">
+        <!--<GradientStop o:Freeze="True" Color="{DynamicResource SecondaryDeepColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryBorderColor}" Offset="1"/>-->
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="SliderIncreaseVerticalBrush" EndPoint="1,0" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryLightColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource BackgroundColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="SliderSelectionVerticalBrush" EndPoint="1,0" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryDeepColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryBorderColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="ButtonPressVerticalBrush" EndPoint="1,0" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyDeepColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush o:Freeze="true" x:Key="ProgressBoxFillBrush" EndPoint="1,0" StartPoint="0,0">
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyColor}" Offset="0"/>
+        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyDeepColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+</ResourceDictionary>

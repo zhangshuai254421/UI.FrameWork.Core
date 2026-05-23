@@ -1,0 +1,82 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:SemiControl.Controls">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Base/BaseStyle.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    <Style x:Key="ToggleIconButtonBaseStyle" BasedOn="{StaticResource BaseStyle}" TargetType="controls:ToggleIconButton">
+        <Setter Property="Width" Value="{DynamicResource Button_IconButtonWidth}"/>
+        <Setter Property="Height" Value="{DynamicResource Button_IconButtonHeight}"/>
+        <Setter Property="IconHeight" Value="{DynamicResource Button_IconHeight}"/>
+        <Setter Property="IconWidth" Value="{DynamicResource Button_IconWidth}"/>
+        <Setter Property="Background" Value="{DynamicResource IconButton_DefaultBackBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource IconButton_DefaultTextBrush}"/>
+        <Setter Property="controls:BorderElement.CornerRadius" Value="0"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource IconButton_DefaultBorderBrush}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="FontSize" Value="{DynamicResource SubHeaderFontSize}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:ToggleIconButton">
+                    <controls:SimplePanel>
+                        <Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding controls:BorderElement.CornerRadius}"/>
+                        <Grid >
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3 3 0 0">
+                                <TextBlock x:Name="PART_MarkContent" Background="Transparent" FontSize="{TemplateBinding FontSize}" Margin="5 0" Text="{TemplateBinding TopLeftContent}"/>
+                                <Rectangle x:Name="PART_MarkIcon" Stroke="{DynamicResource IconButton_DefaultBorderBrush}" Visibility="{TemplateBinding IsShowStatus,Converter={StaticResource BooleanToVisibilityConverter}}" Width="15" Height="15" Margin="5 0" Fill="{TemplateBinding StatusBrush}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
+                                <Path x:Name="PathMain" Width="{TemplateBinding IconWidth}" Height="{TemplateBinding IconHeight}" Fill="{DynamicResource IconButton_DefaultIconBrush}" SnapsToDevicePixels="True" Stretch="Uniform" Data="{TemplateBinding IconGeometry}"/>
+                                <ContentPresenter x:Name="ContentPresenterMain" Margin="0 10 0 5" RecognizesAccessKey="True" HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </StackPanel>
+                        </Grid>
+                    </controls:SimplePanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IconGeometry" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="PathMain"/>
+                            <Setter Property="Margin" Value="0" TargetName="ContentPresenterMain"/>
+                        </Trigger>
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="ContentPresenterMain"/>
+                        </Trigger>
+                        <Trigger Property="TopLeftContent" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="PART_MarkContent"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource IconButton_HoverBackBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource IconButton_HoverBorderBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource IconButton_HoverTextBrush}"/>
+                            <Setter Property="Fill" TargetName="PathMain" Value="{DynamicResource IconButton_HoverIconBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource IconButton_SelectBackBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource IconButton_SelectBorderBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource IconButton_SelectTextBrush}"/>
+                            <Setter Property="Fill" TargetName="PathMain" Value="{DynamicResource IconButton_SelectIconBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.56"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource IconButton_SelectBackBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource IconButton_SelectBorderBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource IconButton_SelectTextBrush}"/>
+                            <Setter Property="Fill" TargetName="PathMain" Value="{DynamicResource IconButton_SelectIconBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,289 @@
+﻿<UserControl x:Class="UI.FrameWork.Core.Main.HeaderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:UI.FrameWork.Core.Main"
+             xmlns:controls="https://github.io/semicontrol"
+            
+             mc:Ignorable="d" 
+            Width="1280"
+             d:DesignWidth="1280">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </ResourceDictionary>
+      
+    </UserControl.Resources>
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Border  Grid.Row="0" Height="{StaticResource Framework_HeaderHeight}"  Background="{StaticResource HeaderMenuGradientBrush}" BorderBrush="{DynamicResource PrimaryBorderBrush}" BorderThickness="0 0 0 1">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  Width="auto" />
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!--图标 {DynamicResource Framework_StatusBarHeight} {DynamicResource MenuHeight}-->
+                <Image  Grid.Row="0"  Grid.Column="0"  Source="/UI.FrameWork.Core;component/Resources/zs.png" Margin="5 0" Width="77" Height="40"    HorizontalAlignment="Center">
+                    <Image.Effect>
+                        <DropShadowEffect  BlurRadius="0" Direction="120"  Opacity="0.75" ShadowDepth="2" Color="Black" />
+                    </Image.Effect>
+                </Image>
+     
+
+
+                <!--急停-->
+                <Button Padding="0" Grid.Row="0" Grid.Column="1" Command="{Binding EmergencyStopCommand}" Width="{StaticResource Framework_StatusBarHeight}" Height="{StaticResource Framework_StatusBarHeight}" Background="{DynamicResource WarningBrush}" Foreground="{DynamicResource PrimaryDefaultBrush}"  >
+                    <Button.Content>
+                        <StackPanel Orientation="Vertical">
+                            <Path Data="{DynamicResource EmergencyStopGeometry}" Fill="Orange" Stretch="Uniform" Width="50" Height="50"  HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                 <Grid Grid.Row="0"  Grid.Column="2" Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition Width="433" />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--时钟-->
+                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource  PrimaryBorderBrush}" BorderThickness="1">
+                        <!--<controls:TimeBlock2 />-->
+                    </Border>
+
+                    <!--CIM内容-->
+                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="{DynamicResource  PrimaryBorderBrush}" BorderThickness="1" Margin="-1 0 0 0">
+                        <TextBlock Text="{Binding Infos.CIMContent}" HorizontalAlignment="Center" Foreground="{DynamicResource HeaderTextGradientBrush}" VerticalAlignment="Center" />
+                    </Border>
+
+                    <!--PLC版本-->
+                    <Border  Grid.Row="0" Grid.Column="2" BorderBrush="{DynamicResource  PrimaryBorderBrush}" BorderThickness="1" Margin="-1 0 0 0">
+                        <TextBlock Text="{Binding Infos.Layout.MachineId}" HorizontalAlignment="Center"  Foreground="{DynamicResource HeaderTextGradientBrush}" VerticalAlignment="Center">
+                        </TextBlock>
+                    </Border>
+
+                    <!--软件版本-->
+                    <Border  Grid.Row="0" Grid.Column="3" BorderBrush="{DynamicResource  PrimaryBorderBrush}" BorderThickness="1" Margin="-1 0 0 0">
+                        <TextBlock Text="1.0.0.260328" HorizontalAlignment="Center" Foreground="{DynamicResource HeaderTextGradientBrush}" VerticalAlignment="Center">
+                        </TextBlock>
+                    </Border>
+
+                    <!--状态信息栏-->
+                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"  BorderBrush="{DynamicResource  PrimaryBorderBrush}" BorderThickness="1" Margin="0 -1 0 0" >
+                        <TextBlock Margin="15,0,0,0" Text="{Binding Infos.AlarmContent}" FontSize="14" VerticalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="White" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Infos.AlarmStatus}" Value="Alarm">
+                                            <Setter Property="Foreground" Value="#FF1E10" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Infos.AlarmStatus}" Value="Warning">
+                                            <Setter Property="Foreground" Value="#fbc46c" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Border>
+
+                    <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"  BorderBrush="{DynamicResource  PrimaryBorderBrush}" BorderThickness="1" Margin="0 -1 0 0" >
+                        <TextBlock Margin="15,0,0,0" Text="{Binding Infos.ShowContent}" Foreground="White"  FontSize="14" VerticalAlignment="Center">
+                        </TextBlock>
+                    </Border>
+
+                    <!--Histary-->
+                    <Border  Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" BorderBrush="{DynamicResource  PrimaryBorderBrush}" BorderThickness="1" Margin="-1 -1 0 0">
+                        <TextBlock Text="History" HorizontalAlignment="Center" Foreground="{DynamicResource HeaderTextGradientBrush}" VerticalAlignment="Center">
+                        </TextBlock>
+                    </Border>
+                </Grid>
+
+                <!--Cim-->
+                <Button  Grid.Row="0"  Padding="0" Grid.Column="3" Command="{Binding ShowCimCommand}" Width="{StaticResource Framework_StatusBarHeight}" Height="{StaticResource Framework_StatusBarHeight}" Margin="0,0,3, 0"  Background="{DynamicResource WarningBrush}" Foreground="{DynamicResource PrimaryDefaultBrush}"  >
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <ContentControl>
+                                            <StackPanel Orientation="Vertical">
+                                                <Path Data="{DynamicResource OnlineGeometry}" Fill="{DynamicResource BackgroundBrush}" Width="30" Height="30"  Stretch="Uniform" />
+                                                <TextBlock Text="CIM" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
+                                            </StackPanel>
+                                        </ContentControl>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Infos.CIMStatus}" Value="False">
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <ContentControl>
+                                                    <Path Data="{DynamicResource OfflineGeometry}" Fill="{DynamicResource BackgroundBrush}" Stretch="Uniform" Width="30" Height="30"/>
+                                                </ContentControl>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!--清除报警-->
+                <Button Padding="0" Grid.Row="0" Grid.Column="4" Command="{Binding ShowAlarmsCommand}" Margin="0 0 4 0"  Width="{StaticResource Framework_StatusBarHeight}" Height="{StaticResource Framework_StatusBarHeight}"  Foreground="{DynamicResource PrimaryDefaultBrush}"  Visibility="{Binding IsShowAlarm, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}">
+                                            <ContentControl.ContentTemplate>
+                                                <DataTemplate>
+                                                    <Border CornerRadius="0 5 5 0">
+                                                        <StackPanel Orientation="Vertical">
+                                                            <TextBlock Text="{Binding Infos.AlarmCount}" Margin="20 0 0 0"  HorizontalAlignment="Right"  VerticalAlignment="Top"></TextBlock>
+                                                            <Path Data="{DynamicResource AlarmGeometry}" Fill="{DynamicResource BackgroundBrush}" Width="30" Height="30" Stretch="Uniform" Margin="0,0,0,10"/>
+                                                            <TextBlock Text="{DynamicResource HeaderAlarm}"  HorizontalAlignment="Center"></TextBlock>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ContentControl.ContentTemplate>
+                                        </ContentControl>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Infos.AlarmStatus}" Value="Alarm">
+                                    <Setter Property="Background" Value="#f68484" />
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames RepeatBehavior="Forever" Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
+                                                    <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                        <EasingColorKeyFrame KeyTime="0:0:0" Value="#f68484" />
+                                                        <EasingColorKeyFrame KeyTime="0:0:.5" Value="#b30c0d" />
+                                                        <EasingColorKeyFrame KeyTime="0:0:1" Value="#f68484" />
+                                                    </ColorAnimationUsingKeyFrames.KeyFrames>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Infos.AlarmStatus}" Value="Warning">
+                                    <Setter Property="Background" Value="#fbc46c" />
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames RepeatBehavior="Forever" Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
+                                                    <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                        <EasingColorKeyFrame KeyTime="0:0:0" Value="#fbc46c" />
+                                                        <EasingColorKeyFrame KeyTime="0:0:.5" Value="Orange" />
+                                                        <EasingColorKeyFrame KeyTime="0:0:1" Value="#fbc46c" />
+                                                    </ColorAnimationUsingKeyFrames.KeyFrames>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Infos.AlarmStatus}" Value="Normal">
+
+                                    <Setter Property="Background" Value="#ffa803" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Infos.AlarmStatus}" Value="Solved">
+                                    <Setter Property="Background" Value="#ffa803" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Height="{StaticResource Framework_StatusLightHeight}" Background="{DynamicResource HeaderTextGradientBrush}" BorderBrush="{DynamicResource PrimaryBorderBrush}" BorderThickness="0 0 0 1">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="315" />
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!--图标-->
+                <Button Grid.Column="0" Width="65" Height="65" Margin="10 0" Background="Transparent">
+                    <!--<Button.Content>
+                  <Image  Source="{Binding Infos.Logo}" Stretch="Uniform" Width="25" Height="25" HorizontalAlignment="Center" MouseLeftButtonDown ="{mw:Action LockScreen}">
+                  </Image>
+              </Button.Content>-->
+                </Button>
+
+                <!--配方信息-->
+                <Grid Grid.Column="1"  Margin="5 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Row="0" Grid.Column="0">
+                        <TextBlock Text="配方名称:" Foreground="{StaticResource PrimaryTextBrush}" FontSize="{StaticResource SubHeaderFontSize}" VerticalAlignment="Center"></TextBlock>
+                    </Border>
+                    <Border  Grid.Row="0" Grid.Column="1">
+                        <TextBlock Text="{Binding Infos.PPID}" VerticalAlignment="Center"></TextBlock>
+                    </Border>
+                    <Border  Grid.Row="1" Grid.Column="0">
+                        <TextBlock Text="ID:" VerticalAlignment="Center"></TextBlock>
+                    </Border>
+                    <Border  Grid.Row="1" Grid.Column="1">
+                        <TextBlock Text="{Binding Infos.RecipeName}" VerticalAlignment="Center"></TextBlock>
+                    </Border>
+                </Grid>
+
+                <!--<Grid Grid.Column="2"  Margin="5 0">
+                    <ContentControl mw:View.Model="{Binding StatisticsViewModel}" />
+                </Grid>-->
+
+                <!--用户管理-->
+                <Menu Grid.Column="3" HorizontalAlignment="Right"  Width="165"  Height="{StaticResource Framework_StatusLightHeight}" >
+                    <!--<MenuItem IsEnabled="{Binding CanMenuUse}" Width="165"  Height="70" Header="{Binding CurrentUser}" BorderThickness="0" Background="Transparent">
+                        <MenuItem.Icon>
+                            <Path Data="M642.56 709.12C638.72 669.44 640 640 640 602.88c17.92-10.24 81.92-71.68 87.04-122.88 14.08-1.28 37.12-15.36 43.52-71.68 3.84-29.44-10.24-47.36-19.2-52.48 23.04-70.4 33.28-290.56-128-312.32C606.72 15.36 564.48 0 509.44 0 289.28 3.84 224 168.96 272.64 357.12c-8.96 5.12-23.04 21.76-19.2 52.48 6.4 56.32 29.44 70.4 43.52 71.68 5.12 52.48 69.12 113.92 87.04 122.88 0 37.12 1.28 65.28-2.56 106.24C337.92 828.16 52.48 766.72 38.4 1024l947.2 0C977.92 762.88 686.08 828.16 642.56 709.12z"  Fill="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=MenuItem}}"  Stretch="Uniform"  Width="25" Height="25" VerticalAlignment="Top"/>
+                        </MenuItem.Icon>
+                        <MenuItem Header="{DynamicResource HeaderSet}" Width="165"  Click="{Binding OpenConfigManager}" Visibility="{Binding IsShowSet, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <MenuItem Header="{DynamicResource HeaderUser}"  Width="165"  Click="{Binding OpenUserManager}" Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <MenuItem Header="{DynamicResource HeaderSwitchUser}"  Width="165"  Click="{Binding SwitchUser}" Visibility="{Binding IsShowSwitchUser, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <MenuItem Header="{DynamicResource HeaderLogout}" Width="165"  Click="{Binding Logout}" Visibility="{Binding IsShowLogout, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <MenuItem Header="{DynamicResource HeaderExit}" Width="165"  Click="{Binding CloseWindow}" Visibility="{Binding IsShowExit, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    </MenuItem>-->
+                </Menu>
+
+
+
+            </Grid>
+        </Border>
+
+
+    </Grid>
+</UserControl>

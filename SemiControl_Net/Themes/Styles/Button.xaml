@@ -1,0 +1,597 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:SemiControl.Controls"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Base/BaseStyle.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <!--控制按钮样式-->
+
+    <Style x:Key="ControlButtonBaseBaseStyle" BasedOn="{StaticResource BaseStyle}" TargetType="ButtonBase">
+        <Setter Property="FontSize" Value="{DynamicResource SubHeaderFontSize}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Height" Value="{DynamicResource Button_ControlButtonHeight}"/>
+        <Setter Property="Width" Value="{DynamicResource Button_ControlButtonWidth}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlButton_DefaultBorderBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ControlButton_DefaultTextBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="ControlButtonBaseStyle" BasedOn="{StaticResource ControlButtonBaseBaseStyle}" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource ControlButton_DefaultBackBrush}"/>
+        <Setter Property="controls:BorderElement.CornerRadius" Value="3"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <controls:SimplePanel>
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding controls:BorderElement.CornerRadius}"/>
+                        <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding controls:BorderElement.CornerRadius}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
+                                <Path x:Name="Icon" Data="{Binding Path=(controls:ButtonAttach.IconGeometory), RelativeSource={RelativeSource TemplatedParent}}" Stretch="Fill" Fill="{DynamicResource ControlButton_DefaultIconBrush}" Width="18" Height="18"/>
+                                <ContentPresenter Margin="0 10 0 0" x:Name="ContentPresenterMain" RecognizesAccessKey="True" VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </StackPanel>
+                        </Border>
+                    </controls:SimplePanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Data" SourceName="Icon" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="Icon"/>
+                            <Setter Property="Margin" Value="0" TargetName="ContentPresenterMain"/>
+                        </Trigger>
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="ContentPresenterMain"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                            <Setter Property="Opacity" Value="0.5" TargetName="ContentPresenterMain"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlButton_DisabledBackBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ControlButton" BasedOn="{StaticResource ControlButtonBaseStyle}" TargetType="Button">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlButton_HoverBorderBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource ControlButton_HoverBackBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ControlButton_HoverTextBrush}"/>
+                <Setter Property="BorderThickness" Value="2"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource ControlButton_SelectBackBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlButton_SelectBorderBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ControlButton_SelectTextBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--原始按钮默认状态-->
+    <!--<Style x:Key="ButtonBaseBaseStyle" BasedOn="{StaticResource BaseStyle}" TargetType="ButtonBase">
+    <Setter Property="FontSize" Value="{DynamicResource SubHeaderFontSize}"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Height" Value="{DynamicResource ButtonHeight}"/>
+    <Setter Property="Width" Value="{DynamicResource ButtonWidth}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+</Style>
+
+<Style x:Key="ButtonBaseStyle" BasedOn="{StaticResource ButtonBaseBaseStyle}" TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource ThirdlyLightGradientBrush}"/>
+    <Setter Property="controls:BorderElement.CornerRadius" Value="3"/>
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="Button">
+                <controls:SimplePanel>
+                    <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding controls:BorderElement.CornerRadius}"/>
+                    <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding controls:BorderElement.CornerRadius}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
+                            <ContentPresenter x:Name="ContentPresenterMain" RecognizesAccessKey="True" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </StackPanel>
+                    </Border>
+                </controls:SimplePanel>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="Content" Value="{x:Null}">
+                        <Setter Property="Visibility" Value="Collapsed" TargetName="ContentPresenterMain"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.5"/>
+                        <Setter Property="Opacity" Value="0.5" TargetName="ContentPresenterMain"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>
+
+<Style BasedOn="{StaticResource ButtonBaseStyle}" TargetType="Button">
+    <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+            <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+            <Setter Property="Background" Value="{DynamicResource ThirdlyDeepGradientBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryDefaultBrush}"/>
+        </Trigger>
+    </Style.Triggers>
+</Style>-->
+
+    <!--键合按钮默认状态-->
+    <Style x:Key="ButtonBaseBaseStyle" BasedOn="{StaticResource BaseStyle}" TargetType="ButtonBase">
+        <Setter Property="FontSize" Value="{DynamicResource SubHeaderFontSize}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Height" Value="{DynamicResource ButtonHeight}"/>
+        <Setter Property="Width" Value="{DynamicResource ButtonWidth}"/>
+        <Setter Property="Background" Value="{DynamicResource DefaultButton_DefaultBackBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DefaultButton_DefaultBorderBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DefaultButton_DefaultTextBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="ButtonBaseStyle" BasedOn="{StaticResource ButtonBaseBaseStyle}" TargetType="Button">
+        <Setter Property="controls:BorderElement.CornerRadius" Value="3"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <controls:SimplePanel>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding controls:BorderElement.CornerRadius}"/>
+                        <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding controls:BorderElement.CornerRadius}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
+                                <Path x:Name="Icon" Data="{Binding Path=(controls:ButtonAttach.IconGeometory), RelativeSource={RelativeSource TemplatedParent}}" Stretch="Fill" Fill="{TemplateBinding Foreground}" Width="{DynamicResource Button_IconWidth}" Height="{DynamicResource Button_IconHeight}"/>
+                                <ContentPresenter Margin="10 0 0 0" x:Name="ContentPresenterMain" RecognizesAccessKey="True" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </StackPanel>
+                        </Border>
+                    </controls:SimplePanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Data" SourceName="Icon" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="Icon"/>
+                            <Setter Property="Margin" Value="0" TargetName="ContentPresenterMain"/>
+                        </Trigger>
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="ContentPresenterMain"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                            <Setter Property="Opacity" Value="0.5" TargetName="ContentPresenterMain"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style BasedOn="{StaticResource ButtonBaseStyle}" TargetType="Button">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource DefaultButton_HoverBorderBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource DefaultButton_HoverBackBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource DefaultButton_HoverTextBrush}"/>
+
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource DefaultButton_SelectBackBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource DefaultButton_SelectBorderBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource DefaultButton_SelectTextBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--无默认背景按钮样式-->
+    <Style x:Key="ButtonPrimaryStyle" BasedOn="{StaticResource ButtonBaseStyle}" TargetType="Button">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--有默认背景按钮样式-->
+    <Style x:Key="ButtonSecondaryStyle" BasedOn="{StaticResource ButtonBaseStyle}" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource PrimaryDefaultBrush}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--水晶按钮基样式-->
+    <Style x:Key="CrystalButtonBaseStyle" BasedOn="{StaticResource ButtonBaseStyle}" TargetType="Button">
+        <Setter Property="FontSize" Value="{DynamicResource HeadFontSize}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryDefaultBrush}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Width" Value="{DynamicResource Button_CrystalButtonWidth}"/>
+        <Setter Property="Height" Value="{DynamicResource Button_CrystalButtonHeight}"/>
+    </Style>
+
+    <!--亮水晶按钮-->
+    <Style x:Key="LightCrystalButtonStyle" BasedOn="{StaticResource CrystalButtonBaseStyle}" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource LightCrystalGradientBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                <Setter Property="BorderThickness" Value="2"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource ThirdlyDeepGradientBrushRevert}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryDefaultBrush}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--暗水晶按钮-->
+    <Style x:Key="DarkCrystalButtonStyle" BasedOn="{StaticResource CrystalButtonBaseStyle}" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource DarkCrystalGradientBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource SecondaryTextBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryTextBrush}"/>
+                <Setter Property="BorderThickness" Value="2"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource PrimaryTextBrush}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--绿水晶按钮-->
+    <Style x:Key="GreenCrystalButtonStyle" BasedOn="{StaticResource CrystalButtonBaseStyle}" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource GreenCrystalGradientBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource NormalToolBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource NormalBrush}"/>
+                <Setter Property="BorderThickness" Value="2"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource NormalBrush}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--红水晶按钮-->
+    <Style x:Key="RedCrystalButtonStyle" BasedOn="{StaticResource CrystalButtonBaseStyle}" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryDefaultBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource RedCrystalGradientBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource WarningToolBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}"/>
+                <Setter Property="BorderThickness" Value="2"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource WarningBrush}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--上一步按钮-->
+    <Style x:Key="PreviousButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource PrimaryDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Width" Value="{DynamicResource Button_PreviousButtonWidth}"/>
+        <Setter Property="Height" Value="{DynamicResource Button_PreviousButtonHeight}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <controls:SimplePanel>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="3"/>
+                        <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="3">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
+                                <Path x:Name="Triangle" Width="{DynamicResource Button_PreviousButton_PathWidth}" Height="{DynamicResource Button_PreviousButton_PathHeight}" Data="M0,9 L12,18 12,0Z" Fill="{DynamicResource PrimaryBrush}"/>
+                                <ContentPresenter x:Name="ContentPresenterMain" Visibility="Collapsed" RecognizesAccessKey="True" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </StackPanel>
+                        </Border>
+                    </controls:SimplePanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter  Property="BorderBrush" Value="{DynamicResource PrimaryToolBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource NextButtonGradientBrush}"/>
+                            <Setter TargetName="Triangle" Property="Shape.Fill" Value="{DynamicResource PrimaryDefaultBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryToolBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--下一步按钮-->
+    <Style x:Key="NextButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource PrimaryDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Width" Value="{DynamicResource Button_ArrowButtonWidth}"/>
+        <Setter Property="Height" Value="{DynamicResource Button_ArrowButtonHeight}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <controls:SimplePanel>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="3"/>
+                        <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="3">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
+                                <Path Name="Triangle" Width="{DynamicResource Button_ArrowButtonTriangleWidth}" Height="{DynamicResource Button_ArrowButtonTriangleHeight}" Data="M12,9 L0,18 0,0Z" Fill="{DynamicResource PrimaryBrush}"/>
+                                <ContentPresenter x:Name="ContentPresenterMain" Visibility="Collapsed" RecognizesAccessKey="True" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </StackPanel>
+                        </Border>
+                    </controls:SimplePanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter  Property="BorderBrush" Value="{DynamicResource PrimaryToolBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource NextButtonGradientBrush}"/>
+                            <Setter TargetName="Triangle" Property="Shape.Fill" Value="{DynamicResource PrimaryDefaultBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryToolBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--控制按钮-->
+    <!--<Style x:Key="ControlButtonBaseStyle" BasedOn="{StaticResource ButtonBaseStyle}" TargetType="Button">
+    <Setter Property="FontSize" Value="{DynamicResource HeadFontSize}"/>
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryDefaultBrush}"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Width" Value="{DynamicResource Button_ControlButtonWidth}"/>
+    <Setter Property="Height" Value="{DynamicResource Button_ControlButtonHeight}"/>
+</Style>
+<Style x:Key="ControlButton" BasedOn="{StaticResource ControlButtonBaseStyle}" TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource LightCrystalGradientBrush}"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+    <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+            <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+            <Setter Property="Background" Value="{DynamicResource ThirdlyDeepGradientBrushRevert}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Trigger>
+    </Style.Triggers>
+</Style>-->
+
+    <!--警告控制按钮-->
+    <Style x:Key="WarningControlButton" BasedOn="{StaticResource ControlButtonBaseStyle}" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource RedCrystalGradientBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource WarningToolBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}"/>
+                <Setter Property="BorderThickness" Value="2"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource WarningBrush}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--region ButtonGroupItem-->
+
+    <Style x:Key="ButtonGroupItemBaseStyle" BasedOn="{StaticResource BaseStyle}" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource ThirdlyLightGradientBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="controls:BorderElement.CornerRadius" Value="0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="controls:BorderElement.CornerRadius" Value="0"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Height" Value="{DynamicResource ButtonGroupHeight}"/>
+        <Setter Property="Padding" Value="10,0"/>
+        <Setter Property="Margin" Value="-1,0,0,0"/>
+        <Setter Property="FontSize" Value="{DynamicResource SubHeaderFontSize}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <controls:SimplePanel>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="{Binding Path=(controls:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}"/>
+                        <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="{Binding Path=(controls:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}">
+                            <ContentPresenter x:Name="ContentPresenterMain" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                    </controls:SimplePanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="ContentPresenterMain"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                <Setter Property="Panel.ZIndex" Value="{x:Static system:Int32.MaxValue}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource ThirdlyDeepGradientBrush}"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryDefaultBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.5"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--ButtonGroupItem默认样式-->
+    <Style x:Key="ButtonGroupItemDefault" BasedOn="{StaticResource ButtonGroupItemBaseStyle}" TargetType="Button"/>
+
+    <!--左半圆角样式-->
+    <Style x:Key="ButtonGroupItemHorizontalFirst" BasedOn="{StaticResource ButtonGroupItemBaseStyle}" TargetType="Button">
+        <Setter Property="controls:BorderElement.CornerRadius" Value="3,0,0,3"/>
+        <Setter Property="Margin" Value="0"/>
+    </Style>
+
+    <!--右半圆角样式-->
+    <Style x:Key="ButtonGroupItemHorizontalLast" BasedOn="{StaticResource ButtonGroupItemBaseStyle}" TargetType="Button">
+        <Setter Property="controls:BorderElement.CornerRadius" Value="0,3,3,0"/>
+    </Style>
+
+    <!--圆角样式-->
+    <Style x:Key="ButtonGroupItemSingle" BasedOn="{StaticResource ButtonGroupItemBaseStyle}" TargetType="Button">
+        <Setter Property="controls:BorderElement.CornerRadius" Value="3"/>
+    </Style>
+
+    <!--上半圆角样式-->
+    <Style x:Key="ButtonGroupItemVerticalFirst" BasedOn="{StaticResource ButtonGroupItemBaseStyle}" TargetType="Button">
+        <Setter Property="controls:BorderElement.CornerRadius" Value="3,3,0,0"/>
+        <Setter Property="Margin" Value="0"/>
+    </Style>
+
+    <!--下半圆角样式-->
+    <Style x:Key="ButtonGroupItemVerticalLast" BasedOn="{StaticResource ButtonGroupItemBaseStyle}" TargetType="Button">
+        <Setter Property="controls:BorderElement.CornerRadius" Value="0,0,3,3"/>
+    </Style>
+
+    <!--endregion-->
+
+    <!--背景透明按钮-->
+    <Style x:Key="ButtonCustom" BasedOn="{StaticResource BaseStyle}" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border" CornerRadius="0" SnapsToDevicePixels="true" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}">
+                        <ContentPresenter x:Name="HeaderTime" TextElement.FontSize="16" TextElement.Foreground="{TemplateBinding Foreground}"  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Width="auto"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource SecondaryBorderBrush}" TargetName="border"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource PrimaryControlToolBrush}" TargetName="border"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="TextElement.Foreground" Value="{DynamicResource DisableTextBrush}" TargetName="HeaderTime"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--region ButtonIcon-->
+    <!--自定义图标按钮-->
+    <Style x:Key="ButtonIcon" TargetType="Button">
+        <Setter Property="Width" Value="25"/>
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="controls:BorderElement.CornerRadius" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border CornerRadius="{Binding Path=(controls:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
+                        <ContentControl HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                            <Path Fill="{TemplateBinding Foreground}" SnapsToDevicePixels="True" Stretch="Uniform" Width="{TemplateBinding controls:IconElement.Width}" Height="{TemplateBinding controls:IconElement.Height}" Data="{TemplateBinding controls:IconElement.Geometry}"/>
+                        </ContentControl>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource ThirdlyDeepGradientBrush}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryDefaultBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.4"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--自定义图片按钮-->
+    <Style x:Key="ButtonImage" TargetType="Button">
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="controls:BorderElement.CornerRadius" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border CornerRadius="{Binding Path=(controls:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
+                        <ContentControl HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                            <Image SnapsToDevicePixels="True" Stretch="Uniform" Width="{TemplateBinding controls:IconElement.Width}" Height="{TemplateBinding controls:IconElement.Height}" Source="{TemplateBinding controls:IconElement.Source}"/>
+                        </ContentControl>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource ThirdlyDeepGradientBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.4"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

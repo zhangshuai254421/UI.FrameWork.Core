@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="UI.FrameWork.Core.Main.FooterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:UI.FrameWork.Core.Main"
+             xmlns:controls="https://github.io/semicontrol"
+             mc:Ignorable="d" 
+            >
+    <UserControl.Resources>
+        <Style TargetType="controls:ToggleIconButton" BasedOn="{StaticResource ToggleIconButtonBaseStyle}">
+            <Setter Property="Width" Value="75"/>
+            <Setter Property="Height" Value="75"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid Focusable="False">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="5"/>
+        </Grid.ColumnDefinitions>
+
+        <controls:ToggleIconButton Grid.Row="1" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource NumericKeyboardGeometry}" 
+                                   FontSize="14" Content="123" IsChecked="{Binding NumberKeyPadChecked}" IconWidth="100"  Command="{Binding BtnNumberKeyPadCommand}"/>
+        <controls:ToggleIconButton Grid.Row="1" Grid.Column="3" Focusable="False" IconGeometry="{StaticResource KeyboardGeometry}"
+                                   FontSize="14" Content="Keyboard" IsChecked="{Binding StringKeyPadChecked}" IconWidth="100" Command="{Binding BtnStringKeyPadCommand}"/>
+
+        <controls:ToggleIconButton Grid.Row="3" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource AxisControlGeometry}" 
+                                   IconHeight="40" IconWidth="40" IsChecked="{Binding AxisChecked}" IsEnabled="{Binding IsAxisButtonEnable}"  Command="{Binding BtnAxisControlCommand}"/>
+        <controls:ToggleIconButton Grid.Row="3" Grid.Column="3" Focusable="False" IconGeometry="{StaticResource DirectGeometry}" 
+                                   FontSize="14" Content="Direct" IsChecked="{Binding DirectChecked}" IsEnabled="{Binding IsDirectButtonEnable}" Command="{Binding  BtnDirectCommand}"/>
+
+    </Grid>
+</UserControl>
