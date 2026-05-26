@@ -23,5 +23,6 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
         // 注册导航
         containerRegistry.RegisterForNavigation<HeaderView>();
         containerRegistry.RegisterForNavigation<NumberKeyPadView>();
+        containerRegistry.RegisterForNavigation<DirectView>();
     }
 }

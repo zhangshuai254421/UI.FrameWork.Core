@@ -28,3 +28,4 @@ D:\CodeSource\01-UI框架\SemiControl_Net\obj\Debug\net10.0-windows\refint\SemiC
 D:\CodeSource\01-UI框架\SemiControl_Net\obj\Debug\net10.0-windows\SemiControl.pdb
 D:\CodeSource\01-UI框架\SemiControl_Net\obj\Debug\net10.0-windows\ref\SemiControl.dll
 D:\CodeSource\01-UI框架\SemiControl_Net\obj\Debug\net10.0-windows\Themes\Styles\Button.baml
+D:\CodeSource\01-UI框架\SemiControl_Net\obj\Debug\net10.0-windows\SemiControl_Net.sourcelink.json

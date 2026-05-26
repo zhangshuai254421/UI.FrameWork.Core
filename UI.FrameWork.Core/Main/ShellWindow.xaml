@@ -32,7 +32,7 @@
             <TextBlock Text="标题栏" VerticalAlignment="Center" TextAlignment="Center" FontSize="{DynamicResource HeaderMenuFontSize}" Foreground="{DynamicResource PrimaryDefaultBrush}" FontWeight="Bold"></TextBlock>
         </Border>
 
-        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" >
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"   Background="{DynamicResource SecondaryBrush}" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -44,7 +44,7 @@
             </Grid.ColumnDefinitions>
 
             <!--左侧工具箱-->
-            <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10" Width="{DynamicResource Framework_SideMenuWidth}" >
+            <StackPanel Grid.Row="0" Grid.Column="0"  Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10" Width="{DynamicResource Framework_SideMenuWidth}" >
                 <Button Style="{DynamicResource ControlButton}"  Content="传感器"  Height="65" Width="65" Margin="0 5"  CommandParameter="Sensor" />
                 <!--<Button Style="{DynamicResource ControlButton}" s:ButtonAttach.IconGeometory="{DynamicResource LineChartGeometry}" Content="曲线图"  Height="65" Width="65" Margin="0 5"  CommandParameter="Graph"/>
             <Button Style="{DynamicResource ControlButton}" s:ButtonAttach.IconGeometory="{DynamicResource BladeGeometry}" Content="Blade"  Height="65" Width="65" Margin="0 5" CommandParameter="Blade"/>-->
@@ -54,21 +54,25 @@
             <!--主界面-->
 
             <!--最下面-->
-            <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" x:Name="BorderFooter" BorderThickness="0 2 0 0"
+            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="BorderFooter" BorderThickness="0 2 0 0"
                     BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch" 
-                    VerticalAlignment="Bottom" Background="{DynamicResource SecondaryBrush}" Height="{DynamicResource Framework_BottomHeight}">
+                    VerticalAlignment="Bottom"  Height="{DynamicResource Framework_BottomHeight}">
 
                 <StackPanel Height="178" >
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="105"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="165"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
                         <!--工具页-->
-                        <ContentControl Grid.Row="0" Grid.Column="0" regions:RegionManager.RegionName="ToolBoxRegion"/>
-                        <!--页脚-->
-                        <ContentControl Grid.Row="0" Grid.Column="1" regions:RegionManager.RegionName="FooterRegion"/>
+                        <ContentControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" regions:RegionManager.RegionName="ToolBoxRegion"/>
+                        <Border BorderThickness="2 0 0 0"  BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Row="0" Grid.Column="2">
+                            <!--页脚-->
+                            <ContentControl  regions:RegionManager.RegionName="FooterRegion"/>
+                        </Border>
+                       
                     </Grid>
                 </StackPanel>
                 <!--<GroupBox Height="178"/>-->

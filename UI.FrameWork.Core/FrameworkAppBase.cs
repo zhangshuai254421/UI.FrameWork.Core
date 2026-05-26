@@ -1,15 +1,25 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DryIoc;
+using DryIoc.Microsoft.DependencyInjection;
+using EFCore.Infrastructure;
+using EFCore.Repository;
+using Example;
+using Log.Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.Extensions.Logging;
-using Serilog;
 using UI.FrameWork.Core.Common;
 using UI.FrameWork.Core.Main;
 
@@ -22,14 +32,23 @@ namespace UI.FrameWork.Core
         public static extern bool SetForegroundWindow(IntPtr hWnd);
         protected override IContainerExtension CreateContainerExtension()
         {
-            //IServiceCollection services = new ServiceCollection();
-            return new DryIocContainerExtension();
+            IServiceCollection services = new ServiceCollection();
+            //services.
+
+            services.AddDbContext<DataContext>();
+            services.AddRepository();
+            //services
+            //new Container(CreateContainerRules()).WithDependencyInjectionAdapter(services);
+            return new DryIocContainerExtension(new DryIoc.Container(DryIocContainerExtension.DefaultRules) .WithDependencyInjectionAdapter(services));
         }
+        private readonly ServiceCollection _services = new ServiceCollection();
         protected override Window CreateShell()
         {
-            return  Container.Resolve<ShellWindow>(); ;
+            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<DataContext>();
+            return Container.Resolve<ShellWindow>(); ;
         }
         private static Mutex AppMutex;
+
         /// <summary>
         /// TODO 3
         /// </summary>
@@ -38,7 +57,12 @@ namespace UI.FrameWork.Core
             IoC.GetInstance = this.Container.Resolve;
             //IoC.BuildUp = this.Container.BuildUp;
 
-             //var  s=IoC.Get<FooterViewModel>();
+#if DEBUG
+            var s = IoC.Get<IUnitOfWork>();
+            var ss = s.GetRepository<Log.Domain.SerilogHistory>();
+            var s2 = ss.GetListAsync();
+#endif
+
             bool createdNew = false;
             FrameworkAppBase.AppMutex = new Mutex(true, "title", out createdNew);
             bool flag6 = !createdNew;
@@ -79,8 +103,12 @@ namespace UI.FrameWork.Core
 
             #region 日志模块
             // 1. 初始化 Serilog
-            Log.Logger = new LoggerConfiguration()
+            Serilog.Log.Logger = new LoggerConfiguration()
+                 //.Enrich.WithMachineName()             // 添加 MachineName
+                 .Enrich.WithThreadId()                // 添加 ThreadId              
+                 .Enrich.WithEnvironmentUserName()     // 添加当前用户名
                 .MinimumLevel.Debug()
+                .WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug,tableName:"SerilogHistory")  // 指定数据库文件路径
                 .WriteTo.File(
                     "logs/log-.txt",
                     rollingInterval: RollingInterval.Day,   // 按天分文件
@@ -104,14 +132,24 @@ namespace UI.FrameWork.Core
 
         }
 
+ 
         /// <summary>
         /// TODO 1. 
         /// </summary>
         /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
+          
+
+
             base.OnStartup(e);
         }
 
+        protected override void OnExit(ExitEventArgs e)
+        {
+            //host.StopAsync().Wait();
+            //host.Dispose();
+            base.OnExit(e);
+        }
     }
 }

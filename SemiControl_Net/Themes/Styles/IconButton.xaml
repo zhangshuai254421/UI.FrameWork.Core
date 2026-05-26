@@ -98,4 +98,10 @@
         <Setter Property="IconWidth" Value="100"/>
         <Setter Property="IconHeight" Value="25"/>
     </Style>
+
+    <Style x:Key="BottomButtonSmallStyle" TargetType="controls:IconButton" BasedOn="{StaticResource IconButtonBaseStyle}">
+        <Setter Property="Width" Value="80"/>
+        <Setter Property="Height" Value="75"/>
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
 </ResourceDictionary>

@@ -43,15 +43,15 @@
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
 
-                <s:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F1" Content="全自动操作" IconGeometry="{StaticResource HomePageF1Geometry}" />
-                <!--<s:IconButton Grid.Row="1" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F2" Content="手动操作" IconGeometry="{StaticResource HomePageF2Geometry}" Command="{s:Action ShowManualOperation}"/>
-                <s:IconButton Grid.Row="1" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F3" Content="切割参数" IconGeometry="{StaticResource HomePageF3Geometry}" Command="{s:Action ShowRecipe}" attach:UserRightAttach.Id ="ShowRecipeRightId" attach:UserRightAttach.FullId ="ShowRecipeRightId" />
-                <s:IconButton Grid.Row="1" Grid.Column="7" Style="{StaticResource MainButtonStyle}" TopLeftContent="F4" Content="刀片维护" IconGeometry="{StaticResource HomePageF4Geometry}" Command="{s:Action ShowBladeMaintenance}" />
-                <s:IconButton Grid.Row="1" Grid.Column="9" Style="{StaticResource MainButtonStyle}" TopLeftContent="F5" Content="参数维护" IconGeometry="{StaticResource HomePageF5Geometry}" Command="{s:Action ShowParameterSetting}" />
-                <s:IconButton Grid.Row="3" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F6" Content="设备维护" IconGeometry="{StaticResource HomePageF6Geometry}" Command="{s:Action ShowEquipmentMaintenance}" />
-                <s:IconButton Grid.Row="3" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F7" Content="工程维护" IconGeometry="{StaticResource HomePageF7Geometry}" Command="{s:Action ShowProjectMaintenance}"/>
-                <s:IconButton Grid.Row="3" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F8" Content="制造商维护" IconGeometry="{StaticResource HomePageF8Geometry}" Command="{s:Action ShowManufacturerMaintenanceHome}"
-                              Visibility="{Binding ManufacturerMaintenanceVisibility}" />-->
+                <s:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F1" Content="全自动操作" IconGeometry="{StaticResource HomePageF1Geometry}" Command="{Binding AutoCutStandByViewCmd}"/>
+                <s:IconButton Grid.Row="1" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F2" Content="手动操作" IconGeometry="{StaticResource HomePageF2Geometry}" Command="{Binding ShowManualOperation}"/>
+                <s:IconButton Grid.Row="1" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F3" Content="切割参数" IconGeometry="{StaticResource HomePageF3Geometry}" Command="{Binding ShowRecipe}"  />
+                <s:IconButton Grid.Row="1" Grid.Column="7" Style="{StaticResource MainButtonStyle}" TopLeftContent="F4" Content="刀片维护" IconGeometry="{StaticResource HomePageF4Geometry}" Command="{Binding ShowBladeMaintenance}" />
+                <s:IconButton Grid.Row="1" Grid.Column="9" Style="{StaticResource MainButtonStyle}" TopLeftContent="F5" Content="参数维护" IconGeometry="{StaticResource HomePageF5Geometry}" Command="{Binding ShowParameterSetting}" />
+                <s:IconButton Grid.Row="3" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F6" Content="设备维护" IconGeometry="{StaticResource HomePageF6Geometry}" Command="{Binding ShowEquipmentMaintenance}" />
+                <s:IconButton Grid.Row="3" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F7" Content="工程维护" IconGeometry="{StaticResource HomePageF7Geometry}" Command="{Binding ShowProjectMaintenance}"/>
+                <s:IconButton Grid.Row="3" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F8" Content="制造商维护" IconGeometry="{StaticResource HomePageF8Geometry}" Command="{Binding ShowManufacturerMaintenanceHome}"
+                              Visibility="{Binding ManufacturerMaintenanceVisibility}" />
 
             </Grid>
         </Border>

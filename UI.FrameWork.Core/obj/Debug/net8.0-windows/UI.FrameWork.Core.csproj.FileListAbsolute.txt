@@ -29,3 +29,10 @@ d:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\UI.FrameWor
 d:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\ref\UI.FrameWork.Core.dll
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\Main\DirectView.g.cs
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\Main\DirectView.baml
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\UI.FrameWork.Core.sourcelink.json
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\EFCore.Infrastructure.dll
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\EFCore.IRepository.dll
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Log.Domain.dll
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\EFCore.Infrastructure.pdb
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\EFCore.IRepository.pdb
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Log.Domain.pdb

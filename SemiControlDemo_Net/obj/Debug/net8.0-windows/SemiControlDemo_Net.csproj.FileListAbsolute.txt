@@ -23,3 +23,4 @@ D:\CodeSource\01-UI框架\SemiControlDemo_Net\obj\Debug\net8.0-windows\SemiContr
 D:\CodeSource\01-UI框架\SemiControlDemo_Net\obj\Debug\net8.0-windows\ref\SemiControlDemo_Net.dll
 D:\CodeSource\01-UI框架\SemiControlDemo_Net\bin\Debug\net8.0-windows\SemiControl.dll
 D:\CodeSource\01-UI框架\SemiControlDemo_Net\bin\Debug\net8.0-windows\SemiControl.pdb
+D:\CodeSource\01-UI框架\SemiControlDemo_Net\obj\Debug\net8.0-windows\SemiControlDemo_Net.sourcelink.json

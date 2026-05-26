@@ -56,7 +56,7 @@ namespace UI.FrameWork.Core.Main {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/UI.FrameWork.Core;V1.0.0.0;component/main/numberkeypadview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/UI.FrameWork.Core;component/main/numberkeypadview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Main\NumberKeyPadView.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
