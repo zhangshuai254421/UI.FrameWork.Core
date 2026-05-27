@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Log.Domain
 {
-    public interface ILogService : IEntityServiceBase<SerilogHistory, Guid>
+    public interface ISerilogService : IEntityServiceBase<SerilogHistory, Guid>
     {
        
     }

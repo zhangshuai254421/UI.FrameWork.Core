@@ -1,22 +1,25 @@
 ﻿using EFCore.Repository;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EFCore.Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DataContext _context;
+        private  DbContext _context;
         private readonly IServiceProvider _provider;
 
-        public UnitOfWork(DataContext context, IServiceProvider provider)
+        public UnitOfWork( IServiceProvider provider)
         {
-            _context = context;
+          
             _provider = provider;
         }
 
         public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class
         {
-            return _provider.GetRequiredService<IRepository<TEntity>>();
+            var temp = _provider.GetRequiredService<IRepository<TEntity>>();
+            _context = ((Repository<TEntity>)temp)._context;
+            return temp;
         }
 
         public async Task<IUnitOfTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)

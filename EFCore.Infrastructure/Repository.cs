@@ -1,4 +1,5 @@
 ﻿using EFCore.Repository;
+using Framework.Core.CustomAttribute;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
@@ -7,11 +8,11 @@ namespace EFCore.Infrastructure
 {
     internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        protected readonly DataContext _context;
+        internal readonly DbContext _context;
 
-        public Repository(DataContext context)
+        public Repository(IDbContextResolver resolver)
         {
-            _context = context;
+            _context = resolver.Resolve<TEntity>();;
         }
 
         public IQueryable<TEntity> GetQueryable(bool isTracking = true)

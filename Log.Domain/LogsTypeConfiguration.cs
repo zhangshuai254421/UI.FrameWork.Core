@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFCore.Infrastructure
+namespace Log.Domain
 {
     public class LogsTypeConfiguration : IEntityTypeConfiguration<Log.Domain.SerilogHistory>
     {

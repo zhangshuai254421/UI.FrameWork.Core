@@ -32,7 +32,11 @@ D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\Main\Direct
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\UI.FrameWork.Core.sourcelink.json
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\EFCore.Infrastructure.dll
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\EFCore.IRepository.dll
-D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Log.Domain.dll
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\EFCore.Infrastructure.pdb
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\EFCore.IRepository.pdb
-D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Log.Domain.pdb
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Framework.Core.dll
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Framework.Core.pdb
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Serilog.Domain.dll
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Serilog.Domain.pdb
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Serilog.Infrastructure.dll
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Serilog.Infrastructure.pdb

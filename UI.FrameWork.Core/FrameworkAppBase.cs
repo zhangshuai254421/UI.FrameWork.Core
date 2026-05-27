@@ -3,6 +3,7 @@ using DryIoc.Microsoft.DependencyInjection;
 using EFCore.Infrastructure;
 using EFCore.Repository;
 using Example;
+using Framework.Core.Common;
 using Log.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Threading.Tasks;
+using Serilog.Infrastructure;
 using System.Windows;
 using UI.FrameWork.Core.Common;
 using UI.FrameWork.Core.Main;
@@ -34,11 +36,12 @@ namespace UI.FrameWork.Core
         {
             IServiceCollection services = new ServiceCollection();
             //services.
-
+            
             services.AddDbContext<DataContext>();
+            /// TODO 2. 注册数据访问层（DAL）和业务逻辑层（BLL）的服务
             services.AddRepository();
-            //services
-            //new Container(CreateContainerRules()).WithDependencyInjectionAdapter(services);
+
+            services.AddSerilogServices();
             return new DryIocContainerExtension(new DryIoc.Container(DryIocContainerExtension.DefaultRules) .WithDependencyInjectionAdapter(services));
         }
         private readonly ServiceCollection _services = new ServiceCollection();
@@ -61,6 +64,11 @@ namespace UI.FrameWork.Core
             var s = IoC.Get<IUnitOfWork>();
             var ss = s.GetRepository<Log.Domain.SerilogHistory>();
             var s2 = ss.GetListAsync();
+
+            var s3 = IoC.Get<ISerilogService>();
+            var s4 = s3.GetListAsync();
+            var ss4 = s3.GetPageAsync(new PageParameter());
+            var s5 = ss4.Result;
 #endif
 
             bool createdNew = false;

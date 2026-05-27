@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UI.FrameWork.Core.Common
+namespace Framework.Core.Common
 {
     public static class IoC
     {

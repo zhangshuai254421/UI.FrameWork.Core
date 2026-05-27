@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EFCore.Infrastructure\EFCore.Infrastructure.csproj" />
     <ProjectReference Include="..\EFCore.Repository\EFCore.IRepository.csproj" />
+    <ProjectReference Include="..\Log.Domain\Serilog.Domain.csproj" />
   </ItemGroup>
 
 </Project>

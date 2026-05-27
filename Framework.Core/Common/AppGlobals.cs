@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UI.FrameWork.Core.Common
+namespace Framework.Core.Common
 {
     public static class AppGlobals
     {
@@ -39,7 +38,8 @@ namespace UI.FrameWork.Core.Common
             }
         }
 
-        public static string AppDebug { get; set; }= AppDomain.CurrentDomain.BaseDirectory;
+        public static string AppDebug { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
     }
+
 }

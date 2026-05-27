@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Log.Infrastructure
+namespace Serilog.Infrastructure
 {
-    public class LogService : EntityServiceBase<Log.Domain.SerilogHistory, Guid>, ILogService
+    public class SerilogService : EntityServiceBase<Log.Domain.SerilogHistory, Guid>, ISerilogService
     {
-        public LogService(IUnitOfWork unitofWork) : base(unitofWork)
+        public SerilogService(IUnitOfWork unitofWork) : base(unitofWork)
         {
         }
     }

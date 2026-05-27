@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UI.FrameWork.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3fec82621b6caf94307d1e1fc72f3c85cc0e4cad")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f45ca46e5d38cb52f36ce485bff04119ef57a82")]
 [assembly: System.Reflection.AssemblyProductAttribute("UI.FrameWork.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UI.FrameWork.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

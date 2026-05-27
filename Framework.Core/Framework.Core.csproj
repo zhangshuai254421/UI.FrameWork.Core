@@ -7,9 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EFCore.Infrastructure\EFCore.Infrastructure.csproj" />
-    <ProjectReference Include="..\EFCore.Repository\EFCore.IRepository.csproj" />
-    <ProjectReference Include="..\Log.Domain\Log.Domain.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
