@@ -1,5 +1,5 @@
 ﻿SemiControlDemo_Net
-
+1.0.0.0
 
 winexe
 C#
@@ -12,9 +12,9 @@ TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR
 D:\CodeSource\01-UI框架\SemiControlDemo_Net\App.xaml
 11407045341
 
-4453848374
+6772620923
 199943446464
 MainWindow.xaml;
 
-False
+True
 

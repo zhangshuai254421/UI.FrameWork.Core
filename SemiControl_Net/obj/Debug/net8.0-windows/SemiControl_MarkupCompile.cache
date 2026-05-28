@@ -1,5 +1,5 @@
 ﻿SemiControl
-
+1.0.0.0
 
 library
 C#
@@ -12,9 +12,9 @@ TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR
 
 14618971342
 
-12-1184247476
+14615532504
 198185795992
 Controls\TimeBlock.xaml;Themes\Basic\Brushes.xaml;Themes\Basic\Brushes\ButtonBrushes.xaml;Themes\Basic\Colors.xaml;Themes\Basic\Fonts.xaml;Themes\Basic\Geometries.xaml;Themes\Basic\Size.Xaml;Themes\IconGeometry.xaml;Themes\Skin.xaml;Themes\Styles\Base\BaseStyle.xaml;Themes\Styles\BigNumericKeypad.xaml;Themes\Styles\Button.xaml;Themes\Styles\IconButton.xaml;Themes\Styles\ToggleButton.xaml;
 
-False
+True
 
