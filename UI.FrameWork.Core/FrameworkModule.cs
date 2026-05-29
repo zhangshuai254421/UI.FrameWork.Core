@@ -1,4 +1,5 @@
 ﻿using UI.FrameWork.Core.Main;
+using UI.FrameWork.Core.Main.View;
 
 namespace UI.FrameWork.Core;
 
@@ -8,8 +9,8 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
     {
         regionManager.RegisterViewWithRegion("HeaderViewRegion", typeof(HeaderView));
         regionManager.RegisterViewWithRegion("FooterRegion", typeof(FooterView));
-
-
+        regionManager.RegisterViewWithRegion("MainRegion", typeof(BaseView));
+        regionManager.RegisterViewWithRegion("BaseViewMainRegion", typeof(LogViewerView));
         //// 注册导航
         //_containerRegistry.RegisterForNavigation<HeaderView>();
         //_containerRegistry.RegisterForNavigation<NumberKeyPadView>();
@@ -24,5 +25,7 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
         containerRegistry.RegisterForNavigation<HeaderView>();
         containerRegistry.RegisterForNavigation<NumberKeyPadView>();
         containerRegistry.RegisterForNavigation<DirectView>();
+        containerRegistry.RegisterForNavigation<LogViewerView>();
+        containerRegistry.RegisterForNavigation<BaseView>();
     }
 }

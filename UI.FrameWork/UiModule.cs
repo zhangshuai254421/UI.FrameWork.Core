@@ -14,7 +14,7 @@ namespace SemiAppliaction
     {
         public void OnInitialized(IContainerProvider containerProvider)
         {
-            regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
+            //regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)

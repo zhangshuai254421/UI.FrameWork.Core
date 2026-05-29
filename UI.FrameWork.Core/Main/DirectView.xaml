@@ -57,7 +57,7 @@
         <s:IconButton  Grid.Row="1" Grid.Column="9" IconGeometry="{StaticResource MainMenu5Geometry}" IsShowStatus="True" Content="清洗台真空" Style="{StaticResource BottomButtonStyle}">
         
         </s:IconButton>
-        <s:IconButton Grid.Row="1" Grid.Column="11" IconGeometry="{StaticResource MainMenuSmall1Geometry}" Style="{StaticResource BottomButtonSmallStyle}" TopLeftContent="" Content="操作记录" >
+        <s:IconButton Grid.Row="1" Grid.Column="11" Command="{Binding  BtnShowLogCommand}" IconGeometry="{StaticResource MainMenuSmall1Geometry}" Style="{StaticResource BottomButtonSmallStyle}" TopLeftContent="" Content="操作记录" >
         
         </s:IconButton>
         <s:IconButton Grid.Row="1" Grid.Column="13" IconGeometry="{StaticResource MainMenuSmall2Geometry}" Style="{StaticResource BottomButtonSmallStyle}" TopLeftContent="" Content="截图" IconWidth="100" />

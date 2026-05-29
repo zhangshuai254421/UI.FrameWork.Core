@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 
-71972766828
+91667627280
 
-151419662265
+202083786239
 260145577187
-Language\Framework_CN.xaml;Main\DirectView.xaml;Main\FooterView.xaml;Main\HeaderView.xaml;Main\LoginView.xaml;Main\NumberKeyPadView.xaml;Main\ShellWindow.xaml;
+Language\Framework_CN.xaml;Main\DirectView.xaml;Main\FooterView.xaml;Main\HeaderView.xaml;Main\LoginView.xaml;Main\LogViewerView.xaml;Main\NumberKeyPadView.xaml;Main\ShellWindow.xaml;Main\View\BaseView.xaml;
 
-False
+True
 

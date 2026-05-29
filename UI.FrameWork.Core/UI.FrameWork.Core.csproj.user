@@ -20,5 +20,8 @@
     <Compile Update="Main\ShellWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Main\View\BaseView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

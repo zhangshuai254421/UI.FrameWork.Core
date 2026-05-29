@@ -40,3 +40,8 @@ D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Serilog.Dom
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Serilog.Domain.pdb
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Serilog.Infrastructure.dll
 D:\CodeSource\01-UI框架\UI.FrameWork.Core\bin\Debug\net8.0-windows\Serilog.Infrastructure.pdb
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\Main\LogViewerView.g.cs
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\Main\LogViewerView.baml
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\Main\View\BaseView.g.cs
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\Main\View\BaseView.baml

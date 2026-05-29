@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 
 using SemiControl.Controls;
+using SemiControl.Controls.DataGrid;
 using SemiControl.Data;
 using SemiControl.Tools;
 using SemiControlDemo_Net;
@@ -62,7 +63,7 @@ namespace SemiControlDemo_Net {
             
             #line default
             #line hidden
-            System.Uri resourceLocater = new System.Uri("/SemiControlDemo_Net;V1.0.0.0;component/app.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/SemiControlDemo_Net;component/app.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\App.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

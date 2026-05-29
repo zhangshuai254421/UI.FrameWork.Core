@@ -9,6 +9,7 @@
         <ResourceDictionary Source="../Themes/Styles/IconButton.xaml"/>
         <ResourceDictionary Source="../Themes/Styles/ToggleButton.xaml"/>
         <ResourceDictionary Source="../Themes/Styles/BigNumericKeypad.xaml"/>
+        <ResourceDictionary Source="../Themes/Styles/DataGrid.xaml"/>
 
         <ResourceDictionary Source="../Themes/IconGeometry.xaml"/>
      

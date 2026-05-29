@@ -6,20 +6,73 @@
         xmlns:local="clr-namespace:SemiControlDemo_Net"
         xmlns:semicontrol="https://github.io/semicontrol"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="SemiControl Demo — DataGrid 控件演示"
+        Width="960" Height="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#F0F2F5">
+    <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-        </Grid.ColumnDefinitions>
+        <!-- 标题栏 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="📊 DataGrid 控件演示"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="#1A1A1A"
+                       VerticalAlignment="Center"/>
+            <TextBlock x:Name="txtRowCount"
+                       Text="（共 0 行）"
+                       FontSize="13" Foreground="#888"
+                       Margin="12,0,0,0"
+                       VerticalAlignment="Center"/>
+        </StackPanel>
 
- 
-        <semicontrol:IconButton  Content="切割深度校正" IconGeometry="{StaticResource CuttingStatusViewF2Geometry}" TopLeftContent="F2" Style="{StaticResource IconButtonBaseStyle}"   IsNeedRedMark="True"/>
-      
+        <!-- 工具栏 -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <Border Background="White" CornerRadius="4" Padding="4,2"
+                    BorderBrush="#C8CCD0" BorderThickness="1" Width="200">
+                <DockPanel>
+                    <TextBlock Text="🔍" Margin="4,0,4,0" VerticalAlignment="Center"/>
+                    <TextBox x:Name="txtSearch"
+                             BorderThickness="0"
+                             VerticalAlignment="Center"
+                             FontSize="13"
+                             TextChanged="TxtSearch_TextChanged"/>
+                </DockPanel>
+            </Border>
+            <CheckBox x:Name="chkFilterRow"
+                      Content="显示筛选行"
+                      Margin="16,0,12,0"
+                      VerticalAlignment="Center"
+                      Checked="ChkFilterRow_Changed"
+                      Unchecked="ChkFilterRow_Changed"/>
+            <TextBlock Text="选择模式：" VerticalAlignment="Center" Margin="12,0,4,0" FontSize="13"/>
+            <ComboBox x:Name="cmbSelectionMode" Width="80" SelectedIndex="0"
+                      SelectionChanged="CmbSelectionMode_Changed">
+                <ComboBoxItem Content="单选"/>
+                <ComboBoxItem Content="多选"/>
+            </ComboBox>
+            <Button x:Name="btnToggleReadOnly" Content="切换只读"
+                    Margin="16,0,0,0" Padding="8,4"
+                    Click="BtnToggleReadOnly_Click"/>
+        </StackPanel>
+
+        <!-- DataGrid -->
+        <semicontrol:DataGrid x:Name="dataGrid"
+                              Grid.Row="3"
+                              AutoGenerateColumns="True"
+                              SelectionMode="Single"/>
+
+        <!-- 状态栏 -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,8,0,0">
+            <TextBlock Text="选中项：" VerticalAlignment="Center" FontSize="12" Foreground="#666"/>
+            <TextBlock x:Name="txtSelected" Text="无"
+                       VerticalAlignment="Center" FontSize="12" Margin="4,0,0,0"/>
+        </StackPanel>
     </Grid>
 </Window>

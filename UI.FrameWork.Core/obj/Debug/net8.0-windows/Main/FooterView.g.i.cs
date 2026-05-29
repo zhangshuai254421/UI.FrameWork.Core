@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 
 using SemiControl.Controls;
+using SemiControl.Controls.DataGrid;
 using SemiControl.Data;
 using SemiControl.Tools;
 using System;
