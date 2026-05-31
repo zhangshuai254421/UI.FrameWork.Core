@@ -361,3 +361,29 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# ============== Project-Specific ==============
+
+# Serilog / SQLite database files
+*.db
+*.sqlite
+logs/
+
+# WPF generated
+*.baml
+*.g.cs
+*.g.i.cs
+
+# Claude local config (keep settings.local.json local, not shared)
+.claude/settings.local.json
+
+# IDE user files (additional)
+*.DotSettings
+*.DotSettings.user
+
+# NuGet
+**/packages/*
+
+# OS files
+Thumbs.db
+Desktop.ini
