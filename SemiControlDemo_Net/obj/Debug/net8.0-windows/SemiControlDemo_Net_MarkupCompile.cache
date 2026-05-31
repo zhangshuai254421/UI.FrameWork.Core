@@ -1,20 +1,20 @@
 ﻿SemiControlDemo_Net
-
+1.0.0.0
 
 winexe
 C#
 .cs
-D:\CodeSource\01-UI框架\SemiControlDemo_Net\obj\Debug\net8.0-windows\
+d:\CodeSource\01-UI框架\SemiControlDemo_Net\obj\Debug\net8.0-windows\
 SemiControlDemo_Net
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-D:\CodeSource\01-UI框架\SemiControlDemo_Net\App.xaml
+d:\CodeSource\01-UI框架\SemiControlDemo_Net\App.xaml
 11407045341
 
-4453848374
-199943446464
+8-1195099335
+398-1082602490
 MainWindow.xaml;
 
-False
+True
 

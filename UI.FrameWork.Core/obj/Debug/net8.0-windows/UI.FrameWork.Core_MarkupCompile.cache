@@ -1,10 +1,10 @@
 ﻿UI.FrameWork.Core
-1.0.0.0
+
 
 library
 C#
 .cs
-d:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\
+D:\CodeSource\01-UI框架\UI.FrameWork.Core\obj\Debug\net8.0-windows\
 UI.FrameWork.Core
 none
 false
@@ -12,8 +12,8 @@ TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR
 
 91667627280
 
-301560827489
-520411991601
+201394884095
+260145577187
 Language\Framework_CN.xaml;Main\DirectView.xaml;Main\FooterView.xaml;Main\HeaderView.xaml;Main\LoginView.xaml;Main\LogViewerView.xaml;Main\NumberKeyPadView.xaml;Main\ShellWindow.xaml;Main\View\BaseView.xaml;
 
 False

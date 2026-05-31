@@ -3,6 +3,7 @@ using EFCore.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -107,6 +108,20 @@ namespace EFCore.Infrastructure
             result.Total = await _repository.CountAsync(cancellationToken);
 
             result.Data = await _repository.GetListAsync(parameter, cancellationToken);
+
+            return result;
+        }
+
+        public virtual async Task<PagedResult<TEntity>> GetPageAsync(
+            Expression<Func<TEntity, bool>> predicate,
+            PageParameter parameter,
+            CancellationToken cancellationToken = default)
+        {
+            var result = new PagedResult<TEntity>();
+
+            result.Total = await _repository.CountAsync(predicate, cancellationToken);
+
+            result.Data = await _repository.GetListAsync(predicate, parameter, cancellationToken);
 
             return result;
         }

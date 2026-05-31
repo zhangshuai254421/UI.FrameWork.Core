@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 namespace UI.FrameWork.Core.Main
 {
     /// <summary>
-    /// 日志查看器 ViewModel — 分页展示 SerilogHistory 数据
+    /// 日志查看器 ViewModel — 分页展示 SerilogHistory 数据，支持按时间范围筛选
     /// </summary>
     public class LogViewerViewModel : BindableBase
     {
@@ -24,6 +24,8 @@ namespace UI.FrameWork.Core.Main
                 () => CurrentPage > 1);
             LastPageCommand = new DelegateCommand(async () => await GoToPage(TotalPages),
                 () => CurrentPage < TotalPages);
+            QueryByDateCommand = new DelegateCommand(async () => await QueryByDateRange());
+            ClearDateFilterCommand = new DelegateCommand(ClearDateFilter);
 
             // 初始化加载
             _ = LoadDataAsync();
@@ -98,6 +100,39 @@ namespace UI.FrameWork.Core.Main
         /// <summary>可选页面大小</summary>
         public static int[] PageSizeOptions { get; } = { 10, 20, 50, 100 };
 
+        private DateTime? _startDate;
+        /// <summary>筛选起始日期</summary>
+        public DateTime? StartDate
+        {
+            get => _startDate;
+            set => SetProperty(ref _startDate, value);
+        }
+
+        private DateTime? _endDate;
+        /// <summary>筛选结束日期</summary>
+        public DateTime? EndDate
+        {
+            get => _endDate;
+            set => SetProperty(ref _endDate, value);
+        }
+
+        private bool _isDateFilterActive;
+        /// <summary>是否启用了日期筛选</summary>
+        public bool IsDateFilterActive
+        {
+            get => _isDateFilterActive;
+            set
+            {
+                if (SetProperty(ref _isDateFilterActive, value))
+                    RaisePropertyChanged(nameof(FilterInfo));
+            }
+        }
+
+        /// <summary>筛选状态提示文字</summary>
+        public string FilterInfo => IsDateFilterActive
+            ? $"🔍 {StartDate:yyyy-MM-dd} ~ {EndDate:yyyy-MM-dd}"
+            : "";
+
         #endregion
 
         #region 命令
@@ -106,6 +141,8 @@ namespace UI.FrameWork.Core.Main
         public DelegateCommand NextPageCommand { get; }
         public DelegateCommand FirstPageCommand { get; }
         public DelegateCommand LastPageCommand { get; }
+        public DelegateCommand QueryByDateCommand { get; }
+        public DelegateCommand ClearDateFilterCommand { get; }
 
         #endregion
 
@@ -116,6 +153,34 @@ namespace UI.FrameWork.Core.Main
             if (page < 1 || (TotalPages > 0 && page > TotalPages)) return;
             CurrentPage = page;
             await LoadDataAsync();
+        }
+
+        /// <summary>
+        /// 按日期范围查询，重置到第一页
+        /// </summary>
+        private async Task QueryByDateRange()
+        {
+            if (StartDate == null || EndDate == null) return;
+            if (StartDate > EndDate)
+            {
+                (StartDate, EndDate) = (EndDate, StartDate);
+            }
+
+            IsDateFilterActive = true;
+            CurrentPage = 1;
+            await LoadDataAsync();
+        }
+
+        /// <summary>
+        /// 清除日期筛选，恢复全量查询
+        /// </summary>
+        private void ClearDateFilter()
+        {
+            StartDate = null;
+            EndDate = null;
+            IsDateFilterActive = false;
+            CurrentPage = 1;
+            _ = LoadDataAsync();
         }
 
         private async Task LoadDataAsync()
@@ -129,7 +194,23 @@ namespace UI.FrameWork.Core.Main
                     PageSize = PageSize
                 };
 
-                var result = await _serilogService.GetPageAsync(parameter);
+                PagedResult<SerilogHistory> result;
+
+                if (IsDateFilterActive && StartDate.HasValue && EndDate.HasValue)
+                {
+                    // 将日期转为字符串比较（Serilog Timestamp 格式天然支持字典序）
+                    var start = StartDate.Value.ToString("yyyy-MM-dd");
+                    var end = EndDate.Value.AddDays(1).ToString("yyyy-MM-dd");
+
+                    result = await _serilogService.GetPageAsync(
+                        x => string.Compare(x.Timestamp, start) >= 0
+                          && string.Compare(x.Timestamp, end) < 0,
+                        parameter);
+                }
+                else
+                {
+                    result = await _serilogService.GetPageAsync(parameter);
+                }
 
                 TotalCount = result.Total;
                 LogEntries = new ObservableCollection<SerilogHistory>(result.Data);

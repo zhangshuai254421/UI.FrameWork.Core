@@ -28,13 +28,21 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="5"/>
         </Grid.ColumnDefinitions>
+        <!--<s:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F1" 
+                      Content="全自动操作" IconGeometry="{StaticResource HomePageF1Geometry}" Command="{Binding AutoCutStandByViewCmd}"/>-->
+        <controls:IconButton Grid.Row="1" Grid.Column="1" Focusable="False" Style="{StaticResource FooterButtonStyle}" IconGeometry="{StaticResource NavigateBackGeometry}" 
+                             Content="后退"   Command="{Binding BtnNavigateBackCommand}"/>
+        <controls:IconButton Grid.Row="1" Grid.Column="3" Focusable="False" Style="{StaticResource FooterButtonStyle}"  IconGeometry="{StaticResource NavigateForwardGeometry}"
+                                   FontSize="14" Content="前进"   Command="{Binding BtnNavigateForwarddCommand}"/>
 
-        <controls:ToggleIconButton Grid.Row="3" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource NumericKeyboardGeometry}" 
-                                   FontSize="14" Content="123" IsChecked="{Binding NumberKeyPadChecked}" IconWidth="100"  Command="{Binding BtnNumberKeyPadCommand}"/>
-        <controls:ToggleIconButton Grid.Row="1" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource AxisControlGeometry}" 
+        <!--<controls:ToggleIconButton Grid.Row="1" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource AxisControlGeometry}" 
                             IconHeight="40" IconWidth="40" IsChecked="{Binding AxisChecked}" IsEnabled="{Binding IsAxisButtonEnable}"  Command="{Binding BtnAxisControlCommand}"/>
         <controls:ToggleIconButton Grid.Row="1" Grid.Column="3" Focusable="False" IconGeometry="{StaticResource KeyboardGeometry}"
-                                   FontSize="14" Content="Keyboard" IsChecked="{Binding StringKeyPadChecked}" IconWidth="100" Command="{Binding BtnStringKeyPadCommand}"/>
+                                   FontSize="14" Content="Keyboard" IsChecked="{Binding StringKeyPadChecked}" IconWidth="100" Command="{Binding BtnStringKeyPadCommand}"/>-->
+
+        
+        <controls:ToggleIconButton Grid.Row="3" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource NumericKeyboardGeometry}" 
+                                   FontSize="14" Content="123" IsChecked="{Binding NumberKeyPadChecked}" IconWidth="100"  Command="{Binding BtnNumberKeyPadCommand}"/>
         <controls:ToggleIconButton Grid.Row="3" Grid.Column="3" Focusable="False" IconGeometry="{StaticResource DirectGeometry}" 
                                    FontSize="14" Content="Direct" IsChecked="{Binding DirectChecked}" IsEnabled="{Binding IsDirectButtonEnable}" Command="{Binding  BtnDirectCommand}"/>
 

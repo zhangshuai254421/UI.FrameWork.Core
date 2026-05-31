@@ -136,7 +136,7 @@ namespace UI.FrameWork.Core
             // 3. 注册到 Prism 容器
             containerRegistry.RegisterInstance<ILoggerFactory>(loggerFactory);
             containerRegistry.Register(typeof(ILogger<>), typeof(Logger<>));
-            containerRegistry.Register<INavigationService, Framework.Core.Common.NavigationService>();
+            containerRegistry.RegisterSingleton<INavigationService, Framework.Core.Common.NavigationService>();
             #endregion
 
 

@@ -16,9 +16,9 @@ namespace SemiAppliaction.Core
         }
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
-            // 注册公共模块
-            moduleCatalog.AddModule<UiModule>();
+            // 注册公共模块（FrameworkModule 先加载，确保 BaseView 的 Region 先就绪）
             moduleCatalog.AddModule<FrameworkModule>();
+            moduleCatalog.AddModule<UiModule>();
             base.ConfigureModuleCatalog(moduleCatalog);
 
         }

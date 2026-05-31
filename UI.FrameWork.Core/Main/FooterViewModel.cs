@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Framework.Core.Common;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using UI.FrameWork.Core.Common;
+using UI.FrameWork.Core.Events;
 
 namespace UI.FrameWork.Core.Main
 {
@@ -14,7 +16,10 @@ namespace UI.FrameWork.Core.Main
 
         private readonly IRegionManager _regionManager;
         private readonly PrismRegionNavigator _regionNavigator;
-        private  readonly DelegateCommand _btnNumberKeyPadCommand = null!;
+        private readonly DelegateCommand _btnNumberKeyPadCommand = null!;
+        private readonly DelegateCommand _btnDirectCommand = null!;
+        private readonly DelegateCommand _btnNavigateBackCommand = null!;
+        private readonly DelegateCommand _btnNavigateForwardCommand = null!;
         private readonly IRegionManager regionManager;
         private bool numberKeyPadChecked;
 
@@ -24,20 +29,7 @@ namespace UI.FrameWork.Core.Main
             set => SetProperty(ref numberKeyPadChecked, value);
         }
 
-        private bool stringKeyPadChecked;
-
-        public bool StringKeyPadChecked
-        {
-            get => stringKeyPadChecked;
-            set => SetProperty(ref stringKeyPadChecked, value);
-        }
-        private bool axisChecked;
-
-        public bool AxisChecked
-        {
-            get => axisChecked;
-            set => SetProperty(ref axisChecked, value);
-        }
+  
         private bool directChecked;
 
         public bool DirectChecked
@@ -47,60 +39,64 @@ namespace UI.FrameWork.Core.Main
         }
 
 
-        public FooterViewModel(IRegionManager regionManager, PrismRegionNavigator regionNavigator)
+        public FooterViewModel(IRegionManager regionManager, PrismRegionNavigator regionNavigator, IEventAggregator eventAggregator)
         {
             this.regionManager = regionManager;
             _regionManager = regionManager;
             _regionNavigator = regionNavigator;
+            eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Subscribe(isChecked =>
+            {
+                if (DirectChecked|| NumberKeyPadChecked) {
+                    IoC.Get<INavigationService>().GoBack(RegionNames.ToolBoxRegion);
+                }
+                DirectChecked = isChecked ? false : true;
+                NumberKeyPadChecked = isChecked ? false : true;
+            });
         }
 
         public DelegateCommand BtnNumberKeyPadCommand => _btnNumberKeyPadCommand ??new DelegateCommand(BtnNumberKeyPad);
-        public DelegateCommand BtnDirectCommand => _btnNumberKeyPadCommand ?? new DelegateCommand(BtnDirect);
+        public DelegateCommand BtnDirectCommand => _btnDirectCommand ?? new DelegateCommand(BtnDirect);
+
+        public DelegateCommand BtnNavigateBackCommand => _btnNavigateBackCommand?? new DelegateCommand(() =>
+        {
+         
+            IoC.Get<INavigationService>().GoBack();
+        });
+
+        public DelegateCommand BtnNavigateForwarddCommand => _btnNavigateForwardCommand ?? new DelegateCommand(() =>
+        {
+
+            IoC.Get<INavigationService>().GoForward();
+        });
 
         void BtnNumberKeyPad()
         {
-            // 获取目标区域
-            IRegion targetRegion = _regionManager.Regions["ToolBoxRegion"];
-
-            if (!NumberKeyPadChecked)
+ 
+           if (!NumberKeyPadChecked)
             {
 
                 // 移除区域中的所有视图，使其变空
-                foreach (var view in targetRegion.Views.ToList())
-                {
-                    targetRegion.Remove(view);
-                }
+                IoC.Get<INavigationService>().GoBack(RegionNames.ToolBoxRegion);
             }
             else
             {
 
                 regionManager.RequestNavigate("ToolBoxRegion", nameof(NumberKeyPadView));
-                //_regionNavigator.NavigateAsync("ToolBoxRegion", "HeaderView");
             }
-            StringKeyPadChecked = false;
-            AxisChecked = false;
             DirectChecked = false;
         }
         void BtnDirect() {
-            // 获取目标区域
-            IRegion targetRegion = _regionManager.Regions["ToolBoxRegion"];
 
             if (!DirectChecked)
             {
                 // 移除区域中的所有视图，使其变空
-                foreach (var view in targetRegion.Views.ToList())
-                {
-                    targetRegion.Remove(view);
-                }
+                IoC.Get<INavigationService>().GoBack(RegionNames.ToolBoxRegion);
             }
             else
             {
+                IoC.Get<INavigationService>().NavigateToAsync(nameof(DirectView),RegionNames.ToolBoxRegion);
 
-                regionManager.RequestNavigate("ToolBoxRegion", nameof(DirectView));
-                //_regionNavigator.NavigateAsync("ToolBoxRegion", "HeaderView");
             }
-            StringKeyPadChecked = false;
-            AxisChecked = false;
             NumberKeyPadChecked = false;
         }
 

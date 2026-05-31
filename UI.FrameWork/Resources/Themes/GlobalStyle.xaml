@@ -14,4 +14,17 @@
         <Setter Property="BorderBrush" Value="{DynamicResource DefaultButton_DefaultBorderBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource DefaultButton_DefaultTextBrush}"/>
     </Style>
+
+
+    <Style x:Key="FooterButtonStyle" TargetType="s:IconButton" BasedOn="{StaticResource IconButtonBaseStyle}">
+        <Setter Property="Width" Value="75"/>
+        <Setter Property="Height" Value="75"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="IconWidth" Value="100"/>
+        <Setter Property="s:BorderElement.CornerRadius" Value="3"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource DefaultButton_DefaultBackBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DefaultButton_DefaultBorderBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DefaultButton_DefaultTextBrush}"/>
+    </Style>
 </ResourceDictionary>

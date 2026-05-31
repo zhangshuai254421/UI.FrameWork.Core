@@ -1,5 +1,6 @@
 ﻿using Framework.Core.Common;
 using SemiAppliaction.Core;
+using SemiAppliaction.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +18,16 @@ namespace SemiAppliaction
         public void OnInitialized(IContainerProvider containerProvider)
         {
             //regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
-            regionManager.RegisterViewWithRegion(RegionNames.BaseViewMainRegion, typeof(MainView));
+            //IoC.Get<INavigationService>().NavigateToAsync(nameof(MainView));
+            containerProvider.Resolve<INavigationService>().NavigateToAsync(nameof(MainView));
+            //regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(MainView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             //throw new NotImplementedException();
+            containerRegistry.RegisterForNavigation<MainView, MainViewModel>();
+            containerRegistry.RegisterForNavigation<EmptyView>();
         }
     }
 }

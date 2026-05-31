@@ -6,7 +6,7 @@ using UI.FrameWork.Core.Main.View;
 
 namespace UI.FrameWork.Core.Main
 {
-    public class DirectViewModel : BindableBase
+    public class DirectViewModel : BindableBase, IJournalAware
     {
         private readonly DelegateCommand _btnShowLogCommand = null!;
         public DelegateCommand BtnShowLogCommand => _btnShowLogCommand ?? new DelegateCommand(ShowLog);
@@ -24,8 +24,16 @@ namespace UI.FrameWork.Core.Main
 
         void ShowLog()
         {
-            _regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(LogViewerView));
-            _eventAggregator.GetEvent<LayoutModeChangedEvent>().Publish(true); // true=全屏，隐藏工具栏
+            //_regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(NumberKeyPadView));
+            //Task.Delay(1000);
+            IoC.Get<INavigationService>().NavigateToAsync(nameof(LogViewerView));
+            //_regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(LogViewerView));
+           
+        }
+
+        public bool PersistInHistory()
+        {
+            return false;
         }
     }
 }

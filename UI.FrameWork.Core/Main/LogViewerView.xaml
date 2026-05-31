@@ -64,6 +64,7 @@
         <Grid Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -87,8 +88,61 @@
                 </Grid>
             </Border>
 
-            <!-- DataGrid 数据表格 -->
+            <!-- 日期筛选栏 -->
             <Border Grid.Row="1"
+                Background="#F0F4FA"
+                BorderBrush="#D0D5DD"
+                BorderThickness="1,0,1,0"
+                Padding="12,8">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="📅 时间筛选"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Foreground="#555"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,0"/>
+                    <!--<s:DateTimePicker SelectedDateTime="{Binding StartDate}"
+                                      Width="200"
+                                      Height="30"
+                                      FontSize="13"
+                                      DateTimeFormat="yyyy-MM-dd"
+                                      VerticalAlignment="Center"/>-->
+                    <TextBlock Text="至"
+                           FontSize="13"
+                           Foreground="#666"
+                           VerticalAlignment="Center"
+                           Margin="8,0,8,0"/>
+                    <!--<s:DateTimePicker SelectedDateTime="{Binding EndDate}"
+                                      Width="200"
+                                      Height="30"
+                                      FontSize="13"
+                                      DateTimeFormat="yyyy-MM-dd"
+                                      VerticalAlignment="Center"/>-->
+                    <Button Content="🔍 查询"
+                            Command="{Binding QueryByDateCommand}"
+                            Width="75"
+                            Height="30"
+                            FontSize="13"
+                            Margin="12,0,0,0"
+                            Cursor="Hand"/>
+                    <Button Content="✕ 清除"
+                            Command="{Binding ClearDateFilterCommand}"
+                            Width="70"
+                            Height="30"
+                            FontSize="13"
+                            Margin="6,0,0,0"
+                            Cursor="Hand"/>
+                    <TextBlock Text="{Binding FilterInfo}"
+                           FontSize="12"
+                           Foreground="#2561A9"
+                           VerticalAlignment="Center"
+                           Margin="14,0,0,0"
+                           FontWeight="SemiBold"/>
+                </StackPanel>
+            </Border>
+
+            <!-- DataGrid 数据表格 -->
+            <Border Grid.Row="2"
                 BorderBrush="#D0D5DD"
                 BorderThickness="1,0,1,0"
                 Background="White">
@@ -128,7 +182,7 @@
             </Border>
 
             <!-- 底部分页栏 -->
-            <Border Grid.Row="2"
+            <Border Grid.Row="3"
                 Background="#F8F9FB"
                 BorderBrush="#D0D5DD"
                 BorderThickness="1"

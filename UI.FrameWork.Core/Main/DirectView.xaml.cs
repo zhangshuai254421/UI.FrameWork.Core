@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Framework.Core.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,7 @@ namespace UI.FrameWork.Core.Main
     /// <summary>
     /// DirectView.xaml 的交互逻辑
     /// </summary>
+
     public partial class DirectView : UserControl
     {
         public DirectView()

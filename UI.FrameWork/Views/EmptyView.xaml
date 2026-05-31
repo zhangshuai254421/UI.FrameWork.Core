@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="SemiAppliaction.Views.EmptyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SemiAppliaction.Views" xmlns:s="https://github.io/semicontrol"
+             mc:Ignorable="d" 
+             d:DesignHeight="180" d:DesignWidth="800">
+
+        <!--底部控制栏-->
+        <Border Grid.Row="1" BorderThickness="0 0 2 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="10"/>
+                </Grid.RowDefinitions>
+
+                <s:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource BottomButtonStyle}"/>
+                <s:IconButton Grid.Row="1" Grid.Column="3"  TopLeftContent="F2" Style="{StaticResource BottomButtonStyle}"  IsNeedRedMark="True"/>
+                <s:IconButton Grid.Row="1" Grid.Column="5"  TopLeftContent="F3" Style="{StaticResource BottomButtonStyle}" />
+                <s:IconButton Grid.Row="1" Grid.Column="7"  TopLeftContent="F4" Style="{StaticResource BottomButtonStyle}"/>
+                <s:IconButton Grid.Row="1" Grid.Column="9" Style="{StaticResource BottomButtonStyle}"/>
+                <s:IconButton Grid.Row="1" Grid.Column="11" Style="{StaticResource BottomButtonStyle}"/>
+                <s:IconButton Grid.Row="3" Grid.Column="1" Style="{StaticResource BottomButtonStyle}"/>
+                <s:IconButton Grid.Row="3" Grid.Column="3"  TopLeftContent="F7" Style="{StaticResource BottomButtonStyle}" IsNeedRedMark="True"/>
+                <s:IconButton Grid.Row="3" Grid.Column="5" TopLeftContent="F8" Style="{StaticResource BottomButtonStyle}"/>
+                 <s:IconButton Grid.Row="3" Grid.Column="7" TopLeftContent="F9"  IsNeedRedMark="True"  Style="{StaticResource BottomButtonStyle}"/>
+                <s:IconButton Grid.Row="3" Grid.Column="9" Style="{StaticResource BottomButtonStyle}"/>
+                <s:IconButton Grid.Row="3" Grid.Column="11" Style="{StaticResource BottomButtonStyle}"/>
+            </Grid>
+        </Border>
+
+</UserControl>

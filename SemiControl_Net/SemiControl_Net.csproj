@@ -10,9 +10,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controls\Input\CalendarWithClock.cs" />
+    <Compile Remove="Controls\Input\Clock.cs" />
+    <Compile Remove="Controls\Input\ClockBase.cs" />
+    <Compile Remove="Controls\Input\ClockRadioButton.cs" />
+    <Compile Remove="Controls\Input\DateTimePicker.cs" />
+    <Compile Remove="Controls\Input\ListClock.cs" />
+    <Compile Remove="Controls\Input\WatermarkTextBox.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Controls\TimeBlock.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controls\Input\" />
   </ItemGroup>
 
   <!--<Import Project="..\SemiControl_Shard\SemiControl_Shard.projitems" Label="Shared" />-->

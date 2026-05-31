@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,6 +28,14 @@ namespace EFCore.IRepository
 
         Task<PagedResult<TEntity>> GetPageAsync(
             PageParameter parameter, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 带条件过滤的分页查询
+        /// </summary>
+        Task<PagedResult<TEntity>> GetPageAsync(
+            Expression<Func<TEntity, bool>> predicate,
+            PageParameter parameter,
+            CancellationToken cancellationToken = default);
 
         Task<int> CountAsync(CancellationToken cancellationToken = default);
     }
