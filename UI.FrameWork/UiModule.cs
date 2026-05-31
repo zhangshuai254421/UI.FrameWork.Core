@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Framework.Core.Common;
+using SemiAppliaction.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SemiAppliaction.Core;
+using UI.FrameWork.Core.Main;
 
 namespace SemiAppliaction
 {
@@ -15,6 +17,7 @@ namespace SemiAppliaction
         public void OnInitialized(IContainerProvider containerProvider)
         {
             //regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
+            regionManager.RegisterViewWithRegion(RegionNames.BaseViewMainRegion, typeof(MainView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)

@@ -29,13 +29,12 @@
             <ColumnDefinition Width="5"/>
         </Grid.ColumnDefinitions>
 
-        <controls:ToggleIconButton Grid.Row="1" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource NumericKeyboardGeometry}" 
+        <controls:ToggleIconButton Grid.Row="3" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource NumericKeyboardGeometry}" 
                                    FontSize="14" Content="123" IsChecked="{Binding NumberKeyPadChecked}" IconWidth="100"  Command="{Binding BtnNumberKeyPadCommand}"/>
+        <controls:ToggleIconButton Grid.Row="1" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource AxisControlGeometry}" 
+                            IconHeight="40" IconWidth="40" IsChecked="{Binding AxisChecked}" IsEnabled="{Binding IsAxisButtonEnable}"  Command="{Binding BtnAxisControlCommand}"/>
         <controls:ToggleIconButton Grid.Row="1" Grid.Column="3" Focusable="False" IconGeometry="{StaticResource KeyboardGeometry}"
                                    FontSize="14" Content="Keyboard" IsChecked="{Binding StringKeyPadChecked}" IconWidth="100" Command="{Binding BtnStringKeyPadCommand}"/>
-
-        <controls:ToggleIconButton Grid.Row="3" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource AxisControlGeometry}" 
-                                   IconHeight="40" IconWidth="40" IsChecked="{Binding AxisChecked}" IsEnabled="{Binding IsAxisButtonEnable}"  Command="{Binding BtnAxisControlCommand}"/>
         <controls:ToggleIconButton Grid.Row="3" Grid.Column="3" Focusable="False" IconGeometry="{StaticResource DirectGeometry}" 
                                    FontSize="14" Content="Direct" IsChecked="{Binding DirectChecked}" IsEnabled="{Binding IsDirectButtonEnable}" Command="{Binding  BtnDirectCommand}"/>
 

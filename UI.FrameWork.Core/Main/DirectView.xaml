@@ -9,7 +9,7 @@
 
     <Grid Background="{DynamicResource SecondaryBrush}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="10"/>
             <ColumnDefinition Width="auto"/>

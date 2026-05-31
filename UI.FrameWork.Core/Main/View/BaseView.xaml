@@ -3,10 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:UI.FrameWork.Core.Main.View" xmlns:s="https://github.io/semicontrol"
-             mc:Ignorable="d" 
+             xmlns:local="clr-namespace:UI.FrameWork.Core.Main.View"
+             xmlns:s="https://github.io/semicontrol"
              xmlns:regions="http://prismlibrary.com/"
+             xmlns:mvvm="http://prismlibrary.com/"
+             mvvm:ViewModelLocator.AutoWireViewModel="True"
+             mc:Ignorable="d" 
              d:DesignHeight="830" d:DesignWidth="1200">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -18,13 +24,41 @@
             <RowDefinition Height="180"/>
         </Grid.RowDefinitions>
 
-        <Border BorderThickness="0 0 2 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch">
-            <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" regions:RegionManager.RegionName="BaseViewMainRegion"/>
+        <!-- 主区域：ColumnSpan 绑定控制占 1 列或 2 列，高度固定占 1 行 -->
+        <Border Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="{Binding MainColumnSpan, FallbackValue=1}"
+                BorderBrush="{DynamicResource PrimaryControlToolBrush}"
+                HorizontalAlignment="Stretch">
+            <ContentControl regions:RegionManager.RegionName="BaseViewMainRegion"/>
         </Border>
 
-        <Border Grid.Row="1" BorderThickness="0 0 2 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch">
-            <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" regions:RegionManager.RegionName="BaseViewToolBoxRegion"/>
-        </Border>
+        <!-- 工具栏区域 -->
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="BorderFooter" BorderThickness="0 2 0 0"
+         BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch" 
+         VerticalAlignment="Bottom"  Height="{DynamicResource Framework_BottomHeight}">
+
+     <StackPanel Height="178" >
+         <Grid>
+             <Grid.ColumnDefinitions>
+                 <ColumnDefinition Width="*"></ColumnDefinition>
+                 <ColumnDefinition Width="165"></ColumnDefinition>
+             </Grid.ColumnDefinitions>
+
+             
+        <!--工具页-->
+        
+             <ContentControl Grid.Row="0" Grid.Column="0"  regions:RegionManager.RegionName="ToolBoxRegion"/>
+             <Border BorderThickness="2 0 0 0"  BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Row="0" Grid.Column="1">                 
+        <!--页脚-->
+        
+                 <ContentControl  regions:RegionManager.RegionName="FooterRegion"/>
+             </Border>
+            
+         </Grid>
+     </StackPanel>
+
+ </Border>
 
     </Grid>
 </UserControl>

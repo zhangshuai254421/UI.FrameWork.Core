@@ -95,21 +95,33 @@
                 <s:DataGrid x:Name="LogDataGrid"
                         ItemsSource="{Binding LogEntries}"
                         AutoGenerateColumns="False"
-                        IsReadOnly="True">
+                        IsReadOnly="True"
+                        CanUserAddRows="False">
                     <s:DataGrid.Columns>
-                        <s:GridTextColumn Header="序号"
-                                      BindingPath="Id"
+                        <DataGridTextColumn Header="序号"
+                                      Binding="{Binding Id}"
                                       Width="50"/>
-                        <s:GridTextColumn Header="时间"
-                                      BindingPath="Timestamp"
+                        <DataGridTextColumn Header="时间"
+                                      Binding="{Binding Timestamp}"
                                       Width="180"/>
-                        <s:GridTextColumn Header="级别"
-                                      BindingPath="Level"
+                        <DataGridTextColumn Header="级别"
+                                      Binding="{Binding Level}"
                                       Width="70"/>
-                        <!-- RenderedMessage 使用高亮列突出显示 -->
-                        <local:HighlightTextColumn Header="日志内容"
-                                               BindingPath="RenderedMessage"
-                                               Width="420"/>
+                        <!-- RenderedMessage 使用 ElementStyle 高亮突出 -->
+                        <DataGridTextColumn Header="日志内容"
+                                      Binding="{Binding RenderedMessage}"
+                                      Width="420">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Foreground" Value="#1A56DB"/>
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="2,4"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
 
                     </s:DataGrid.Columns>
                 </s:DataGrid>

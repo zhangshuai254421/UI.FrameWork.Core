@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SemiControl")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+be4384a434261378835ef184c9cee91e6e1bd827")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f1c4781bdb29f0530cb3075d5050abc370a48da4")]
 [assembly: System.Reflection.AssemblyProductAttribute("SemiControl")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SemiControl")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

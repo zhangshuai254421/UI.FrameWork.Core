@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,8 +21,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Threading.Tasks;
-using Serilog.Infrastructure;
 using System.Windows;
+using System.Windows.Navigation;
 using UI.FrameWork.Core.Common;
 using UI.FrameWork.Core.Main;
 
@@ -135,6 +136,7 @@ namespace UI.FrameWork.Core
             // 3. 注册到 Prism 容器
             containerRegistry.RegisterInstance<ILoggerFactory>(loggerFactory);
             containerRegistry.Register(typeof(ILogger<>), typeof(Logger<>));
+            containerRegistry.Register<INavigationService, Framework.Core.Common.NavigationService>();
             #endregion
 
 

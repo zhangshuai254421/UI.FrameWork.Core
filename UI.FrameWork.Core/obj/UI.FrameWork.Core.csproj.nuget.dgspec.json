@@ -215,6 +215,10 @@
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Prism.Wpf": {
+              "target": "Package",
+              "version": "[9.0.537, )"
             }
           },
           "imports": [

@@ -10,12 +10,10 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="165"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="180"/>
         </Grid.RowDefinitions>
 
         <Border BorderThickness="0 0 2 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch">
@@ -56,9 +54,6 @@
             </Grid>
         </Border>
 
-        <Border Grid.Row="1" BorderThickness="0 0 2 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch">
-            <!--<TextBlock Text="1234" VerticalAlignment="Center" HorizontalAlignment="Center">  </TextBlock>-->
-        </Border>
 
     </Grid>
 </UserControl>

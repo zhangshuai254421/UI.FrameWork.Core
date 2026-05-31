@@ -1,32 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Framework.Core.Common;
+using Prism.Events;
 using UI.FrameWork.Core.Common;
+using UI.FrameWork.Core.Events;
+using UI.FrameWork.Core.Main.View;
 
 namespace UI.FrameWork.Core.Main
 {
-    public class DirectViewModel :BindableBase
+    public class DirectViewModel : BindableBase
     {
         private readonly DelegateCommand _btnShowLogCommand = null!;
         public DelegateCommand BtnShowLogCommand => _btnShowLogCommand ?? new DelegateCommand(ShowLog);
 
         private readonly PrismRegionNavigator _regionNavigator;
         private readonly IRegionManager _regionManager;
-        public DirectViewModel(IRegionManager regionManager, PrismRegionNavigator regionNavigator)
+        private readonly IEventAggregator _eventAggregator;
+
+        public DirectViewModel(IRegionManager regionManager, PrismRegionNavigator regionNavigator, IEventAggregator eventAggregator)
         {
-            this._regionManager = regionManager;
+            _regionManager = regionManager;
             _regionNavigator = regionNavigator;
+            _eventAggregator = eventAggregator;
         }
+
         void ShowLog()
         {
-            // 获取目标区域
-            IRegion targetRegion = _regionManager.Regions["ToolBoxRegion"];
-
-
-            _regionManager.RequestNavigate("MainRegion", nameof(LogViewerView));
-
+            _regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(LogViewerView));
+            _eventAggregator.GetEvent<LayoutModeChangedEvent>().Publish(true); // true=全屏，隐藏工具栏
         }
     }
 }

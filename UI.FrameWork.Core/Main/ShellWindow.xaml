@@ -54,7 +54,7 @@
             <!--主界面-->
 
             <!--最下面-->
-            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="BorderFooter" BorderThickness="0 2 0 0"
+            <!--<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="BorderFooter" BorderThickness="0 2 0 0"
                     BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch" 
                     VerticalAlignment="Bottom"  Height="{DynamicResource Framework_BottomHeight}">
 
@@ -66,17 +66,17 @@
                             <ColumnDefinition Width="165"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <!--工具页-->
+                        --><!--工具页--><!--
                         <ContentControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" regions:RegionManager.RegionName="ToolBoxRegion"/>
                         <Border BorderThickness="2 0 0 0"  BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Row="0" Grid.Column="2">
-                            <!--页脚-->
+                            --><!--页脚--><!--
                             <ContentControl  regions:RegionManager.RegionName="FooterRegion"/>
                         </Border>
                        
                     </Grid>
                 </StackPanel>
-                <!--<GroupBox Height="178"/>-->
-            </Border>
+                --><!--<GroupBox Height="178"/>--><!--
+            </Border>-->
         </Grid>
 
 

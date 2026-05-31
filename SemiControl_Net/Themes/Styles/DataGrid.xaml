@@ -15,108 +15,140 @@
     <SolidColorBrush x:Key="GridFilterBg" Color="#F5F6F8"/>
     <SolidColorBrush x:Key="GridSortArrow" Color="#0078D4"/>
 
-    <!-- ===== DataGrid 主样式 ===== -->
-    <Style TargetType="{x:Type dg:DataGrid}">
+    <!-- ===== SemiControl DataGrid 主样式（继承微软 DataGrid 模板） ===== -->
+    <Style TargetType="{x:Type dg:DataGrid}"
+           BasedOn="{StaticResource {x:Type DataGrid}}">
         <Setter Property="Background" Value="White"/>
         <Setter Property="BorderBrush" Value="#C8CCD0"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Template">
+        <Setter Property="RowBackground" Value="White"/>
+        <Setter Property="AlternatingRowBackground" Value="{StaticResource GridAltRowBg}"/>
+        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource GridRowBorder}"/>
+        <Setter Property="VerticalGridLinesBrush" Value="{StaticResource GridRowBorder}"/>
+        <Setter Property="RowHeight" Value="30"/>
+        <Setter Property="ColumnHeaderHeight" Value="34"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="CanUserDeleteRows" Value="False"/>
+        <Setter Property="CanUserReorderColumns" Value="False"/>
+        <Setter Property="CanUserResizeRows" Value="False"/>
+        <Setter Property="SelectionUnit" Value="FullRow"/>
+
+        <!-- 列头样式 -->
+        <Setter Property="ColumnHeaderStyle">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type dg:DataGrid}">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4">
-
-                        <Grid Margin="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>  <!-- 列头 -->
-                                <RowDefinition Height="Auto"/>  <!-- 筛选行 -->
-                                <RowDefinition Height="*"/>     <!-- 数据行 -->
-                            </Grid.RowDefinitions>
-
-                            <!-- ======== 列头面板（动态生成） ======== -->
-                            <Grid x:Name="PART_HeaderGrid"
-                                  Grid.Row="0"
-                                  Background="{StaticResource GridHeaderBg}"
-                                  Height="34"/>
-
-                            <!-- ======== 筛选行面板（动态生成） ======== -->
-                            <Grid x:Name="PART_FilterGrid"
-                                  Grid.Row="1"
-                                  Background="{StaticResource GridFilterBg}"
-                                  Height="28"
-                                  Visibility="Collapsed"/>
-
-                            <!-- ======== 数据行列表 ======== -->
-                            <ListBox x:Name="PART_DataRows"
-                                     Grid.Row="2"
-                                     BorderThickness="0"
-                                     Background="{TemplateBinding Background}"
-                                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                     SelectionMode="Single"
-                                     VirtualizingPanel.IsVirtualizing="True"
-                                     VirtualizingPanel.VirtualizationMode="Recycling">
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <VirtualizingStackPanel IsItemsHost="True"/>
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                        <Setter Property="Padding" Value="0"/>
-                                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                                        <Setter Property="BorderBrush" Value="{StaticResource GridRowBorder}"/>
-                                        <Setter Property="Template">
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="{StaticResource GridHeaderBg}"/>
+                    <Setter Property="Foreground" Value="{StaticResource GridHeaderFg}"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource GridHeaderBorder}"/>
+                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                    <Setter Property="Padding" Value="8,0"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="DataGridColumnHeader">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Padding="{TemplateBinding Padding}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ContentPresenter Grid.Column="0"
+                                                          VerticalAlignment="Center"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                                        <!-- 排序箭头 -->
+                                        <Path x:Name="SortArrow"
+                                              Grid.Column="1"
+                                              Fill="{StaticResource GridSortArrow}"
+                                              VerticalAlignment="Center"
+                                              Margin="4,0,0,0"
+                                              Visibility="Collapsed"
+                                              Data="M0,4 L4,0 L8,4"/>
+                                    </Grid>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="SortDirection" Value="Ascending">
+                                        <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                    </Trigger>
+                                    <Trigger Property="SortDirection" Value="Descending">
+                                        <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                        <Setter TargetName="SortArrow" Property="RenderTransform">
                                             <Setter.Value>
-                                                <ControlTemplate TargetType="ListBoxItem">
-                                                    <Border x:Name="rowBorder"
-                                                            Background="{TemplateBinding Background}"
-                                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                                            Padding="{TemplateBinding Padding}">
-                                                        <ContentPresenter/>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="rowBorder" Property="Background"
-                                                                    Value="{StaticResource GridRowHoverBg}"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsSelected" Value="True">
-                                                            <Setter TargetName="rowBorder" Property="Background"
-                                                                    Value="{StaticResource GridRowSelectedBg}"/>
-                                                        </Trigger>
-                                                        <!-- 交替行颜色 -->
-                                                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                                                            <Setter Property="Background" Value="{StaticResource GridAltRowBg}"/>
-                                                        </Trigger>
-                                                        <MultiDataTrigger>
-                                                            <MultiDataTrigger.Conditions>
-                                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False"/>
-                                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=(ItemsControl.AlternationIndex)}" Value="0"/>
-                                                            </MultiDataTrigger.Conditions>
-                                                            <Setter Property="Background" Value="Transparent"/>
-                                                        </MultiDataTrigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
+                                                <ScaleTransform ScaleY="-1"/>
                                             </Setter.Value>
                                         </Setter>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <!-- 每行是动态构建的水平 Grid -->
-                                        <Grid x:Name="RowGrid"
-                                              dg:DataGrid.RowData="{Binding}"
-                                              Height="30"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        <!-- 单元格样式 -->
+        <Setter Property="CellStyle">
+            <Setter.Value>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="Foreground" Value="{StaticResource GridCellFg}"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource GridRowBorder}"/>
+                    <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                    <Setter Property="Padding" Value="6,0"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="DataGridCell">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        <!-- 行样式 -->
+        <Setter Property="RowStyle">
+            <Setter.Value>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="DataGridRow">
+                                <Border x:Name="RowBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{StaticResource GridRowBorder}"
+                                        BorderThickness="0,0,0,1">
+                                    <SelectiveScrollingGrid>
+                                        <DataGridCellsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                                    </SelectiveScrollingGrid>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="RowBorder" Property="Background"
+                                                Value="{StaticResource GridRowHoverBg}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="RowBorder" Property="Background"
+                                                Value="{StaticResource GridRowSelectedBg}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
             </Setter.Value>
         </Setter>
     </Style>

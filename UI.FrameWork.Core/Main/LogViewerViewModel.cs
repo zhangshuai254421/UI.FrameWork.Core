@@ -1,12 +1,7 @@
 using EFCore.Repository;
 using Log.Domain;
 using Prism.Commands;
-using SemiControl.Controls.DataGrid;
 using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media;
 
 namespace UI.FrameWork.Core.Main
 {
@@ -166,33 +161,5 @@ namespace UI.FrameWork.Core.Main
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// 高亮文本列 — 用于突出显示 RenderedMessage 等关键字段
-    /// </summary>
-    public class HighlightTextColumn : GridTextColumn
-    {
-        public HighlightTextColumn() { }
-        public HighlightTextColumn(string header, string bindingPath, double width = 120)
-            : base(header, bindingPath, width) { }
-
-        /// <summary>高亮前景色</summary>
-        public Brush? HighlightForeground { get; set; }
-
-        public override FrameworkElement GenerateDisplayElement(object rowItem)
-        {
-            var tb = new TextBlock
-            {
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(8, 4, 8, 4),
-                FontWeight = FontWeights.SemiBold,
-                Foreground = HighlightForeground ?? new SolidColorBrush(Color.FromRgb(0x1A, 0x56, 0xDB)),
-                TextWrapping = TextWrapping.Wrap,
-                TextTrimming = TextTrimming.CharacterEllipsis
-            };
-            tb.SetBinding(TextBlock.TextProperty, new Binding(BindingPath));
-            return tb;
-        }
     }
 }
