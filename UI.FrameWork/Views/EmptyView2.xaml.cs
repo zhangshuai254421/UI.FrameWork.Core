@@ -15,14 +15,16 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UI.FrameWork.Core.Main;
 
-namespace SemiAppliaction
+namespace SemiAppliaction.Views
 {
-    // 作者：Zhang Shuai
-    // 描述：主视图的代码隐藏（View），与 MainView.xaml 配合显示应用主要 UI。
+    /// <summary>
+    /// EmptyView.xaml 的交互逻辑
+    /// </summary>
     //[ToolBoxFor(typeof(MainView))]
-    public partial class MainView : UserControl
+    [ToolBoxFor(typeof(LogViewerView))]
+    public partial class EmptyView2 : UserControl
     {
-        public MainView()
+        public EmptyView2()
         {
             InitializeComponent();
         }

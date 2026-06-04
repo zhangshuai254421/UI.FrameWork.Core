@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Infrastructure;
+using Serilog.Sinks.RichTextBox.Themes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,6 +26,7 @@ using System.Windows;
 using System.Windows.Navigation;
 using UI.FrameWork.Core.Common;
 using UI.FrameWork.Core.Main;
+using UI.FrameWork.Core.Main.Footer;
 
 namespace UI.FrameWork.Core
 {
@@ -96,12 +98,14 @@ namespace UI.FrameWork.Core
             if (result == false)
             {
                 base.OnInitialized();
+      
             }
             else
             {
                 // 登录失败或取消 → 退出程序
                 Current.Shutdown();
             }
+           
         }
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
@@ -117,7 +121,7 @@ namespace UI.FrameWork.Core
                  .Enrich.WithThreadId()                // 添加 ThreadId              
                  .Enrich.WithEnvironmentUserName()     // 添加当前用户名
                 .MinimumLevel.Debug()
-                .WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug,tableName:"SerilogHistory")  // 指定数据库文件路径
+                .WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug, tableName: "SerilogHistory")  // 指定数据库文件路径
                 .WriteTo.File(
                     "logs/log-.txt",
                     rollingInterval: RollingInterval.Day,   // 按天分文件
@@ -125,6 +129,7 @@ namespace UI.FrameWork.Core
                     outputTemplate:
                     "{Timestamp:HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
                 )
+                //.WriteTo.RichTextBox(LogShowView.Instance, theme: RichTextBoxConsoleTheme.Colored)
                 .CreateLogger();
 
             // 2. 接入微软日志抽象

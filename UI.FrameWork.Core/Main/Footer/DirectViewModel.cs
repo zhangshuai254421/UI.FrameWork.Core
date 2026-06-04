@@ -31,6 +31,10 @@ namespace UI.FrameWork.Core.Main
            
         }
 
+        /// <summary>
+        /// 不作为导航历史的一部分，点击后无法通过导航历史返回到之前的页面
+        /// </summary>
+        /// <returns></returns>
         public bool PersistInHistory()
         {
             return false;

@@ -21,6 +21,8 @@ namespace Framework.Core.Common
         /// </summary>
         public static string ToolBoxRegion => nameof(ToolBoxRegion);
 
+       
+
         /// <summary>
         /// 右下角的页脚区域
         /// </summary>
@@ -42,6 +44,10 @@ namespace Framework.Core.Common
         public static string AxisView => nameof(AxisView);
         public static string DirectView => nameof(DirectView);
         public static string MainView => nameof(MainView);
+
+        public const string DefaultView = nameof(DefaultView);
+        public const string EmptyView = nameof(EmptyView);
+        public const string EmptyView2 = nameof(EmptyView2);
     }
     public interface INavigationService
     {

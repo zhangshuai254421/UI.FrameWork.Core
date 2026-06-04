@@ -20,7 +20,7 @@ namespace SemiAppliaction.Views
     /// <summary>
     /// EmptyView.xaml 的交互逻辑
     /// </summary>
-    [ToolBoxFor(typeof(MainView))]
+    //[ToolBoxFor(typeof(MainView))]
     [ToolBoxFor(typeof(LogViewerView))]
     public partial class EmptyView : UserControl
     {

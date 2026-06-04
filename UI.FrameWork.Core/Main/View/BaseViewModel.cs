@@ -8,6 +8,7 @@ namespace UI.FrameWork.Core.Main.View
     /// </summary>
     public class BaseViewModel : BindableBase
     {
+        public IEventAggregator EventAggregator { get; set; }
         private int _mainColumnSpan = 1;
         /// <summary>主区域列跨（宽度）：1=占第一列，2=占满两列</summary>
         public int MainColumnSpan
@@ -18,7 +19,8 @@ namespace UI.FrameWork.Core.Main.View
 
         public BaseViewModel(IEventAggregator eventAggregator)
         {
-            eventAggregator.GetEvent<LayoutModeChangedEvent>().Subscribe(isFullWidth =>
+            EventAggregator = eventAggregator;
+            EventAggregator.GetEvent<LayoutModeChangedEvent>().Subscribe(isFullWidth =>
             {
                 MainColumnSpan = isFullWidth ? 2 : 1;
             });

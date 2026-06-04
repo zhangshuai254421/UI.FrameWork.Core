@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UI.FrameWork.Core.Main"
-        xmlns:regions="http://prismlibrary.com/"
+         xmlns:mvvm="http://prismlibrary.com/"
+        mvvm:ViewModelLocator.AutoWireViewModel="True"
+        xmlns:regions="http://prismlibrary.com/" xmlns:controls="https://github.io/semicontrol"
         mc:Ignorable="d"
         Title="ShellWindow"   
         Height="1080"
@@ -45,9 +47,15 @@
 
             <!--左侧工具箱-->
             <StackPanel Grid.Row="0" Grid.Column="0"  Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10" Width="{DynamicResource Framework_SideMenuWidth}" >
-                <Button Style="{DynamicResource ControlButton}"  Content="传感器"  Height="65" Width="65" Margin="0 5"  CommandParameter="Sensor" />
+                <Button Style="{DynamicResource ControlButton}"  Content="传感器"  Height="65" Width="65" Margin="0 5"  />
                 <!--<Button Style="{DynamicResource ControlButton}" s:ButtonAttach.IconGeometory="{DynamicResource LineChartGeometry}" Content="曲线图"  Height="65" Width="65" Margin="0 5"  CommandParameter="Graph"/>
             <Button Style="{DynamicResource ControlButton}" s:ButtonAttach.IconGeometory="{DynamicResource BladeGeometry}" Content="Blade"  Height="65" Width="65" Margin="0 5" CommandParameter="Blade"/>-->
+                <controls:IconButton  Focusable="False" Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource NavigateForwardGeometry}"
+              FontSize="14" Content="前进" Click="BtnNavigateForwarddCommand"   />
+
+                <controls:IconButton  Focusable="False" Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource NavigateBackGeometry}" 
+                       Content="后退" Click="BtnNavigateBackCommand"  />
+               
             </StackPanel>
 
             <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" regions:RegionManager.RegionName="MainRegion"/>

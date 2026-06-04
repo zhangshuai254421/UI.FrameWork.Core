@@ -21,4 +21,10 @@
     <Folder Include="UI.FrameWork.Core\Common\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Views\EmptyView2.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

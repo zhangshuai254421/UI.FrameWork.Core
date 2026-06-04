@@ -2,17 +2,21 @@ using EFCore.Repository;
 using Log.Domain;
 using Prism.Commands;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using UI.FrameWork.Core.Events;
+using UI.FrameWork.Core.Main.View;
 
 namespace UI.FrameWork.Core.Main
 {
     /// <summary>
     /// 日志查看器 ViewModel — 分页展示 SerilogHistory 数据，支持按时间范围筛选
     /// </summary>
-    public class LogViewerViewModel : BindableBase
+    public class LogViewerViewModel : BaseViewModel, INavigationAware
     {
         private readonly ISerilogService _serilogService;
 
-        public LogViewerViewModel(ISerilogService serilogService)
+        public LogViewerViewModel(ISerilogService serilogService, IEventAggregator eventAggregator)
+            : base(eventAggregator)
         {
             _serilogService = serilogService;
 
@@ -77,8 +81,7 @@ namespace UI.FrameWork.Core.Main
             {
                 if (SetProperty(ref _pageSize, value))
                 {
-                    RaisePropertyChanged(nameof(TotalPages));
-                    RaisePropertyChanged(nameof(PageInfo));
+                    CurrentPage = 1;
                     _ = LoadDataAsync();
                 }
             }
@@ -105,7 +108,14 @@ namespace UI.FrameWork.Core.Main
         public DateTime? StartDate
         {
             get => _startDate;
-            set => SetProperty(ref _startDate, value);
+            set
+            {
+                if (SetProperty(ref _startDate, value))
+                {
+                    RaisePropertyChanged(nameof(IsDateFilterActive));
+                    RaisePropertyChanged(nameof(FilterInfo));
+                }
+            }
         }
 
         private DateTime? _endDate;
@@ -113,20 +123,18 @@ namespace UI.FrameWork.Core.Main
         public DateTime? EndDate
         {
             get => _endDate;
-            set => SetProperty(ref _endDate, value);
-        }
-
-        private bool _isDateFilterActive;
-        /// <summary>是否启用了日期筛选</summary>
-        public bool IsDateFilterActive
-        {
-            get => _isDateFilterActive;
             set
             {
-                if (SetProperty(ref _isDateFilterActive, value))
+                if (SetProperty(ref _endDate, value))
+                {
+                    RaisePropertyChanged(nameof(IsDateFilterActive));
                     RaisePropertyChanged(nameof(FilterInfo));
+                }
             }
         }
+
+        /// <summary>是否启用了日期筛选</summary>
+        public bool IsDateFilterActive => StartDate.HasValue && EndDate.HasValue;
 
         /// <summary>筛选状态提示文字</summary>
         public string FilterInfo => IsDateFilterActive
@@ -150,7 +158,8 @@ namespace UI.FrameWork.Core.Main
 
         private async Task GoToPage(int page)
         {
-            if (page < 1 || (TotalPages > 0 && page > TotalPages)) return;
+            if (page < 1) return;
+            if (TotalPages > 0 && page > TotalPages) return;
             CurrentPage = page;
             await LoadDataAsync();
         }
@@ -161,12 +170,13 @@ namespace UI.FrameWork.Core.Main
         private async Task QueryByDateRange()
         {
             if (StartDate == null || EndDate == null) return;
-            if (StartDate > EndDate)
+            if (StartDate.Value > EndDate.Value)
             {
-                (StartDate, EndDate) = (EndDate, StartDate);
+                var temp = StartDate;
+                StartDate = EndDate;
+                EndDate = temp;
             }
 
-            IsDateFilterActive = true;
             CurrentPage = 1;
             await LoadDataAsync();
         }
@@ -178,7 +188,6 @@ namespace UI.FrameWork.Core.Main
         {
             StartDate = null;
             EndDate = null;
-            IsDateFilterActive = false;
             CurrentPage = 1;
             _ = LoadDataAsync();
         }
@@ -196,7 +205,7 @@ namespace UI.FrameWork.Core.Main
 
                 PagedResult<SerilogHistory> result;
 
-                if (IsDateFilterActive && StartDate.HasValue && EndDate.HasValue)
+                if (IsDateFilterActive)
                 {
                     // 将日期转为字符串比较（Serilog Timestamp 格式天然支持字典序）
                     var start = StartDate.Value.ToString("yyyy-MM-dd");
@@ -225,7 +234,7 @@ namespace UI.FrameWork.Core.Main
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"加载日志失败: {ex.Message}");
+                Debug.WriteLine($"加载日志失败: {ex.Message}");
             }
             finally
             {
@@ -239,6 +248,21 @@ namespace UI.FrameWork.Core.Main
             NextPageCommand.RaiseCanExecuteChanged();
             FirstPageCommand.RaiseCanExecuteChanged();
             LastPageCommand.RaiseCanExecuteChanged();
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            EventAggregator.GetEvent<LayoutModeChangedEvent>().Publish(true);
+        }
+
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            return true;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            EventAggregator.GetEvent<LayoutModeChangedEvent>().Publish(false);
         }
 
         #endregion

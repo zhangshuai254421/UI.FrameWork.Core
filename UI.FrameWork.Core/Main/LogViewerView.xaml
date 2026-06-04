@@ -8,6 +8,7 @@
              xmlns:mvvm="http://prismlibrary.com/"
              mvvm:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
              d:DesignHeight="830" d:DesignWidth="1200"
              Background="{DynamicResource SecondaryBrush}">
 
@@ -101,23 +102,23 @@
                            Foreground="#555"
                            VerticalAlignment="Center"
                            Margin="0,0,12,0"/>
-                    <!--<s:DateTimePicker SelectedDateTime="{Binding StartDate}"
+                    <hc:DateTimePicker SelectedDateTime="{Binding StartDate}"
                                       Width="200"
                                       Height="30"
                                       FontSize="13"
                                       DateTimeFormat="yyyy-MM-dd"
-                                      VerticalAlignment="Center"/>-->
+                                      VerticalAlignment="Center"/>
                     <TextBlock Text="至"
                            FontSize="13"
                            Foreground="#666"
                            VerticalAlignment="Center"
                            Margin="8,0,8,0"/>
-                    <!--<s:DateTimePicker SelectedDateTime="{Binding EndDate}"
+                <hc:DateTimePicker SelectedDateTime="{Binding EndDate}"
                                       Width="200"
                                       Height="30"
                                       FontSize="13"
                                       DateTimeFormat="yyyy-MM-dd"
-                                      VerticalAlignment="Center"/>-->
+                                      VerticalAlignment="Center"/>
                     <Button Content="🔍 查询"
                             Command="{Binding QueryByDateCommand}"
                             Width="75"

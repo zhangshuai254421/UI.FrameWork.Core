@@ -28,6 +28,7 @@ namespace SemiAppliaction
             //throw new NotImplementedException();
             containerRegistry.RegisterForNavigation<MainView, MainViewModel>();
             containerRegistry.RegisterForNavigation<EmptyView>();
+            containerRegistry.RegisterForNavigation<EmptyView2>();
         }
     }
 }

@@ -10,6 +10,9 @@
                 <!--<ResourceDictionary Source="/SemiAppliaction.Core;component/Skin.xaml" />-->
                 <ResourceDictionary Source="pack://application:,,,/SemiControl;component/Themes/Skin.xaml" />
                 <ResourceDictionary Source="/Resources/Themes/GlobalStyle.xaml"/>
+
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
                 <!--<ResourceDictionary Source="pack://application:,,,/SemiControl;component/Themes/Styles/ButtonStyle.xaml" />-->
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

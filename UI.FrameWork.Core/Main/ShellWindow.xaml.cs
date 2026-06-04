@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Framework.Core.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,8 @@ namespace UI.FrameWork.Core.Main
     /// </summary>
     public partial class ShellWindow : Window
     {
+
+
         public ShellWindow()
         {
             InitializeComponent();
@@ -38,6 +41,29 @@ namespace UI.FrameWork.Core.Main
             Width = 1280;
             Height = 1024;
 
+        }
+        //private readonly DelegateCommand _btnNavigateBackCommand = null!;
+        //private readonly DelegateCommand _btnNavigateForwardCommand = null!;
+        //public DelegateCommand BtnNavigateBackCommand => _btnNavigateBackCommand ?? new DelegateCommand(() =>
+        //{
+
+        //    IoC.Get<INavigationService>().GoBack();
+        //});
+
+        //public DelegateCommand BtnNavigateForwarddCommand => _btnNavigateForwardCommand ?? new DelegateCommand(() =>
+        //{
+
+        //    IoC.Get<INavigationService>().GoForward();
+        //});
+
+        private void BtnNavigateBackCommand(object sender, RoutedEventArgs e)
+        {
+            IoC.Get<INavigationService>().GoBack();
+        }
+
+        private void BtnNavigateForwarddCommand(object sender, RoutedEventArgs e)
+        {
+            IoC.Get<INavigationService>().GoForward();
         }
     }
 }

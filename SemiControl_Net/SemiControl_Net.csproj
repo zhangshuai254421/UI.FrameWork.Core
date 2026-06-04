@@ -17,12 +17,11 @@
     <Compile Remove="Controls\Input\DateTimePicker.cs" />
     <Compile Remove="Controls\Input\ListClock.cs" />
     <Compile Remove="Controls\Input\WatermarkTextBox.cs" />
+    <Compile Remove="Controls\TimeBlock.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Controls\TimeBlock.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Page Remove="Themes\Styles\DateTimePicker.xaml" />
   </ItemGroup>
 
   <ItemGroup>

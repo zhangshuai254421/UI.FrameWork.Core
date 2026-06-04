@@ -38,25 +38,21 @@
          BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch" 
          VerticalAlignment="Bottom"  Height="{DynamicResource Framework_BottomHeight}">
 
-     <StackPanel Height="178" >
+     <Border Height="178">
          <Grid>
              <Grid.ColumnDefinitions>
-                 <ColumnDefinition Width="*"></ColumnDefinition>
-                 <ColumnDefinition Width="165"></ColumnDefinition>
+                 <ColumnDefinition Width="*"/>
+                 <ColumnDefinition Width="165"/>
              </Grid.ColumnDefinitions>
 
-             
-        <!--工具页-->
-        
-             <ContentControl Grid.Row="0" Grid.Column="0"  regions:RegionManager.RegionName="ToolBoxRegion"/>
-             <Border BorderThickness="2 0 0 0"  BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Row="0" Grid.Column="1">                 
-        <!--页脚-->
-        
-                 <ContentControl  regions:RegionManager.RegionName="FooterRegion"/>
+             <!--工具页-->
+             <ContentControl Grid.Column="0" regions:RegionManager.RegionName="ToolBoxRegion"/>
+             <Border BorderThickness="2 0 0 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Column="1">
+                 <!--页脚-->
+                 <ContentControl regions:RegionManager.RegionName="FooterRegion"/>
              </Border>
-            
          </Grid>
-     </StackPanel>
+     </Border>
 
  </Border>
 

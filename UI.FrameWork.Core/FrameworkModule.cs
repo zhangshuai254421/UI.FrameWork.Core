@@ -1,5 +1,6 @@
 ﻿using Framework.Core.Common;
 using UI.FrameWork.Core.Main;
+using UI.FrameWork.Core.Main.Footer;
 using UI.FrameWork.Core.Main.View;
 
 namespace UI.FrameWork.Core;
@@ -22,6 +23,7 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
 
     public void RegisterTypes(IContainerRegistry containerRegistry)
     {
+        //containerRegistry.RegisterForNavigation<ShellWindow,ShellWindowModel>();
         // 注册 ViewModel（需要手动控制布局的）
         containerRegistry.Register<BaseViewModel>();
 
@@ -31,5 +33,6 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
         containerRegistry.RegisterForNavigation<DirectView>();
         containerRegistry.RegisterForNavigation<LogViewerView>();
         containerRegistry.RegisterForNavigation<BaseView>();
+        containerRegistry.RegisterForNavigation<LogShowView>();
     }
 }
