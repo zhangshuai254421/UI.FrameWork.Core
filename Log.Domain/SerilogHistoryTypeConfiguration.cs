@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Log.Domain
 {
-    public class LogsTypeConfiguration : IEntityTypeConfiguration<Log.Domain.SerilogHistory>
+    public class SerilogHistoryTypeConfiguration : IEntityTypeConfiguration<Log.Domain.SerilogHistory>
     {
         public void Configure(EntityTypeBuilder<Log.Domain.SerilogHistory> builder)
         {

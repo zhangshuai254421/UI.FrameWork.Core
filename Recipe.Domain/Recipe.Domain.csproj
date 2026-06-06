@@ -7,10 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="Prism.Wpf" Version="9.0.537">
-      <NoWarn>NU1701,NU1701</NoWarn>
-    </PackageReference>
+    <ProjectReference Include="..\EFCore.Infrastructure\EFCore.Infrastructure.csproj" />
+    <ProjectReference Include="..\EFCore.Repository\EFCore.IRepository.csproj" />
   </ItemGroup>
 
 </Project>
