@@ -14,6 +14,7 @@ using Serilog.Infrastructure;
 using Serilog.Sinks.RichTextBox.Themes;
 using System;
 using System.Collections.Generic;
+using Recipe.Infrastructure;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -27,6 +28,7 @@ using System.Windows.Navigation;
 using UI.FrameWork.Core.Common;
 using UI.FrameWork.Core.Main;
 using UI.FrameWork.Core.Main.Footer;
+using Recipe.Domain;
 
 namespace UI.FrameWork.Core
 {
@@ -40,17 +42,20 @@ namespace UI.FrameWork.Core
             IServiceCollection services = new ServiceCollection();
             //services.
             
-            services.AddDbContext<DataContext>();
+            services.AddDbContext<Recipe.Domain.DataContext>();
+            services.AddDbContext<Log.Domain.DataContext>();
             /// TODO 2. 注册数据访问层（DAL）和业务逻辑层（BLL）的服务
             services.AddRepository();
 
             services.AddSerilogServices();
+            services.AddRecipeServices();
             return new DryIocContainerExtension(new DryIoc.Container(DryIocContainerExtension.DefaultRules) .WithDependencyInjectionAdapter(services));
         }
         private readonly ServiceCollection _services = new ServiceCollection();
         protected override Window CreateShell()
         {
-            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<DataContext>();
+            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Recipe.Domain.DataContext>();
+            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Log.Domain.DataContext>();
             return Container.Resolve<ShellWindow>(); ;
         }
         private static Mutex AppMutex;
@@ -72,6 +77,11 @@ namespace UI.FrameWork.Core
             var s4 = s3.GetListAsync();
             var ss4 = s3.GetPageAsync(new PageParameter());
             var s5 = ss4.Result;
+
+            var a = IoC.Get<IRecipeService>();
+            var a1= a.GetListAsync();
+             var a2 = a.GetPageAsync(new PageParameter());
+             var a3 = a2.Result;
 #endif
 
             bool createdNew = false;

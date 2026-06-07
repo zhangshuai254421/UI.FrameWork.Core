@@ -31,19 +31,4 @@ namespace Recipe.Domain
                 .HasComment("Data unique identifier.");
         }
     }
-
-    public class CameraConfigurationTypeConfiguration : IEntityTypeConfiguration<CameraConfiguration>
-    {
-        public void Configure(EntityTypeBuilder<CameraConfiguration> builder)
-        {
-            builder
-                .HasKey(x => x.Id);
-
-
-            builder
-                .Property(x => x.Id)
-                .ValueGeneratedOnAdd()
-                .HasComment("Data unique identifier.");
-        }
-    }
 }

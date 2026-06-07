@@ -1,11 +1,13 @@
 ﻿using EFCore.Repository;
+using Framework.Core.CustomAttribute;
+using Recipe.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
-
+[assembly: DefaultDbContext(typeof(DataContext))]
 namespace Recipe.Domain
 {
     public class Recipe:Entity

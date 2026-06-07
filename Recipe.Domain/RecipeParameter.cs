@@ -7,12 +7,8 @@ using System.Threading.Tasks;
 
 namespace Recipe.Domain
 {
-    public class RecipeParameter:Entity
+    public class RecipeParameter : Entity
     {
         public virtual Recipe? Recipe { get; set; }
     }
-    public class CameraConfiguration:RecipeParameter
-    {
-        public string CameraName { get; set; }
-        
-    }
+}
