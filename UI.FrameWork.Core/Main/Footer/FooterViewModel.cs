@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using UI.FrameWork.Core.Common;
-using UI.FrameWork.Core.Events;
 using UI.FrameWork.Core.Main.Footer;
 
 namespace UI.FrameWork.Core.Main
@@ -44,7 +43,7 @@ namespace UI.FrameWork.Core.Main
             get => logShowChecked;
             set => SetProperty(ref logShowChecked, value);
         }
-
+        private readonly IEventAggregator eventAggregator;
 
 
         public FooterViewModel(IRegionManager regionManager, PrismRegionNavigator regionNavigator, IEventAggregator eventAggregator)
@@ -55,12 +54,17 @@ namespace UI.FrameWork.Core.Main
             eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Subscribe(isChecked =>
             {
                 if (DirectChecked|| NumberKeyPadChecked||logShowChecked) {
-                    IoC.Get<INavigationService>().NavigateToAsync(ViewNames.EmptyView2, RegionNames.ToolBoxRegion);
+                    regionManager.Regions[RegionNames.ToolBoxRegion].RemoveAll();
+                }
+                else
+                {
+                    return;
                 }
                 DirectChecked = isChecked ? false : true;
                 NumberKeyPadChecked = isChecked ? false : true;
                 LogShowChecked = isChecked ? false : true;
             });
+            this.eventAggregator = eventAggregator ?? new EventAggregator();
         }
 
         public DelegateCommand BtnNumberKeyPadCommand => _btnNumberKeyPadCommand ??new DelegateCommand(BtnNumberKeyPad);
@@ -72,13 +76,14 @@ namespace UI.FrameWork.Core.Main
                if (!LogShowChecked)
                {
                    // 移除区域中的所有视图，使其变空
-                   IoC.Get<INavigationService>().NavigateToAsync(ViewNames.EmptyView2, RegionNames.ToolBoxRegion);
+                   regionManager.Regions[RegionNames.ToolBoxRegion].RemoveAll();
                }
                else
                {
                    regionManager.RequestNavigate("ToolBoxRegion", nameof(LogShowView));
                }
-               
+               DirectChecked = false;
+               NumberKeyPadChecked = false;
            });
 
         void BtnNumberKeyPad()
@@ -86,9 +91,9 @@ namespace UI.FrameWork.Core.Main
  
            if (!NumberKeyPadChecked)
             {
-
+                eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Publish(true);
                 // 移除区域中的所有视图，使其变空
-                IoC.Get<INavigationService>().NavigateToAsync(ViewNames.EmptyView2, RegionNames.ToolBoxRegion);
+                regionManager.Regions[RegionNames.ToolBoxRegion].RemoveAll();
             }
             else
             {
@@ -103,7 +108,7 @@ namespace UI.FrameWork.Core.Main
             if (!DirectChecked)
             {
                 // 移除区域中的所有视图，使其变空
-                IoC.Get<INavigationService>().NavigateToAsync(ViewNames.EmptyView2, RegionNames.ToolBoxRegion);
+                regionManager.Regions[RegionNames.ToolBoxRegion].RemoveAll();
             }
             else
             {

@@ -61,6 +61,22 @@
             <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" regions:RegionManager.RegionName="MainRegion"/>
             <!--主界面-->
 
+
+            <Border Height="178" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="165"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!--工具页-->
+                    <ContentControl Grid.Column="0" regions:RegionManager.RegionName="ToolBoxRegion" VerticalAlignment="Bottom"/>
+                    <Border BorderThickness="2 0 0 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Column="1" VerticalAlignment="Top">
+                        <!--页脚-->
+                        <ContentControl regions:RegionManager.RegionName="FooterRegion"/>
+                    </Border>
+                </Grid>
+            </Border>
             <!--最下面-->
             <!--<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="BorderFooter" BorderThickness="0 2 0 0"
                     BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch" 

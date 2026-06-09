@@ -17,7 +17,7 @@ namespace SemiAppliaction
     {
         public void OnInitialized(IContainerProvider containerProvider)
         {
-            //regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
+            regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
             //IoC.Get<INavigationService>().NavigateToAsync(nameof(MainView));
             containerProvider.Resolve<INavigationService>().NavigateToAsync(nameof(MainView));
             //regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(MainView));
@@ -27,8 +27,6 @@ namespace SemiAppliaction
         {
             //throw new NotImplementedException();
             containerRegistry.RegisterForNavigation<MainView, MainViewModel>();
-            containerRegistry.RegisterForNavigation<EmptyView>();
-            containerRegistry.RegisterForNavigation<EmptyView2>();
         }
     }
 }

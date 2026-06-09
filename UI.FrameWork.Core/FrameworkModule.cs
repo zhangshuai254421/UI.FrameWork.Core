@@ -1,6 +1,7 @@
 ﻿using Framework.Core.Common;
 using UI.FrameWork.Core.Main;
 using UI.FrameWork.Core.Main.Footer;
+using UI.FrameWork.Core.Main.RecipeUI;
 using UI.FrameWork.Core.Main.View;
 
 namespace UI.FrameWork.Core;
@@ -11,7 +12,7 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
     {
         regionManager.RegisterViewWithRegion(RegionNames.HeaderViewRegion, typeof(HeaderView));
         regionManager.RegisterViewWithRegion(RegionNames.FooterRegion, typeof(FooterView));
-        regionManager.RegisterViewWithRegion(RegionNames.MainRegion, typeof(BaseView));
+        //regionManager.RegisterViewWithRegion(RegionNames.MainRegion, typeof(RecipeHomeView));
         
         //// 注册导航
         //_containerRegistry.RegisterForNavigation<HeaderView>();
@@ -25,14 +26,14 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
     {
         //containerRegistry.RegisterForNavigation<ShellWindow,ShellWindowModel>();
         // 注册 ViewModel（需要手动控制布局的）
-        containerRegistry.Register<BaseViewModel>();
+
 
         // 注册导航
         containerRegistry.RegisterForNavigation<HeaderView>();
         containerRegistry.RegisterForNavigation<NumberKeyPadView>();
         containerRegistry.RegisterForNavigation<DirectView>();
         containerRegistry.RegisterForNavigation<LogViewerView>();
-        containerRegistry.RegisterForNavigation<BaseView>();
-        containerRegistry.RegisterForNavigation<LogShowView>();
+        containerRegistry.RegisterForNavigation<LogShowView>(); 
+        containerRegistry.RegisterForNavigation<RecipeHomeView>();
     }
 }

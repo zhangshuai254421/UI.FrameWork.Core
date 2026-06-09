@@ -1,5 +1,4 @@
-﻿using Framework.Core.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,15 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UI.FrameWork.Core.Main;
 
-namespace SemiAppliaction.Views
+namespace UI.FrameWork.Core.Main.RecipeUI
 {
     /// <summary>
     /// EmptyView.xaml 的交互逻辑
     /// </summary>
-    //[ToolBoxFor(typeof(MainView))]
-    [ToolBoxFor(typeof(LogViewerView))]
     public partial class EmptyView : UserControl
     {
         public EmptyView()

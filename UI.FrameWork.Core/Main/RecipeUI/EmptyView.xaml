@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="UI.FrameWork.Core.Main.RecipeUI.EmptyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:UI.FrameWork.Core.Main.RecipeUI" xmlns:controls="clr-namespace:UI.FrameWork.Core.Main.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <!-- 原来写几十行 Grid 的页面，现在只需填充内容 -->
+
+    <controls:LayoutPageControl IsRightPanelVisible="True">
+
+        <!-- ═══ 主区域 ═══ -->
+        <controls:LayoutPageControl.MainContent>
+            <Grid/>
+        </controls:LayoutPageControl.MainContent>
+
+        <!-- ═══ 右侧面板 ═══ -->
+        <controls:LayoutPageControl.RightContent>
+            <StackPanel Margin="8,0,0,0">
+                <TextBlock Text="属性" FontWeight="Bold"/>
+                <Border Background="{DynamicResource CardBackgroundBrush}" >
+                    <!-- 属性编辑面板 -->
+                </Border>
+            </StackPanel>
+        </controls:LayoutPageControl.RightContent>
+
+        <!-- ═══ 底部工具栏 ═══ -->
+        <controls:LayoutPageControl.ToolBoxContent>
+            <Grid/>
+        </controls:LayoutPageControl.ToolBoxContent>
+
+
+    </controls:LayoutPageControl>
+
+</UserControl>

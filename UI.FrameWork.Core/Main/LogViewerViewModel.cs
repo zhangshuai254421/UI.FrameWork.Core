@@ -3,7 +3,6 @@ using Log.Domain;
 using Prism.Commands;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using UI.FrameWork.Core.Events;
 using UI.FrameWork.Core.Main.View;
 
 namespace UI.FrameWork.Core.Main
@@ -252,7 +251,7 @@ namespace UI.FrameWork.Core.Main
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            EventAggregator.GetEvent<LayoutModeChangedEvent>().Publish(true);
+
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
@@ -262,7 +261,7 @@ namespace UI.FrameWork.Core.Main
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            EventAggregator.GetEvent<LayoutModeChangedEvent>().Publish(false);
+
         }
 
         #endregion

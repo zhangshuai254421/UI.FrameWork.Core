@@ -1,274 +1,89 @@
-<UserControl x:Class="UI.FrameWork.Core.Main.LogViewerView"
+﻿<UserControl x:Class="UI.FrameWork.Core.Main.RecipeUI.RecipeHomeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:UI.FrameWork.Core.Main"
-             xmlns:mw="https://github.io/semicontrol"
-             xmlns:mvvm="http://prismlibrary.com/"
-             mvvm:ViewModelLocator.AutoWireViewModel="True"
-             mc:Ignorable="d"
-             xmlns:hc="https://handyorg.github.io/handycontrol" xmlns:controls="clr-namespace:UI.FrameWork.Core.Main.View"
-             d:DesignHeight="830" d:DesignWidth="1200"
-             Background="{DynamicResource SecondaryBrush}">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:UI.FrameWork.Core.Main.RecipeUI" xmlns:controls="clr-namespace:UI.FrameWork.Core.Main.View" xmlns:mw="https://github.io/semicontrol"
+             mc:Ignorable="d" 
+             d:DesignHeight="830" d:DesignWidth="1200">
 
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <!-- 分页按钮样式 -->
-            <Style x:Key="PaginationButton" TargetType="Button">
-                <Setter Property="Width" Value="36"/>
-                <Setter Property="Height" Value="36"/>
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="FontWeight" Value="Bold"/>
-                <Setter Property="Foreground" Value="#333333"/>
-                <Setter Property="Background" Value="#F0F2F5"/>
-                <Setter Property="BorderBrush" Value="#D0D5DD"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="4">
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#E0E4EA"/>
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Opacity" Value="0.4"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <!-- 页面大小 ComboBox 样式 -->
-            <Style x:Key="PageSizeComboBox" TargetType="ComboBox">
-                <Setter Property="Width" Value="65"/>
-                <Setter Property="Height" Value="32"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Setter Property="Foreground" Value="#333333"/>
-                <Setter Property="Background" Value="White"/>
-                <Setter Property="BorderBrush" Value="#D0D5DD"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-            </Style>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <!-- 原来写几十行 Grid 的页面，现在只需填充内容 -->
 
     <controls:LayoutPageControl IsRightPanelVisible="True">
 
         <!-- ═══ 主区域 ═══ -->
         <controls:LayoutPageControl.MainContent>
-            <Grid Margin="10">
+            <Grid>
+                <Grid.Resources>
+                    <DiscreteObjectKeyFrame x:Key="CommentKey" Value="{Binding IsComment}" />
+                    <DiscreteObjectKeyFrame x:Key="CreateTimeKey" Value="{Binding IsCreateTime}" />
+                    <BooleanToVisibilityConverter x:Key="bVisible" />
+
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition />
+                    <RowDefinition Height="5"/>
                 </Grid.RowDefinitions>
 
-                <!-- 标题栏 -->
-                <Border Grid.Row="0"
-         Background="{DynamicResource PrimaryDeepBrush}"
-         CornerRadius="6,6,0,0"
-         Padding="16,10">
-                    <Grid>
-                        <TextBlock Text="📋 系统日志"
-                    FontSize="18"
-                    FontWeight="Bold"
-                    Foreground="{DynamicResource PrimaryDefaultBrush}"
-                    VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding PageInfo}"
-                    FontSize="13"
-                    Foreground="#A0C4E8"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"/>
-                    </Grid>
+                <!--显示选择的文件夹名-->
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectGroupName}" Height="40" Width="200" IsReadOnly="True"/>
+
+                <Grid Grid.Row="1" Grid.Column="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="0"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="1" Text="{Binding SelectRecipeName}" Height="40" Width="500" />
+                    <TextBox Grid.Column="3" Text="{Binding RecipeShowCount}" Height="40" Width="80" IsReadOnly="True"/>
+                    <TextBlock Grid.Column="5" Text="/" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="7" Text="{Binding RecipeCount}" Height="40" Width="80" IsReadOnly="True"/>
+                </Grid>
+
+                <!--文件夹-->
+                <Border Grid.Row="3" Grid.Column="1" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1">
+                    <ListBox ItemsSource="{Binding GroupNames}" SelectedItem="{Binding SelectGroupName}"   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Height="45" MinWidth="250" >
+                                    <Image VerticalAlignment="Center" Source="pack://application:,,,/Ui/Icon/folder-3.png" Width="16" Height="16" Margin="0,0,2,2"></Image>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding }"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </Border>
 
-                <!-- 日期筛选栏 -->
-                <Border Grid.Row="1"
-         Background="#F0F4FA"
-         BorderBrush="#D0D5DD"
-         BorderThickness="1,0,1,0"
-         Padding="12,8">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="📅 时间筛选"
-                    FontSize="13"
-                    FontWeight="SemiBold"
-                    Foreground="#555"
-                    VerticalAlignment="Center"
-                    Margin="0,0,12,0"/>
-                        <hc:DateTimePicker SelectedDateTime="{Binding StartDate}"
-                               Width="200"
-                               Height="30"
-                               FontSize="13"
-                               DateTimeFormat="yyyy-MM-dd"
-                               VerticalAlignment="Center"/>
-                        <TextBlock Text="至"
-                    FontSize="13"
-                    Foreground="#666"
-                    VerticalAlignment="Center"
-                    Margin="8,0,8,0"/>
-                        <hc:DateTimePicker SelectedDateTime="{Binding EndDate}"
-                               Width="200"
-                               Height="30"
-                               FontSize="13"
-                               DateTimeFormat="yyyy-MM-dd"
-                               VerticalAlignment="Center"/>
-                        <Button Content="🔍 查询"
-                     Command="{Binding QueryByDateCommand}"
-                     Width="75"
-                     Height="30"
-                     FontSize="13"
-                     Margin="12,0,0,0"
-                     Cursor="Hand"/>
-                        <Button Content="✕ 清除"
-                     Command="{Binding ClearDateFilterCommand}"
-                     Width="70"
-                     Height="30"
-                     FontSize="13"
-                     Margin="6,0,0,0"
-                     Cursor="Hand"/>
-                        <TextBlock Text="{Binding FilterInfo}"
-                    FontSize="12"
-                    Foreground="#2561A9"
-                    VerticalAlignment="Center"
-                    Margin="14,0,0,0"
-                    FontWeight="SemiBold"/>
-                    </StackPanel>
+                <!--配方-->
+                <Border Grid.Row="3" Grid.Column="3" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1">
+                    <ListBox ItemsSource="{Binding RecipeNames}" SelectedItem="{Binding SelectRecipeName}"   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Height="45" MinWidth="250" >
+                                    <Image VerticalAlignment="Center" Source="pack://application:,,,/Ui/Icon/excel-5.png" Width="16" Height="16" Margin="0,0,2,2"></Image>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding }"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </Border>
 
-                <!-- DataGrid 数据表格 -->
-                <Border Grid.Row="2"
-         BorderBrush="#D0D5DD"
-         BorderThickness="1,0,1,0"
-         Background="White">
-                    <mw:DataGrid x:Name="LogDataGrid"
-                 ItemsSource="{Binding LogEntries}"
-                 AutoGenerateColumns="False"
-                 IsReadOnly="True"
-                 CanUserAddRows="False">
-                        <mw:DataGrid.Columns>
-                            <DataGridTextColumn Header="序号"
-                               Binding="{Binding Id}"
-                               Width="50"/>
-                            <DataGridTextColumn Header="时间"
-                               Binding="{Binding Timestamp}"
-                               Width="180"/>
-                            <DataGridTextColumn Header="级别"
-                               Binding="{Binding Level}"
-                               Width="70"/>
-                            <!-- RenderedMessage 使用 ElementStyle 高亮突出 -->
-                            <DataGridTextColumn Header="日志内容"
-                               Binding="{Binding RenderedMessage}"
-                               Width="420">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="FontWeight" Value="SemiBold"/>
-                                        <Setter Property="Foreground" Value="#1A56DB"/>
-                                        <Setter Property="TextWrapping" Value="Wrap"/>
-                                        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                        <Setter Property="Margin" Value="2,4"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
-
-                        </mw:DataGrid.Columns>
-                    </mw:DataGrid>
-                </Border>
-
-                <!-- 底部分页栏 -->
-                <Border Grid.Row="3"
-         Background="#F8F9FB"
-         BorderBrush="#D0D5DD"
-         BorderThickness="1"
-         CornerRadius="0,0,6,6"
-         Padding="12,8">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- 左侧：页面大小选择 -->
-                        <StackPanel Grid.Column="0"
-                     Orientation="Horizontal"
-                     VerticalAlignment="Center">
-                            <TextBlock Text="每页显示"
-                        FontSize="13"
-                        Foreground="#666"
-                        VerticalAlignment="Center"
-                        Margin="0,0,6,0"/>
-                            <ComboBox Style="{StaticResource PageSizeComboBox}"
-                       ItemsSource="{x:Static local:LogViewerViewModel.PageSizeOptions}"
-                       SelectedItem="{Binding PageSize}"/>
-                            <TextBlock Text="条"
-                        FontSize="13"
-                        Foreground="#666"
-                        VerticalAlignment="Center"
-                        Margin="4,0,0,0"/>
-                        </StackPanel>
-
-                        <!-- 中间：加载指示器 -->
-                        <TextBlock Grid.Column="1"
-                    Text="⏳ 加载中..."
-                    FontSize="13"
-                    Foreground="#2561A9"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    d:Visibility="Collapsed"/>
-
-                        <!-- 右侧：翻页按钮 -->
-                        <StackPanel Grid.Column="2"
-                     Orientation="Horizontal"
-                     VerticalAlignment="Center">
-                            <Button Content="⏮"
-                     Style="{StaticResource PaginationButton}"
-                     Command="{Binding FirstPageCommand}"
-                     ToolTip="首页"/>
-                            <Button Content="◀"
-                     Style="{StaticResource PaginationButton}"
-                     Command="{Binding PrevPageCommand}"
-                     ToolTip="上一页"
-                     Margin="4,0"/>
-                            <Border Background="White"
-                     BorderBrush="#D0D5DD"
-                     BorderThickness="1"
-                     CornerRadius="4"
-                     MinWidth="80"
-                     Height="36"
-                     Padding="12,0"
-                     Margin="4,0">
-                                <TextBlock Text="{Binding PageInfo}"
-                            FontSize="13"
-                            Foreground="#333"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"/>
-                            </Border>
-                            <Button Content="▶"
-                     Style="{StaticResource PaginationButton}"
-                     Command="{Binding NextPageCommand}"
-                     ToolTip="下一页"
-                     Margin="4,0"/>
-                            <Button Content="⏭"
-                     Style="{StaticResource PaginationButton}"
-                     Command="{Binding LastPageCommand}"
-                     ToolTip="末页"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
             </Grid>
         </controls:LayoutPageControl.MainContent>
 
@@ -365,10 +180,6 @@
 
 
     </controls:LayoutPageControl>
-       
-
-
-
 
 
 </UserControl>

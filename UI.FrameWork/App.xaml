@@ -13,6 +13,7 @@
 
                 <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
+                <ResourceDictionary Source="/UI.FrameWork.Core;component/Main/View/Dictionary1.xaml"/>
                 <!--<ResourceDictionary Source="pack://application:,,,/SemiControl;component/Themes/Styles/ButtonStyle.xaml" />-->
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

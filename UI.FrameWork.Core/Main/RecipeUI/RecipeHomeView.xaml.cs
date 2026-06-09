@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UI.FrameWork.Core.Main.View
+namespace UI.FrameWork.Core.Main.RecipeUI
 {
     /// <summary>
-    /// BaseView.xaml 的交互逻辑
+    /// RecipeHomeView.xaml 的交互逻辑
     /// </summary>
-    public partial class BaseView : UserControl
+    public partial class RecipeHomeView : UserControl
     {
-        public BaseView()
+        public RecipeHomeView()
         {
             InitializeComponent();
         }

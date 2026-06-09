@@ -5,55 +5,82 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SemiAppliaction"
              mc:Ignorable="d" 
-              xmlns:regions="http://prismlibrary.com/" xmlns:s="https://github.io/semicontrol"
+              xmlns:regions="http://prismlibrary.com/" xmlns:s="https://github.io/semicontrol"  xmlns:controls="clr-namespace:UI.FrameWork.Core.Main.View;assembly=UI.FrameWork.Core"
              d:DesignHeight="830" d:DesignWidth="1200">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <!-- 原来写几十行 Grid 的页面，现在只需填充内容 -->
 
-        <Border BorderThickness="0 0 2 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch">
+    <controls:LayoutPageControl IsRightPanelVisible="True">
+
+        <!-- ═══ 主区域 ═══ -->
+        <controls:LayoutPageControl.MainContent>
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="35"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
 
-                <s:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F1" Content="全自动操作" IconGeometry="{StaticResource HomePageF1Geometry}" Command="{Binding AutoCutStandByViewCmd}"/>
-                <s:IconButton Grid.Row="1" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F2" Content="手动操作" IconGeometry="{StaticResource HomePageF2Geometry}" Command="{Binding ShowManualOperation}"/>
-                <s:IconButton Grid.Row="1" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F3" Content="切割参数" IconGeometry="{StaticResource HomePageF3Geometry}" Command="{Binding ShowRecipe}"  />
-                <s:IconButton Grid.Row="1" Grid.Column="7" Style="{StaticResource MainButtonStyle}" TopLeftContent="F4" Content="刀片维护" IconGeometry="{StaticResource HomePageF4Geometry}" Command="{Binding ShowBladeMaintenance}" />
-                <s:IconButton Grid.Row="1" Grid.Column="9" Style="{StaticResource MainButtonStyle}" TopLeftContent="F5" Content="参数维护" IconGeometry="{StaticResource HomePageF5Geometry}" Command="{Binding ShowParameterSetting}" />
-                <s:IconButton Grid.Row="3" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F6" Content="设备维护" IconGeometry="{StaticResource HomePageF6Geometry}" Command="{Binding ShowEquipmentMaintenance}" />
-                <s:IconButton Grid.Row="3" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F7" Content="工程维护" IconGeometry="{StaticResource HomePageF7Geometry}" Command="{Binding ShowProjectMaintenance}"/>
-                <s:IconButton Grid.Row="3" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F8" Content="制造商维护" IconGeometry="{StaticResource HomePageF8Geometry}" Command="{Binding ShowManufacturerMaintenanceHome}"
-                              Visibility="{Binding ManufacturerMaintenanceVisibility}" />
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Border BorderThickness="0 0 2 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="0"/>
+                        </Grid.ColumnDefinitions>
+
+                        <s:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F1" Content="全自动操作" IconGeometry="{StaticResource HomePageF1Geometry}" Command="{Binding AutoCutStandByViewCmd}"/>
+                        <s:IconButton Grid.Row="1" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F2" Content="手动操作" IconGeometry="{StaticResource HomePageF2Geometry}" Command="{Binding ShowManualOperation}"/>
+                        <s:IconButton Grid.Row="1" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F3" Content="切割参数" IconGeometry="{StaticResource HomePageF3Geometry}" Command="{Binding ShowRecipe}"  />
+                        <s:IconButton Grid.Row="1" Grid.Column="7" Style="{StaticResource MainButtonStyle}" TopLeftContent="F4" Content="刀片维护" IconGeometry="{StaticResource HomePageF4Geometry}" Command="{Binding ShowBladeMaintenance}" />
+                        <s:IconButton Grid.Row="1" Grid.Column="9" Style="{StaticResource MainButtonStyle}" TopLeftContent="F5" Content="参数维护" IconGeometry="{StaticResource HomePageF5Geometry}" Command="{Binding ShowParameterSetting}" />
+                        <s:IconButton Grid.Row="3" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F6" Content="设备维护" IconGeometry="{StaticResource HomePageF6Geometry}" Command="{Binding ShowEquipmentMaintenance}" />
+                        <s:IconButton Grid.Row="3" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F7" Content="工程维护" IconGeometry="{StaticResource HomePageF7Geometry}" Command="{Binding ShowProjectMaintenance}"/>
+                        <s:IconButton Grid.Row="3" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F8" Content="制造商维护" IconGeometry="{StaticResource HomePageF8Geometry}" Command="{Binding ShowManufacturerMaintenanceHome}"
+                           Visibility="{Binding ManufacturerMaintenanceVisibility}" />
+
+                    </Grid>
+                </Border>
+
 
             </Grid>
-        </Border>
+        </controls:LayoutPageControl.MainContent>
+
+        <!-- ═══ 右侧面板 ═══ -->
+        <controls:LayoutPageControl.RightContent>
+            <StackPanel Margin="8,0,0,0">
+                <TextBlock Text="属性" FontWeight="Bold"/>
+                <Border Background="{DynamicResource CardBackgroundBrush}" >
+                    <!-- 属性编辑面板 -->
+                </Border>
+            </StackPanel>
+        </controls:LayoutPageControl.RightContent>
+
+        <!-- ═══ 底部工具栏 ═══ -->
+        <controls:LayoutPageControl.ToolBoxContent>
+            <Grid/>
+        </controls:LayoutPageControl.ToolBoxContent>
 
 
-    </Grid>
+    </controls:LayoutPageControl>
+   
 </UserControl>

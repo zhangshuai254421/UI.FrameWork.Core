@@ -48,4 +48,8 @@
     <ProjectReference Include="..\SemiControl_Net\SemiControl_Net.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Events\" />
+  </ItemGroup>
+
 </Project>
