@@ -20,7 +20,6 @@ namespace SemiAppliaction
             regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
             //IoC.Get<INavigationService>().NavigateToAsync(nameof(MainView));
             containerProvider.Resolve<INavigationService>().NavigateToAsync(nameof(MainView));
-            //regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(MainView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)

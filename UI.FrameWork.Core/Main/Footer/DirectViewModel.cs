@@ -13,19 +13,22 @@ namespace UI.FrameWork.Core.Main
         private readonly PrismRegionNavigator _regionNavigator;
         private readonly IRegionManager _regionManager;
         private readonly IEventAggregator _eventAggregator;
+        private readonly INavigationService _navigationService;
 
-        public DirectViewModel(IRegionManager regionManager, PrismRegionNavigator regionNavigator, IEventAggregator eventAggregator)
+        public DirectViewModel(IRegionManager regionManager, PrismRegionNavigator regionNavigator, IEventAggregator eventAggregator, INavigationService navigationService)
         {
             _regionManager = regionManager;
             _regionNavigator = regionNavigator;
             _eventAggregator = eventAggregator;
+            _navigationService = navigationService;
+
         }
 
         void ShowLog()
         {
             //_regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(NumberKeyPadView));
             //Task.Delay(1000);
-            IoC.Get<INavigationService>().NavigateToAsync(nameof(LogViewerView));
+            _navigationService.NavigateToAsync(nameof(LogViewerView));
             //_regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(LogViewerView));
            
         }

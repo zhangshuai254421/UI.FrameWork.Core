@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Prism.Events;
 
 namespace Framework.Core.Common
 {
@@ -55,18 +56,11 @@ namespace Framework.Core.Common
     public class NavigationService : INavigationService
     {
         private readonly IRegionManager _regionManager;
-        private readonly IDialogService _dialogService;
-        private readonly IEventAggregator _eventAggregator;
+        private readonly  IEventAggregator _eventAggregator;
 
-        // ToolBox 配对映射：MainViewName -> ToolBoxViewName（从 [ToolBoxFor] 特性自动扫描）
-        private static Dictionary<string, string>? _toolBoxPairings;
-
-  
-
-        public NavigationService(IRegionManager regionManager, IDialogService dialogService, IEventAggregator eventAggregator)
+        public NavigationService(IRegionManager regionManager,IEventAggregator eventAggregator)
         {
             _regionManager = regionManager;
-            _dialogService = dialogService;
             _eventAggregator = eventAggregator;
         }
 
@@ -84,9 +78,8 @@ namespace Framework.Core.Common
                 {
                     if (regionName == RegionNames.MainRegion)
                     {
-                        _eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Publish(true);
+                        ClearToolBoxRegion();
                     }
-                   
                     tcs.SetResult(true);
                 }
                 else if (result.Exception != null)
@@ -121,7 +114,7 @@ namespace Framework.Core.Common
             {
                 if (regionName == RegionNames.MainRegion)
                 {
-                    _eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Publish(true);
+                    ClearToolBoxRegion();
                 }
                 journal.GoBack();
                
@@ -152,7 +145,7 @@ namespace Framework.Core.Common
             {
                 if (regionName == RegionNames.MainRegion)
                 {
-                    _eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Publish(true);
+                    ClearToolBoxRegion();
                 }
                 journal.GoForward();
             }
@@ -166,6 +159,15 @@ namespace Framework.Core.Common
             //        toolBoxJournal.GoForward();
             //    }
             //}
+        }
+
+        private void ClearToolBoxRegion()
+        {
+            _eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Publish(true);
+            if (_regionManager.Regions.ContainsRegionWithName(RegionNames.ToolBoxRegion))
+            {
+                _regionManager.Regions[RegionNames.ToolBoxRegion]?.RemoveAll();
+            }
         }
 
         private IRegionNavigationJournal? GetJournal(string? regionName = null)

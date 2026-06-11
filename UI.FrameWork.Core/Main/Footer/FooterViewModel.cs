@@ -43,77 +43,71 @@ namespace UI.FrameWork.Core.Main
             get => logShowChecked;
             set => SetProperty(ref logShowChecked, value);
         }
-        private readonly IEventAggregator eventAggregator;
+        private readonly  IEventAggregator eventAggregator;
+        private readonly INavigationService _navigationService;
 
 
-        public FooterViewModel(IRegionManager regionManager, PrismRegionNavigator regionNavigator, IEventAggregator eventAggregator)
+        public FooterViewModel(IRegionManager regionManager, PrismRegionNavigator regionNavigator, IEventAggregator eventAggregator, INavigationService navigationService)
         {
             this.regionManager = regionManager;
             _regionManager = regionManager;
             _regionNavigator = regionNavigator;
-            eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Subscribe(isChecked =>
+            this.eventAggregator = eventAggregator;
+            _navigationService = navigationService;
+            this.eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Subscribe(isChecked =>
             {
-                if (DirectChecked|| NumberKeyPadChecked||logShowChecked) {
-                    regionManager.Regions[RegionNames.ToolBoxRegion].RemoveAll();
-                }
-                else
-                {
-                    return;
-                }
                 DirectChecked = isChecked ? false : true;
                 NumberKeyPadChecked = isChecked ? false : true;
                 LogShowChecked = isChecked ? false : true;
             });
-            this.eventAggregator = eventAggregator ?? new EventAggregator();
+            
         }
 
-        public DelegateCommand BtnNumberKeyPadCommand => _btnNumberKeyPadCommand ??new DelegateCommand(BtnNumberKeyPad);
+        public DelegateCommand BtnNumberKeyPadCommand => _btnNumberKeyPadCommand ?? new DelegateCommand(BtnNumberKeyPad);
         public DelegateCommand BtnDirectCommand => _btnDirectCommand ?? new DelegateCommand(BtnDirect);
 
         private DelegateCommand _btnLogShowCommand = null!;
-        public DelegateCommand BtnLogShowCommand=> _btnLogShowCommand?? new DelegateCommand(() =>
-           {
-               if (!LogShowChecked)
-               {
-                   // 移除区域中的所有视图，使其变空
-                   regionManager.Regions[RegionNames.ToolBoxRegion].RemoveAll();
-               }
-               else
-               {
-                   regionManager.RequestNavigate("ToolBoxRegion", nameof(LogShowView));
-               }
-               DirectChecked = false;
-               NumberKeyPadChecked = false;
-           });
-
-        void BtnNumberKeyPad()
+        public DelegateCommand BtnLogShowCommand => _btnLogShowCommand ?? new DelegateCommand(() =>
         {
- 
-           if (!NumberKeyPadChecked)
+
+            if (LogShowChecked)
             {
-                eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Publish(true);
-                // 移除区域中的所有视图，使其变空
-                regionManager.Regions[RegionNames.ToolBoxRegion].RemoveAll();
+                regionManager.RequestNavigate("ToolBoxRegion", nameof(LogShowView));
             }
             else
             {
+                regionManager.Regions[RegionNames.ToolBoxRegion]?.RemoveAll();
+            }
+            DirectChecked = false;
+            NumberKeyPadChecked = false;
+        });
 
+        void BtnNumberKeyPad()
+        {
+
+            if (NumberKeyPadChecked)
+            {
                 regionManager.RequestNavigate("ToolBoxRegion", nameof(NumberKeyPadView));
+            }
+            else
+            {
+                regionManager.Regions[RegionNames.ToolBoxRegion]?.RemoveAll();
             }
             DirectChecked = false;
             LogShowChecked = false;
         }
-        void BtnDirect() {
 
-            if (!DirectChecked)
+        void BtnDirect()
+        {
+            if (DirectChecked)
             {
-                // 移除区域中的所有视图，使其变空
-                regionManager.Regions[RegionNames.ToolBoxRegion].RemoveAll();
+
+                _navigationService.NavigateToAsync(nameof(DirectView), RegionNames.ToolBoxRegion);
             }
             else
             {
-                IoC.Get<INavigationService>().NavigateToAsync(nameof(DirectView),RegionNames.ToolBoxRegion);
 
+                regionManager.Regions[RegionNames.ToolBoxRegion]?.RemoveAll();
             }
             NumberKeyPadChecked = false;
             LogShowChecked = false;

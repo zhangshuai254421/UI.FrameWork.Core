@@ -58,6 +58,7 @@ namespace UI.FrameWork.Core.Main
 
         private void BtnNavigateBackCommand(object sender, RoutedEventArgs e)
         {
+            //var s = IoC.Get<INavigationService>();
             IoC.Get<INavigationService>().GoBack();
         }
 

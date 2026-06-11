@@ -40,8 +40,7 @@ namespace UI.FrameWork.Core
         protected override IContainerExtension CreateContainerExtension()
         {
             IServiceCollection services = new ServiceCollection();
-            //services.
-            
+
             services.AddDbContext<Recipe.Domain.DataContext>();
             services.AddDbContext<Log.Domain.DataContext>();
             /// TODO 2. 注册数据访问层（DAL）和业务逻辑层（BLL）的服务
@@ -49,6 +48,8 @@ namespace UI.FrameWork.Core
 
             services.AddSerilogServices();
             services.AddRecipeServices();
+            services.AddSingleton<INavigationService, Framework.Core.Common.NavigationService>();
+  
             return new DryIocContainerExtension(new DryIoc.Container(DryIocContainerExtension.DefaultRules) .WithDependencyInjectionAdapter(services));
         }
         private readonly ServiceCollection _services = new ServiceCollection();
@@ -67,7 +68,6 @@ namespace UI.FrameWork.Core
         {
             IoC.GetInstance = this.Container.Resolve;
             //IoC.BuildUp = this.Container.BuildUp;
-
 #if DEBUG
             var s = IoC.Get<IUnitOfWork>();
             var ss = s.GetRepository<Log.Domain.SerilogHistory>();
@@ -83,7 +83,6 @@ namespace UI.FrameWork.Core
              var a2 = a.GetPageAsync(new PageParameter());
              var a3 = a2.Result;
 #endif
-
             bool createdNew = false;
             FrameworkAppBase.AppMutex = new Mutex(true, "title", out createdNew);
             bool flag6 = !createdNew;
@@ -122,7 +121,7 @@ namespace UI.FrameWork.Core
             // 注册全局依赖，比如主题服务、消息总线等
             containerRegistry.Register<LoginView>();
             containerRegistry.Register<LoginViewModel>();
-            containerRegistry.RegisterForNavigation<ShellWindow>();
+            containerRegistry.Register<ShellWindow>();
 
             #region 日志模块
             // 1. 初始化 Serilog
@@ -151,22 +150,15 @@ namespace UI.FrameWork.Core
             // 3. 注册到 Prism 容器
             containerRegistry.RegisterInstance<ILoggerFactory>(loggerFactory);
             containerRegistry.Register(typeof(ILogger<>), typeof(Logger<>));
-            containerRegistry.RegisterSingleton<INavigationService, Framework.Core.Common.NavigationService>();
+
             #endregion
-
-
         }
-
- 
         /// <summary>
         /// TODO 1. 
         /// </summary>
         /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
-          
-
-
             base.OnStartup(e);
         }
 
