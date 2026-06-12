@@ -130,5 +130,10 @@ namespace EFCore.Infrastructure
         {
             return _repository.CountAsync(cancellationToken);
         }
+
+        public Task<IEnumerable<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+           return _repository.GetListAsync(predicate, cancellationToken);
+        }
     }
 }

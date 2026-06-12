@@ -28,6 +28,14 @@ namespace Recipe.Domain
         /// </summary>
         public string MachineName { get; set; }
 
+        public Recipe(int id, string recipeName, string groupName, string machineName)
+        {
+            base.Id = id;
+            RecipeName = recipeName;
+            GroupName = groupName;
+            MachineName = machineName;
+        }
+
         public virtual ICollection<RecipeParameter>? Parameters { get; set; } = new HashSet<RecipeParameter>();
     }
 }

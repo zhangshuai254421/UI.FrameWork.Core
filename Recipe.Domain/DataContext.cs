@@ -31,6 +31,12 @@ namespace Recipe.Domain
         {
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
 
+
+            modelBuilder.Entity<Recipe>().HasData(
+    new Recipe(-1, "default", "-Default-" ,"ZS1A")
+    );
+
+
             base.OnModelCreating(modelBuilder);
         }
     }

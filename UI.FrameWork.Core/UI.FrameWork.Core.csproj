@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Main\RecipeUI\**" />
+    <EmbeddedResource Remove="Main\RecipeUI\**" />
+    <None Remove="Main\RecipeUI\**" />
+    <Page Remove="Main\RecipeUI\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\logo1.png" />
     <None Remove="Resources\zs.png" />
   </ItemGroup>

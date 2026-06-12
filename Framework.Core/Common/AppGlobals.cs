@@ -55,6 +55,7 @@ namespace Framework.Core.Common
 
         public static string AppDebug { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
+        public static string MachineName = "ZS1A";
     }
 
 }

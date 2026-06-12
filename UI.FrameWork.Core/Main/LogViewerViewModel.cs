@@ -72,7 +72,7 @@ namespace UI.FrameWork.Core.Main
             }
         }
 
-        private int _pageSize = 20;
+        private int _pageSize = 100;
         public int PageSize
         {
             get => _pageSize;
