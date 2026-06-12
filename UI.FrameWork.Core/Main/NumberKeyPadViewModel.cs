@@ -6,8 +6,23 @@ using System.Threading.Tasks;
 
 namespace UI.FrameWork.Core.Main
 {
-    public class NumberKeyPadViewModel : BindableBase, IJournalAware
+    public class NumberKeyPadViewModel : BindableBase, IJournalAware, INavigationAware
     {
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+           return true;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+       
+        }
+
         public bool PersistInHistory()
         {
             return false;

@@ -62,7 +62,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Height="45" MinWidth="250" >
-                                    <Image VerticalAlignment="Center" Source="pack://application:,,,/Ui/Icon/folder-3.png" Width="16" Height="16" Margin="0,0,2,2"></Image>
+                                    <Image VerticalAlignment="Center" Source="/Recipe.UI;component/RecipeUI/folder-3.png" Width="16" Height="16" Margin="0,0,2,2"></Image>
                                     <TextBlock VerticalAlignment="Center" Text="{Binding }"/>
                                 </StackPanel>
                             </DataTemplate>
@@ -72,11 +72,11 @@
 
                 <!--配方-->
                 <Border Grid.Row="3" Grid.Column="3" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1">
-                    <ListBox ItemsSource="{Binding RecipeNames}" SelectedItem="{Binding SelectRecipeName}"   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox ItemsSource="{Binding RecipeNames}" SelectedItem="{Binding SelectRecipeName}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Height="45" MinWidth="250" >
-                                    <Image VerticalAlignment="Center" Source="pack://application:,,,/Ui/Icon/excel-5.png" Width="16" Height="16" Margin="0,0,2,2"></Image>
+                                    <Image VerticalAlignment="Center" Source="/Recipe.UI;component/RecipeUI/excel-5.png" Width="16" Height="16" Margin="0,0,2,2"></Image>
                                     <TextBlock VerticalAlignment="Center" Text="{Binding }"/>
                                 </StackPanel>
                             </DataTemplate>

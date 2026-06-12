@@ -13,6 +13,7 @@
         Width="1280"
         Focusable="False"
         WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
         ResizeMode="NoResize">
 
 
@@ -62,7 +63,7 @@
             <!--主界面-->
 
 
-            <Border Height="178" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom">
+            <Border Height="178" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" >
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -70,7 +71,8 @@
                     </Grid.ColumnDefinitions>
 
                     <!--工具页-->
-                    <ContentControl Grid.Column="0" regions:RegionManager.RegionName="ToolBoxRegion" VerticalAlignment="Bottom"/>
+                    <ContentControl Grid.Column="0" regions:RegionManager.RegionName="ToolBoxRegion" VerticalAlignment="Bottom"
+                                    Visibility="{Binding IsToolBoxVisible}"/>
                     <Border BorderThickness="2 0 0 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Column="1" VerticalAlignment="Top">
                         <!--页脚-->
                         <ContentControl regions:RegionManager.RegionName="FooterRegion"/>

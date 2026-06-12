@@ -166,7 +166,7 @@ namespace Framework.Core.Common
             _eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Publish(true);
             if (_regionManager.Regions.ContainsRegionWithName(RegionNames.ToolBoxRegion))
             {
-                _regionManager.Regions[RegionNames.ToolBoxRegion]?.RemoveAll();
+                _eventAggregator.GetEvent<ToolBoxVisibilityChangedEvent>().Publish(false);
             }
         }
 

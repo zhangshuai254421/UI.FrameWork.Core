@@ -46,7 +46,7 @@ namespace Recipe.UI.RecipeUI
 
         public Dictionary<string, string> RecipeSelectCache = new Dictionary<string, string>();
 
-        private string _selectGroupName;
+        private string _selectGroupName ;
         private ObservableCollection<string> _recipeNames;
         private string _selectRecipeName;
         private int _recipeShowCount;
@@ -120,6 +120,10 @@ namespace Recipe.UI.RecipeUI
             RecipeNames = new ObservableCollection<string> (_recipeService.GetListAsync(p => p.MachineName == AppGlobals.MachineName && p.RecipeName != string.Empty).Result.Select(p => p.RecipeName));
             RecipeShowCount = RecipeNames.Count;
 
+            if (SelectGroupName == null)
+            {
+                SelectGroupName = GroupNames.FirstOrDefault();
+            }
             if (SelectGroupName != null && !RecipeSelectCache.ContainsKey(SelectGroupName))
             {
                 RecipeSelectCache.Add(SelectGroupName, string.Empty);

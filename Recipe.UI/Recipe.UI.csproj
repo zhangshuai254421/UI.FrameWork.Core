@@ -8,6 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="RecipeUI\excel-5.png" />
+    <None Remove="RecipeUI\folder-3.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="RecipeUI\excel-5.png" />
+    <Resource Include="RecipeUI\folder-3.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
     <ProjectReference Include="..\Recipe.Domain\Recipe.Domain.csproj" />
     <ProjectReference Include="..\SemiControl_Net\SemiControl_Net.csproj" />

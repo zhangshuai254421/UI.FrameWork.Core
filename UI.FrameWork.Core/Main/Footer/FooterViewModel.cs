@@ -69,30 +69,22 @@ namespace UI.FrameWork.Core.Main
         private DelegateCommand _btnLogShowCommand = null!;
         public DelegateCommand BtnLogShowCommand => _btnLogShowCommand ?? new DelegateCommand(() =>
         {
-
             if (LogShowChecked)
             {
                 regionManager.RequestNavigate("ToolBoxRegion", nameof(LogShowView));
             }
-            else
-            {
-                regionManager.Regions[RegionNames.ToolBoxRegion]?.RemoveAll();
-            }
+            eventAggregator.GetEvent<ToolBoxVisibilityChangedEvent>().Publish(LogShowChecked);
             DirectChecked = false;
             NumberKeyPadChecked = false;
         });
 
         void BtnNumberKeyPad()
         {
-
             if (NumberKeyPadChecked)
             {
                 regionManager.RequestNavigate("ToolBoxRegion", nameof(NumberKeyPadView));
             }
-            else
-            {
-                regionManager.Regions[RegionNames.ToolBoxRegion]?.RemoveAll();
-            }
+            eventAggregator.GetEvent<ToolBoxVisibilityChangedEvent>().Publish(NumberKeyPadChecked);
             DirectChecked = false;
             LogShowChecked = false;
         }
@@ -101,14 +93,9 @@ namespace UI.FrameWork.Core.Main
         {
             if (DirectChecked)
             {
-
                 _navigationService.NavigateToAsync(nameof(DirectView), RegionNames.ToolBoxRegion);
             }
-            else
-            {
-
-                regionManager.Regions[RegionNames.ToolBoxRegion]?.RemoveAll();
-            }
+            eventAggregator.GetEvent<ToolBoxVisibilityChangedEvent>().Publish(DirectChecked);
             NumberKeyPadChecked = false;
             LogShowChecked = false;
         }

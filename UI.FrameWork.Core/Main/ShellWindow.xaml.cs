@@ -1,7 +1,10 @@
 ﻿using Framework.Core.Common;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,13 +22,14 @@ namespace UI.FrameWork.Core.Main
     /// <summary>
     /// ShellWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class ShellWindow : Window
+    public partial class ShellWindow : Window, INotifyPropertyChanged
     {
 
 
         public ShellWindow()
         {
             InitializeComponent();
+            DataContext = this;
 
             var chrome = new WindowChrome()
             {
@@ -42,22 +46,37 @@ namespace UI.FrameWork.Core.Main
             Height = 1024;
 
         }
-        //private readonly DelegateCommand _btnNavigateBackCommand = null!;
-        //private readonly DelegateCommand _btnNavigateForwardCommand = null!;
-        //public DelegateCommand BtnNavigateBackCommand => _btnNavigateBackCommand ?? new DelegateCommand(() =>
-        //{
 
-        //    IoC.Get<INavigationService>().GoBack();
-        //});
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        //public DelegateCommand BtnNavigateForwarddCommand => _btnNavigateForwardCommand ?? new DelegateCommand(() =>
-        //{
+        // CallerMemberName 会自动填充调用该方法的属性名称
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
-        //    IoC.Get<INavigationService>().GoForward();
-        //});
+
+
+        private Visibility _isToolBoxVisible = Visibility.Collapsed;
+
+        public Visibility IsToolBoxVisible
+        {
+            get => _isToolBoxVisible;
+            set
+            {
+                if (_isToolBoxVisible != value)
+                {
+                    _isToolBoxVisible = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        
 
         private void BtnNavigateBackCommand(object sender, RoutedEventArgs e)
         {
+           
             //var s = IoC.Get<INavigationService>();
             IoC.Get<INavigationService>().GoBack();
         }
@@ -65,6 +84,14 @@ namespace UI.FrameWork.Core.Main
         private void BtnNavigateForwarddCommand(object sender, RoutedEventArgs e)
         {
             IoC.Get<INavigationService>().GoForward();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            //// 订听工具箱显隐事件
+            IoC.Get<IEventAggregator>()
+               .GetEvent<ToolBoxVisibilityChangedEvent>()
+               .Subscribe(visible => IsToolBoxVisible = visible ? Visibility.Visible : Visibility.Collapsed);
         }
     }
 }
