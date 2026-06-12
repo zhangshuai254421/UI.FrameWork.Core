@@ -11,7 +11,7 @@ namespace Framework.Core.Common
         /// <summary>
         /// D:\\CodeSource\\01-UI框架\\UI.FrameWork\\bin\\Debug\\net8.0-windows\\logs\\log.db
         /// </summary>
-        public static string LogDbConnectionStr
+        private static string LogDbConnectionStr
         {
             get
             {
@@ -27,6 +27,14 @@ namespace Framework.Core.Common
             }
         }
 
+        private static string RecipeDbFilePathNoDebug
+        {
+            get
+            {
+                return "logs\\RecipeDomain.db";
+            }
+        }
+
         /// <summary>
         /// Data Source=D:\\CodeSource\\01-UI框架\\UI.FrameWork\\bin\\Debug\\net8.0-windows\\logs\\log.db
         /// </summary>
@@ -35,6 +43,13 @@ namespace Framework.Core.Common
             get
             {
                 return $"Data Source={LogDbConnectionStr}";
+            }
+        }
+
+        public static string RecipeDbFliePath { 
+            get
+            {
+                return $"Data Source={Path.Combine(AppDebug, RecipeDbFilePathNoDebug)}";
             }
         }
 

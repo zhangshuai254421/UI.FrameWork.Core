@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Framework.Core.Common;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using UI.FrameWork.Core.Main.Footer;
+using UI.FrameWork.Core.Main.RecipeUI;
 
 namespace SemiAppliaction.Views
 {
@@ -17,5 +20,11 @@ namespace SemiAppliaction.Views
             _logger = logger;
             //_logger.LogDebug("测试");
         }
+        //ShowRecipe
+        private DelegateCommand _ShowRecipe = null!;
+        public DelegateCommand ShowRecipe => _ShowRecipe ?? new DelegateCommand(() =>
+        {
+            IoC.Get<INavigationService>().NavigateToAsync(nameof(RecipeHomeView), RegionNames.MainRegion);
+        });
     }
 }
