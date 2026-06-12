@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace UI.FrameWork.Core.Main.View
+namespace SemiControl.Controls
 { 
 [TemplatePart(Name = "PART_MainArea", Type = typeof(ContentPresenter))]
 [TemplatePart(Name = "PART_RightArea", Type = typeof(ContentPresenter))]

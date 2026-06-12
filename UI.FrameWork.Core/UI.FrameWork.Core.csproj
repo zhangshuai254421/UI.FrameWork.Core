@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Main\View\LayoutPageControl.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\logo1.png" />
     <None Remove="Resources\zs.png" />
   </ItemGroup>
@@ -52,6 +56,7 @@
     <ProjectReference Include="..\Log.Domain\Serilog.Domain.csproj" />
     <ProjectReference Include="..\Log.Infrastructure\Serilog.Infrastructure.csproj" />
     <ProjectReference Include="..\Recipe.Infrastructure\Recipe.Infrastructure.csproj" />
+    <ProjectReference Include="..\Recipe.UI\Recipe.UI.csproj" />
     <ProjectReference Include="..\SemiControl_Net\SemiControl_Net.csproj" />
   </ItemGroup>
 

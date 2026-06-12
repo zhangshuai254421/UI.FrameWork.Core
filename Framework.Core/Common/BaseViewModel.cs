@@ -1,5 +1,5 @@
 
-namespace UI.FrameWork.Core.Main.View
+namespace Framework.Core.Common
 {
     /// <summary>
     /// BaseView 的 ViewModel — 控制主区域列跨和工具栏区域可见性。

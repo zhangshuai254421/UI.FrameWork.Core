@@ -9,9 +9,8 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using UI.FrameWork.Core.Main.View;
 
-namespace UI.FrameWork.Core.Main.RecipeUI
+namespace Recipe.UI.RecipeUI
 {
     public class RecipeHomeViewModel : BaseViewModel, INavigationAware
     {
@@ -118,7 +117,7 @@ namespace UI.FrameWork.Core.Main.RecipeUI
         public void RefreshSelectGroupName()
         {
             GroupNames = new ObservableCollection<string>(_recipeService.GetListAsync(p => p.MachineName == AppGlobals.MachineName).Result.Select(p => p.GroupName).Distinct());
-            RecipeCount = _recipeService.GetListAsync(p => p.MachineName == AppGlobals.MachineName && p.RecipeName != string.Empty).Result.Count();
+            RecipeNames = new ObservableCollection<string> (_recipeService.GetListAsync(p => p.MachineName == AppGlobals.MachineName && p.RecipeName != string.Empty).Result.Select(p => p.RecipeName));
             RecipeShowCount = RecipeNames.Count;
 
             if (SelectGroupName != null && !RecipeSelectCache.ContainsKey(SelectGroupName))
@@ -145,7 +144,7 @@ namespace UI.FrameWork.Core.Main.RecipeUI
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            throw new NotImplementedException();
+           
         }
     }
 }

@@ -1,12 +1,12 @@
 ﻿using Framework.Core.Common;
 using Microsoft.Extensions.Logging;
+using Recipe.UI.RecipeUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UI.FrameWork.Core.Main.Footer;
-using UI.FrameWork.Core.Main.RecipeUI;
 
 namespace SemiAppliaction.Views
 {

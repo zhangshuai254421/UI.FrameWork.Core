@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Recipe.UI.RecipeUI;
 using System.Configuration;
 using System.Data;
 using System.Windows;
@@ -18,7 +19,8 @@ namespace SemiAppliaction.Core
         {
             // 注册公共模块（FrameworkModule 先加载，确保 BaseView 的 Region 先就绪）
             moduleCatalog.AddModule<FrameworkModule>();
-            moduleCatalog.AddModule<UiModule>();
+            moduleCatalog.AddModule<UIModule>();
+            moduleCatalog.AddModule<RecipeUIModule>();
             base.ConfigureModuleCatalog(moduleCatalog);
 
         }

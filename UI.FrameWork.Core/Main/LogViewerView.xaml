@@ -4,13 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:UI.FrameWork.Core.Main"
-             xmlns:mw="https://github.io/semicontrol"
              xmlns:mvvm="http://prismlibrary.com/"
              mvvm:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d"
-             xmlns:hc="https://handyorg.github.io/handycontrol" xmlns:controls="clr-namespace:UI.FrameWork.Core.Main.View"
-             d:DesignHeight="830" d:DesignWidth="1200"
-             Background="{DynamicResource SecondaryBrush}">
+             xmlns:hc="https://handyorg.github.io/handycontrol" xmlns:controls="https://github.io/semicontrol" >
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -152,12 +149,12 @@
          BorderBrush="#D0D5DD"
          BorderThickness="1,0,1,0"
          Background="White">
-                    <mw:DataGrid x:Name="LogDataGrid"
+                    <controls:DataGrid x:Name="LogDataGrid"
                  ItemsSource="{Binding LogEntries}"
                  AutoGenerateColumns="False"
                  IsReadOnly="True"
                  CanUserAddRows="False">
-                        <mw:DataGrid.Columns>
+                        <controls:DataGrid.Columns>
                             <DataGridTextColumn Header="序号"
                                Binding="{Binding Id}"
                                Width="50"/>
@@ -183,8 +180,8 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
 
-                        </mw:DataGrid.Columns>
-                    </mw:DataGrid>
+                        </controls:DataGrid.Columns>
+                    </controls:DataGrid>
                 </Border>
 
                 <!-- 底部分页栏 -->
@@ -313,51 +310,51 @@
                         <RowDefinition Height="10"/>
                     </Grid.RowDefinitions>
 
-                    <mw:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource BottomButtonStyle}"/>
-                    <mw:IconButton Grid.Row="1" Grid.Column="3" TopLeftContent="F2" Style="{StaticResource BottomButtonStyle}" Content="拷贝新程式" Command="{Binding CopyRecipeCmd}" IsNeedRedMark="True">
-                        <mw:IconButton.IconGeometry>
+                    <controls:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource BottomButtonStyle}"/>
+                    <controls:IconButton Grid.Row="1" Grid.Column="3" TopLeftContent="F2" Style="{StaticResource BottomButtonStyle}" Content="拷贝新程式" Command="{Binding CopyRecipeCmd}" IsNeedRedMark="True">
+                        <controls:IconButton.IconGeometry>
                             <PathGeometry Figures="M174.143,720.292H162.871a2.37,2.37,0,0,0-2.254,2.459v0.323l0.007,4.751,1.126,0-0.006-5.072a1.116,1.116,0,0,1,1.127-1.23h11.272a1.117,1.117,0,0,1,1.128,1.23v9.835H170.2a0.558,0.558,0,0,0-.563.615v5.532h-6.764a1.079,1.079,0,0,1-1.108-.988l-0.02-5.786-1.113,0,0.009,5.788a2.34,2.34,0,0,0,2.232,2.218h7.44a2.14,2.14,0,0,0,1.578-.738l3.832-4.18a2.537,2.537,0,0,0,.677-1.722V722.751A2.37,2.37,0,0,0,174.143,720.292Zm0.789,13.892-3.832,4.18a0.6,0.6,0,0,1-.338.247v-4.795h4.4C175.045,733.938,175.045,734.062,174.932,734.184Zm-10.37-7.958h7.891a0.617,0.617,0,0,0,0-1.229h-7.891A0.617,0.617,0,0,0,164.562,726.226Zm0,7.377h2.255a0.617,0.617,0,0,0,0-1.229h-2.255A0.617,0.617,0,0,0,164.562,733.6Zm0-3.688h7.891a0.617,0.617,0,0,0,0-1.23h-7.891A0.617,0.617,0,0,0,164.562,729.915Zm-10.92,2.671h-5.073a0.558,0.558,0,0,0-.563.615v5.532h-6.764a1.079,1.079,0,0,1-1.108-.988l-0.019-14.994a1.116,1.116,0,0,1,1.127-1.23h11.272a1.117,1.117,0,0,1,1.128,1.23l0.019,5.684,1.108-1.049v-4.635a2.37,2.37,0,0,0-2.255-2.459H141.242a2.37,2.37,0,0,0-2.255,2.459v0.323l0.023,14.671a2.34,2.34,0,0,0,2.232,2.218h7.439a2.14,2.14,0,0,0,1.579-.738l3.832-4.18a2.542,2.542,0,0,0,.677-1.722v-0.848l-1.127-1.089v1.2Zm-0.339,1.6-3.833,4.18a0.6,0.6,0,0,1-.337.247v-4.795h4.395C153.416,733.938,153.416,734.062,153.3,734.184ZM150.823,725h-7.89a0.617,0.617,0,0,0,0,1.23h7.89A0.617,0.617,0,0,0,150.823,725Zm-7.89,7.377a0.617,0.617,0,0,0,0,1.229h2.254a0.617,0.617,0,0,0,0-1.229h-2.254Zm8.454-3.074a0.558,0.558,0,0,0-.564-0.615h-7.89a0.617,0.617,0,0,0,0,1.23h7.89A0.558,0.558,0,0,0,151.387,729.3Zm5.657-3.537-4.389,4.151,4.389,4.153v-2.534h2.426V728.3h-2.426v-2.533Zm6.068,2.534h-2.893v3.236h2.893V728.3Z"/>
-                        </mw:IconButton.IconGeometry>
-                    </mw:IconButton>
-                    <mw:IconButton Grid.Row="1" Grid.Column="5"  Style="{StaticResource BottomButtonStyle}" TopLeftContent="F3" Content="移动程式" Command="{Binding MoveRecipeCmd}" IsNeedRedMark="True">
-                        <mw:IconButton.IconGeometry>
+                        </controls:IconButton.IconGeometry>
+                    </controls:IconButton>
+                    <controls:IconButton Grid.Row="1" Grid.Column="5"  Style="{StaticResource BottomButtonStyle}" TopLeftContent="F3" Content="移动程式" Command="{Binding MoveRecipeCmd}" IsNeedRedMark="True">
+                        <controls:IconButton.IconGeometry>
                             <GeometryGroup>
                                 <PathGeometry Figures="M224.7,719.958H213.073a2.423,2.423,0,0,0-2.326,2.5v0.328l0.007,4.821,1.162,0-0.006-5.147a1.141,1.141,0,0,1,1.163-1.248H224.7a1.141,1.141,0,0,1,1.163,1.248v9.981h-5.233a0.57,0.57,0,0,0-.581.624v5.614h-6.977a1.108,1.108,0,0,1-1.144-1l-0.02-5.872h-1.148l0.009,5.873a2.4,2.4,0,0,0,2.3,2.251h7.674a2.222,2.222,0,0,0,1.628-.749l3.954-4.242a2.556,2.556,0,0,0,.7-1.747V722.454A2.422,2.422,0,0,0,224.7,719.958Zm0.814,14.1-3.954,4.242a0.615,0.615,0,0,1-.348.249v-4.865h4.534C225.631,733.807,225.631,733.932,225.515,734.057Zm-10.7-8.076h8.14a0.626,0.626,0,0,0,0-1.248h-8.14A0.626,0.626,0,0,0,214.817,725.981Zm0,7.486h2.326a0.626,0.626,0,0,0,0-1.248h-2.326A0.626,0.626,0,0,0,214.817,733.467Zm0-3.743h8.14a0.626,0.626,0,0,0,0-1.248h-8.14A0.626,0.626,0,0,0,214.817,729.724Zm-15.8,0,4.528,4.214v-2.572h2.5v-3.284h-2.5V725.51Zm7.8,1.643h2.984v-3.285h-2.984v3.285Zm6.882-3.285h-2.984v3.285h2.984v-3.285ZM193.23,733.42a0.556,0.556,0,1,0,0,1.112h5.108a0.556,0.556,0,1,0,0-1.112H193.23Zm14.528,2.151a0.751,0.751,0,0,1-.753.749H191.852a0.751,0.751,0,0,1-.753-0.749V723.877a0.751,0.751,0,0,1,.753-0.749h5.293a0.759,0.759,0,0,1,.56.247l1.2,1.328a1.881,1.881,0,0,0,1.388.615h6.709a0.751,0.751,0,0,1,.753.749V727.6h1.117v-1.534a1.867,1.867,0,0,0-1.87-1.861H200.3a0.76,0.76,0,0,1-.559-0.247l-1.2-1.329a1.878,1.878,0,0,0-1.389-.613h-5.293a1.866,1.866,0,0,0-1.87,1.86v11.694a1.867,1.867,0,0,0,1.87,1.861h15.153a1.868,1.868,0,0,0,1.87-1.861v-3.753h-1.117v3.753Z"/>
                             </GeometryGroup>
-                        </mw:IconButton.IconGeometry>
-                    </mw:IconButton>
-                    <mw:IconButton Grid.Row="1" Grid.Column="7" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F4" Content="程式重命名" Command="{Binding RenameCmd}" IsNeedRedMark="True">
-                        <mw:IconButton.IconGeometry>
+                        </controls:IconButton.IconGeometry>
+                    </controls:IconButton>
+                    <controls:IconButton Grid.Row="1" Grid.Column="7" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F4" Content="程式重命名" Command="{Binding RenameCmd}" IsNeedRedMark="True">
+                        <controls:IconButton.IconGeometry>
                             <PathGeometry Figures="M254.7,727.906v-1.437a3.056,3.056,0,0,0-3.06-3.045h-8.6a3.056,3.056,0,0,0-3.06,3.045v6.743a3.056,3.056,0,0,0,3.06,3.045h8.6a3.056,3.056,0,0,0,3.06-3.045v-1.438l3.2-1.934Zm-0.975,3.39v1.916a2.082,2.082,0,0,1-2.085,2.075h-8.6a2.083,2.083,0,0,1-2.086-2.075v-6.743a2.084,2.084,0,0,1,2.086-2.076h8.6a2.083,2.083,0,0,1,2.085,2.076v1.916l2.433,1.455Zm-3.59-3.769a0.487,0.487,0,0,0-.487.485v3.655a0.487,0.487,0,0,0,.974,0v-3.655A0.486,0.486,0,0,0,250.135,727.527Zm-2.753,0a0.486,0.486,0,0,0-.487.485v3.656a0.487,0.487,0,0,0,.974,0v-3.656A0.486,0.486,0,0,0,247.382,727.527Zm-2.754,0a0.485,0.485,0,0,0-.486.485v3.655a0.487,0.487,0,0,0,.973,0v-3.655A0.486,0.486,0,0,0,244.628,727.527Zm25.62-7.767H258.507a2.445,2.445,0,0,0-2.348,2.52v0.331L256.167,728l1.174,0.718-0.008-6.442a1.151,1.151,0,0,1,1.174-1.26h11.741a1.151,1.151,0,0,1,1.174,1.26v10.08h-5.284a0.577,0.577,0,0,0-.587.631v5.67h-7.044a1.12,1.12,0,0,1-1.155-1.014l-0.009-6.773-1.17.748,0.009,6.025a2.419,2.419,0,0,0,2.325,2.274h7.749a2.245,2.245,0,0,0,1.644-.756l3.992-4.284a2.583,2.583,0,0,0,.7-1.765V722.28A2.445,2.445,0,0,0,270.248,719.76ZM271.07,734l-3.992,4.285a0.62,0.62,0,0,1-.352.252V733.62h4.579C271.187,733.747,271.187,733.872,271.07,734Zm-10.8-8.156h8.219a0.632,0.632,0,0,0,0-1.26h-8.219A0.632,0.632,0,0,0,260.268,725.842Zm0,7.561h2.348a0.632,0.632,0,0,0,0-1.26h-2.348A0.632,0.632,0,0,0,260.268,733.4Zm0-3.78h8.219a0.632,0.632,0,0,0,0-1.26h-8.219A0.632,0.632,0,0,0,260.268,729.623Z"/>
-                        </mw:IconButton.IconGeometry>
-                    </mw:IconButton>
-                    <mw:IconButton Grid.Row="1" Grid.Column="9" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F5" Content="删除程式" Command="{Binding DeleteRecipeCmd}" IsNeedRedMark="True">
-                        <mw:IconButton.IconGeometry>
+                        </controls:IconButton.IconGeometry>
+                    </controls:IconButton>
+                    <controls:IconButton Grid.Row="1" Grid.Column="9" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F5" Content="删除程式" Command="{Binding DeleteRecipeCmd}" IsNeedRedMark="True">
+                        <controls:IconButton.IconGeometry>
                             <PathGeometry Figures="M306.707,719.973H295.266a2.407,2.407,0,0,0-2.289,2.5V722.8l0,1.292,1.146,1.1,0-2.725a1.132,1.132,0,0,1,1.144-1.248h11.441a1.133,1.133,0,0,1,1.144,1.248v9.994H302.7a0.567,0.567,0,0,0-.572.624v5.621h-6.864a1.1,1.1,0,0,1-1.125-1l0-1.556H293l0,1.556a2.377,2.377,0,0,0,2.266,2.253h7.551a2.173,2.173,0,0,0,1.6-.749l3.89-4.247a2.585,2.585,0,0,0,.686-1.749V722.47A2.407,2.407,0,0,0,306.707,719.973Zm0.8,14.115-3.89,4.247a0.609,0.609,0,0,1-.343.249v-4.871h4.462C307.622,733.838,307.622,733.963,307.508,734.088Zm-2.517-9.335h-8.009a0.627,0.627,0,0,0,0,1.249h8.009A0.627,0.627,0,0,0,304.991,724.753Zm0,3.748h-5.665a0.627,0.627,0,0,0,0,1.249h5.665A0.627,0.627,0,0,0,304.991,728.5Zm-10.172,6.837,2.852-2.889a1.44,1.44,0,0,0,0-2.016l-0.894-.9a1.433,1.433,0,0,0-.364-1.355l-5.2-5.261a1.4,1.4,0,0,0-1.991,0l-3.827,3.875a1.437,1.437,0,0,0,0,2.016l5.2,5.261a1.4,1.4,0,0,0,1,.416,1.37,1.37,0,0,0,.342-0.048l0.895,0.906A1.4,1.4,0,0,0,294.819,735.338Zm-3.6-1.9-5.2-5.261a0.541,0.541,0,0,1,0-.756l3.827-3.875a0.525,0.525,0,0,1,.747,0l5.2,5.261a0.538,0.538,0,0,1,0,.756l-3.827,3.875A0.525,0.525,0,0,1,291.216,733.434Zm2.233,1.274-0.749-.759,3.6-3.645,0.75,0.76a0.54,0.54,0,0,1,0,.756l-2.853,2.888A0.525,0.525,0,0,1,293.449,734.708Z"/>
-                        </mw:IconButton.IconGeometry>
-                    </mw:IconButton>
+                        </controls:IconButton.IconGeometry>
+                    </controls:IconButton>
 
-                    <mw:IconButton Grid.Row="1" Grid.Column="11" Style="{StaticResource BottomButtonStyle}"/>
-                    <mw:IconButton Grid.Row="3" Grid.Column="1" Style="{StaticResource BottomButtonStyle}"/>
-                    <mw:IconButton Grid.Row="3" Grid.Column="3" Style="{StaticResource BottomButtonStyle}"/>
-                    <mw:IconButton Grid.Row="3" Grid.Column="5" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F9" Content="创建文件夹" Command="{Binding NewGroupCmd}" IsNeedRedMark="True">
-                        <mw:IconButton.IconGeometry>
+                    <controls:IconButton Grid.Row="1" Grid.Column="11" Style="{StaticResource BottomButtonStyle}"/>
+                    <controls:IconButton Grid.Row="3" Grid.Column="1" Style="{StaticResource BottomButtonStyle}"/>
+                    <controls:IconButton Grid.Row="3" Grid.Column="3" Style="{StaticResource BottomButtonStyle}"/>
+                    <controls:IconButton Grid.Row="3" Grid.Column="5" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F9" Content="创建文件夹" Command="{Binding NewGroupCmd}" IsNeedRedMark="True">
+                        <controls:IconButton.IconGeometry>
                             <GeometryGroup>
                                 <PathGeometry Figures="M333.354,734.875h-6.348a0.7,0.7,0,0,0,0,1.409h6.348A0.7,0.7,0,0,0,333.354,734.875ZM344.122,723.2h-8.335a0.934,0.934,0,0,1-.695-0.315l-1.5-1.682a2.314,2.314,0,0,0-1.725-.778H325.3a2.342,2.342,0,0,0-2.323,2.358V737.6a2.342,2.342,0,0,0,2.323,2.357h18.827a2.343,2.343,0,0,0,2.324-2.357V725.556A2.343,2.343,0,0,0,344.122,723.2Zm0.936,14.4a0.944,0.944,0,0,1-.936.949H325.3a0.943,0.943,0,0,1-.935-0.949v-14.82a0.942,0.942,0,0,1,.935-0.949h6.577a0.925,0.925,0,0,1,.694.313l1.5,1.683a2.317,2.317,0,0,0,1.725.778h8.335a0.944,0.944,0,0,1,.936.95V737.6Z"/>
                             </GeometryGroup>
-                        </mw:IconButton.IconGeometry>
-                    </mw:IconButton>
-                    <mw:IconButton Grid.Row="3" Grid.Column="7" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F10" Content="删除文件夹" Command="{Binding DeleteGroupCmd}" IsNeedRedMark="True">
-                        <mw:IconButton.IconGeometry>
+                        </controls:IconButton.IconGeometry>
+                    </controls:IconButton>
+                    <controls:IconButton Grid.Row="3" Grid.Column="7" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F10" Content="删除文件夹" Command="{Binding DeleteGroupCmd}" IsNeedRedMark="True">
+                        <controls:IconButton.IconGeometry>
                             <PathGeometry Figures="M391.527,722.994h-8.68a0.984,0.984,0,0,1-.724-0.32l-1.558-1.706a2.435,2.435,0,0,0-1.8-.79h-6.851a2.409,2.409,0,0,0-2.419,2.393l1.446,1.3v-1.3a0.97,0.97,0,0,1,.973-0.964h6.851a0.977,0.977,0,0,1,.723.319l1.558,1.707a2.442,2.442,0,0,0,1.8.79h8.68a0.97,0.97,0,0,1,.975.963v12.222a0.969,0.969,0,0,1-.975.963H371.918a0.969,0.969,0,0,1-.973-0.963v-0.176l-1.446-.047v0.223A2.409,2.409,0,0,0,371.918,740h19.609a2.409,2.409,0,0,0,2.42-2.393V725.386A2.408,2.408,0,0,0,391.527,722.994Zm-2.093,13.278a0.715,0.715,0,1,0,0-1.429h-6.611a0.715,0.715,0,1,0,0,1.429h6.611Zm-17.484.465,3.766-3.725a1.826,1.826,0,0,0,0-2.6l-1.181-1.167a1.82,1.82,0,0,0-.481-1.748l-6.86-6.783a1.877,1.877,0,0,0-2.629,0l-5.053,5a1.825,1.825,0,0,0,0,2.6l6.86,6.783a1.83,1.83,0,0,0,1.768.475l1.18,1.168A1.881,1.881,0,0,0,371.95,736.737Zm-4.756-2.455-6.86-6.784a0.683,0.683,0,0,1,0-.974l5.052-5a0.705,0.705,0,0,1,.986,0l6.86,6.783a0.682,0.682,0,0,1,0,.975l-5.052,5A0.707,0.707,0,0,1,367.194,734.282Zm2.948,1.642-0.99-.979,4.752-4.7,0.989,0.98a0.684,0.684,0,0,1,0,.975l-3.766,3.723A0.7,0.7,0,0,1,370.142,735.924Z"/>
-                        </mw:IconButton.IconGeometry>
-                    </mw:IconButton>
-                    <mw:IconButton Grid.Row="3" Grid.Column="9" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F11" Content="调用" Command="{Binding ApplyRecipeCmd}">
-                        <mw:IconButton.IconGeometry>
+                        </controls:IconButton.IconGeometry>
+                    </controls:IconButton>
+                    <controls:IconButton Grid.Row="3" Grid.Column="9" Style="{StaticResource BottomButtonStyle}" TopLeftContent="F11" Content="调用" Command="{Binding ApplyRecipeCmd}">
+                        <controls:IconButton.IconGeometry>
                             <PathGeometry Figures="M418.134,719.138a10.887,10.887,0,1,0,10.888,10.887A10.9,10.9,0,0,0,418.134,719.138Zm0,20.484a9.6,9.6,0,1,1,9.6-9.6A9.607,9.607,0,0,1,418.134,739.622Zm-1.007-13.115a2.386,2.386,0,0,0-1.008-.89,3.519,3.519,0,0,0-1.509-.292,3.567,3.567,0,0,0-1.511.292,2.374,2.374,0,0,0-1.017.89,3.114,3.114,0,0,0-.388,1.176,24.418,24.418,0,0,0,0,4.775,3.115,3.115,0,0,0,.388,1.175,2.419,2.419,0,0,0,1.017.889,4.037,4.037,0,0,0,3.02,0,2.39,2.39,0,0,0,1.008-.889,2.984,2.984,0,0,0,.4-1.184,24.061,24.061,0,0,0,0-4.76A2.979,2.979,0,0,0,417.127,726.507Zm-1.646,4.381a5.282,5.282,0,0,1-.189,1.852,0.822,0.822,0,0,1-1.37-.008,5.367,5.367,0,0,1-.187-1.844v-1.635a5.352,5.352,0,0,1,.187-1.852,0.7,0.7,0,0,1,.677-0.365,0.712,0.712,0,0,1,.69.357,5.19,5.19,0,0,1,.192,1.86v1.635Zm8.717-5.345h-2.164l-1.581,3.757v-3.757h-2.117V734.6h2.117v-2.41l0.458-.865,1.112,3.275h2.222l-2.011-5.092Z"/>
-                        </mw:IconButton.IconGeometry>
-                    </mw:IconButton>
-                    <mw:IconButton Grid.Row="3" Grid.Column="11" Style="{StaticResource BottomButtonStyle}"/>
+                        </controls:IconButton.IconGeometry>
+                    </controls:IconButton>
+                    <controls:IconButton Grid.Row="3" Grid.Column="11" Style="{StaticResource BottomButtonStyle}"/>
 
                 </Grid>
             </Border>

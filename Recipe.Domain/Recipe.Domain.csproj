@@ -7,20 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Page Include="RecipeUI\RecipeHomeView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EFCore.Infrastructure\EFCore.Infrastructure.csproj" />
     <ProjectReference Include="..\EFCore.Repository\EFCore.IRepository.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="RecipeUI\RecipeHomeView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
 
 </Project>

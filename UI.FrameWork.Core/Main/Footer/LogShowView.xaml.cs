@@ -153,21 +153,21 @@ public partial class LogShowView : UserControl
             // 1. 初始化 Serilog（自定义浅色背景 + 黑色文字主题）
 
 
-    Serilog.Log.Logger = new LoggerConfiguration()
-                 //.Enrich.WithMachineName()             // 添加 MachineName
-                 .Enrich.WithThreadId()                // 添加 ThreadId
-                 .Enrich.WithEnvironmentUserName()     // 添加当前用户名
-                .MinimumLevel.Debug()
-                .WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug, tableName: "SerilogHistory")  // 指定数据库文件路径
-                .WriteTo.File(
-                    "logs/log-.txt",
-                    rollingInterval: RollingInterval.Day,   // 按天分文件
-                    retainedFileCountLimit: 10,            // 保留10天
-                    outputTemplate:
-                    "{Timestamp:HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-                )
-                .WriteTo.RichTextBox(this.LogRichTextBox, theme: ColoredCustom)
-                .CreateLogger();
+            Serilog.Log.Logger = new LoggerConfiguration()
+                        // //.Enrich.WithMachineName()             // 添加 MachineName
+                        // .Enrich.WithThreadId()                // 添加 ThreadId
+                        // .Enrich.WithEnvironmentUserName()     // 添加当前用户名
+                        //.MinimumLevel.Debug()
+                        //.WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug, tableName: "SerilogHistory")  // 指定数据库文件路径
+                        //.WriteTo.File(
+                        //    "logs/log-.txt",
+                        //    rollingInterval: RollingInterval.Day,   // 按天分文件
+                        //    retainedFileCountLimit: 10,            // 保留10天
+                        //    outputTemplate:
+                        //    "{Timestamp:HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+                        //)
+                        .WriteTo.RichTextBox(this.LogRichTextBox, theme: ColoredCustom)
+                        .CreateLogger();
         }
 
         private void OnScrollChanged(object sender, ScrollChangedEventArgs e)

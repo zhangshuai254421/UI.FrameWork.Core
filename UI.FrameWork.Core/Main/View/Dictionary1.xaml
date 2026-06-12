@@ -1,17 +1,17 @@
 ﻿<!-- Themes/Generic.xaml -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:UI.FrameWork.Core.Main.View"
-                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                  
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime" xmlns:control="https://github.io/semicontrol">
 
     <!-- 底部区域高度资源（保持与原代码一致） -->
     <system:Double x:Key="Framework_BottomHeight">180</system:Double>
 
-    <Style TargetType="{x:Type local:LayoutPageControl}">
+    <Style TargetType="{x:Type control:LayoutPageControl}">
         <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:LayoutPageControl}">
+                <ControlTemplate TargetType="{x:Type control:LayoutPageControl}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>

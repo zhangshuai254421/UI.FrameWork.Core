@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UI.FrameWork.Core.Main.RecipeUI
+namespace UI.FrameWork.Core.Main.View
 {
     /// <summary>
     /// EmptyView.xaml 的交互逻辑

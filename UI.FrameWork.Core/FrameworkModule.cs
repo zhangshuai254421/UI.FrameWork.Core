@@ -1,9 +1,7 @@
 ﻿using Framework.Core.Common;
+using Recipe.UI.RecipeUI;
 using UI.FrameWork.Core.Main;
 using UI.FrameWork.Core.Main.Footer;
-using UI.FrameWork.Core.Main.RecipeUI;
-using UI.FrameWork.Core.Main.View;
-
 namespace UI.FrameWork.Core;
 
 public class FrameworkModule(IRegionManager regionManager  )  : IModule
@@ -29,11 +27,8 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
 
 
         // 注册导航
-        containerRegistry.RegisterForNavigation<HeaderView>();
-        containerRegistry.RegisterForNavigation<NumberKeyPadView>();
-        containerRegistry.RegisterForNavigation<DirectView>();
-        containerRegistry.RegisterForNavigation<LogViewerView>();
-        containerRegistry.RegisterForNavigation<LogShowView>(); 
-        containerRegistry.RegisterForNavigation<RecipeHomeView>();
+       containerRegistry.RegisterViewsFromAssembly(GetType().Assembly);
+
+       
     }
 }

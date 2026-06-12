@@ -1,9 +1,9 @@
 using EFCore.Repository;
+using Framework.Core.Common;
 using Log.Domain;
 using Prism.Commands;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using UI.FrameWork.Core.Main.View;
 
 namespace UI.FrameWork.Core.Main
 {

@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Recipe.UI\Recipe.UI.csproj" />
     <ProjectReference Include="..\UI.FrameWork.Core\UI.FrameWork.Core.csproj" />
   </ItemGroup>
 
