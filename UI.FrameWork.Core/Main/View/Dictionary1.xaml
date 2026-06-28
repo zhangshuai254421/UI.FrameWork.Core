@@ -15,7 +15,7 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="165"/>
+                            <ColumnDefinition x:Name="PART_RightColumn" Width="165"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -70,16 +70,7 @@
                         </Border>
                     </Grid>
 
-                    <ControlTemplate.Triggers>
-                        <!-- 右侧面板隐藏时：主区域跨 2 列 -->
-                        <DataTrigger Binding="{Binding IsRightPanelVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                     Value="False">
-                            <Setter TargetName="PART_MainBorder"
-                                    Property="Grid.ColumnSpan" Value="2"/>
-                            <Setter TargetName="PART_RightBorder"
-                                    Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
-                    </ControlTemplate.Triggers>
+                    <!-- 右侧面板显隐逻辑已移至 LayoutPageControl.cs 的 ApplyRightPanelVisibility() -->
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

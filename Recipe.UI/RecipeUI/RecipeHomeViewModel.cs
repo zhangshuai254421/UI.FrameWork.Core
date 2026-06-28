@@ -14,11 +14,32 @@ namespace Recipe.UI.RecipeUI
 {
     public class RecipeHomeViewModel : BaseViewModel, INavigationAware
     {
-        private readonly IRecipeService _recipeService;   
+        private readonly IRecipeService _recipeService;
+        private readonly IDialogService _dialogService;
 
-        public RecipeHomeViewModel(IEventAggregator eventAggregator, IRecipeService recipeService) : base(eventAggregator)
+        private DelegateCommand _renameCmd = null!;
+        public DelegateCommand RenameCmd => _renameCmd ?? new DelegateCommand(() =>
+        {
+            var result= _dialogService.ShowDialogAsync(nameof(RenameRecipeDialogView));
+
+            if (result.Result.Result == ButtonResult.OK)
+            {
+                // 用户点了确认
+                //var name = result.Parameters.GetValue<string>("UserName");
+                // 使用返回的数据...
+            }
+            else if (result.Result.Result == ButtonResult.Cancel)
+            {
+                // 用户点了取消
+            }
+        
+        });
+
+
+        public RecipeHomeViewModel(IEventAggregator eventAggregator, IRecipeService recipeService, IDialogService dialogService) : base(eventAggregator)
         {
             _recipeService = recipeService;
+            _dialogService = dialogService;
         }
 
         private ObservableCollection<Recipe.Domain.Recipe> recipes;

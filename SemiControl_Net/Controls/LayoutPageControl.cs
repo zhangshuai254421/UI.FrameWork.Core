@@ -1,21 +1,20 @@
-﻿// Controls/LayoutPageControl.cs
+// Controls/LayoutPageControl.cs
 using System.Windows;
 using System.Windows.Controls;
 
 namespace SemiControl.Controls
-{ 
+{
 [TemplatePart(Name = "PART_MainArea", Type = typeof(ContentPresenter))]
 [TemplatePart(Name = "PART_RightArea", Type = typeof(ContentPresenter))]
 [TemplatePart(Name = "PART_ToolBoxArea", Type = typeof(ContentPresenter))]
 [TemplatePart(Name = "PART_FooterArea", Type = typeof(ContentPresenter))]
+[TemplatePart(Name = "PART_RightBorder", Type = typeof(Border))]
+[TemplatePart(Name = "PART_RightColumn", Type = typeof(ColumnDefinition))]
 public class LayoutPageControl : Control
 {
-    static LayoutPageControl()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(
-            typeof(LayoutPageControl),
-            new FrameworkPropertyMetadata(typeof(LayoutPageControl)));
-    }
+    // 模板部件引用
+    private Border? _rightBorder;
+    private ColumnDefinition? _rightColumn;
 
     // ============ 主区域内容 ============
     public static readonly DependencyProperty MainContentProperty =
@@ -50,14 +49,12 @@ public class LayoutPageControl : Control
         set => SetValue(ToolBoxContentProperty, value);
     }
 
-
-
     // ============ 右侧面板可见性 ============
     // true  → 显示右侧面板，主区域占 1 列
     // false → 隐藏右侧面板，主区域跨 2 列
     public static readonly DependencyProperty IsRightPanelVisibleProperty =
         DependencyProperty.Register("IsRightPanelVisible", typeof(bool), typeof(LayoutPageControl),
-            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsMeasure));
+            new FrameworkPropertyMetadata(true, IsRightPanelVisibleChanged));
 
     public bool IsRightPanelVisible
     {
@@ -75,8 +72,42 @@ public class LayoutPageControl : Control
     public override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
-        // 预留：可在此获取 PART_ 命名元素做进一步操作
+
+        // 获取模板中的命名部件
+        _rightBorder = GetTemplateChild("PART_RightBorder") as Border;
+        _rightColumn = GetTemplateChild("PART_RightColumn") as ColumnDefinition;
+
+        // 模板加载后立即应用当前状态
+        ApplyRightPanelVisibility();
+    }
+
+    private static void IsRightPanelVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is LayoutPageControl control)
+        {
+            control.ApplyRightPanelVisibility();
+        }
+    }
+
+    private void ApplyRightPanelVisibility()
+    {
+        bool visible = IsRightPanelVisible;
+
+        if (_rightBorder != null)
+        {
+            _rightBorder.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        if (_rightColumn != null)
+        {
+            _rightColumn.Width = visible ? new GridLength(165) : new GridLength(0);
+        }
+
+        // 主区域跨列：找 PART_MainBorder 设置 ColumnSpan
+        if (GetTemplateChild("PART_MainBorder") is Border mainBorder)
+        {
+            Grid.SetColumnSpan(mainBorder, visible ? 1 : 2);
+        }
     }
 }
-
 }

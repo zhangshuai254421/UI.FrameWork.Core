@@ -60,7 +60,7 @@
     </UserControl.Resources>
     <!-- 原来写几十行 Grid 的页面，现在只需填充内容 -->
 
-    <controls:LayoutPageControl IsRightPanelVisible="True">
+    <controls:LayoutPageControl IsRightPanelVisible="False">
 
         <!-- ═══ 主区域 ═══ -->
         <controls:LayoutPageControl.MainContent>

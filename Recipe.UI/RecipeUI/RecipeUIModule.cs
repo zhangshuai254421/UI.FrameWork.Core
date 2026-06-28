@@ -17,6 +17,9 @@ namespace Recipe.UI.RecipeUI
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<RecipeHomeView>();
+
+            // 注册弹框：View 类型 → ViewModel 类型 或 自动匹配
+            containerRegistry.RegisterDialog<RenameRecipeDialogView, RenameRecipeDialogViewModel>();
         }
     }
 }
