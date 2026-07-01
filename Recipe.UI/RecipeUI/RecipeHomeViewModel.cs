@@ -1,13 +1,16 @@
 ﻿
 using Framework.Core.Common;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Recipe.Domain;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Xml.Linq;
 
 namespace Recipe.UI.RecipeUI
@@ -20,19 +23,35 @@ namespace Recipe.UI.RecipeUI
         private DelegateCommand _renameCmd = null!;
         public DelegateCommand RenameCmd => _renameCmd ?? new DelegateCommand(() =>
         {
-            var result= _dialogService.ShowDialogAsync(nameof(RenameRecipeDialogView));
+            if (string.IsNullOrWhiteSpace(SelectRecipeName))
+            {
+                return; // 没有选中配方，不弹框
+            }
 
-            if (result.Result.Result == ButtonResult.OK)
+            // 将当前选中的配方名传入弹框
+            var parameters = new DialogParameters
             {
-                // 用户点了确认
-                //var name = result.Parameters.GetValue<string>("UserName");
-                // 使用返回的数据...
-            }
-            else if (result.Result.Result == ButtonResult.Cancel)
+                { "RecipeName", SelectRecipeName }
+            };
+
+            var task = _dialogService.ShowDialogAsync(nameof(RenameRecipeDialogView), parameters);
+            var dialogResult = task.Result; // 同步等待弹框关闭
+
+            if (dialogResult.Result == ButtonResult.OK)
             {
-                // 用户点了取消
+                // 用户点了确认 — 获取新配方名并执行重命名
+                var newRecipeName = dialogResult.Parameters.GetValue<string>("NewRecipeName");
+                if (!string.IsNullOrWhiteSpace(newRecipeName) && newRecipeName != SelectRecipeName)
+                {
+                    // TODO: 调用 _recipeService 执行重命名逻辑
+     
+
+                    _recipeService.UpdateRangeAsync(p => p.GroupName == SelectGroupName && p.RecipeName == SelectRecipeName, recipe => recipe.RecipeName = newRecipeName);
+                    // _recipeService.RenameAsync(SelectGroupName, SelectRecipeName, newRecipeName);
+                    RefreshSelectGroupName(); // 刷新列表
+                }
             }
-        
+            // Cancel 则什么都不做
         });
 
 
@@ -40,30 +59,35 @@ namespace Recipe.UI.RecipeUI
         {
             _recipeService = recipeService;
             _dialogService = dialogService;
+           
         }
 
-        private ObservableCollection<Recipe.Domain.Recipe> recipes;
+        private ObservableCollection<Recipe.Domain.Recipe> recipes = new ObservableCollection<Recipe.Domain.Recipe>();
 
+        /// <summary>
+        /// 配方数据源   
+        /// </summary>
         public ObservableCollection<Recipe.Domain.Recipe> Recipes
         {
             get =>recipes;
             set => SetProperty(ref recipes, value);
         }
-
-        private ObservableCollection<string> _groupNames;
-
-
-        public ObservableCollection<string> GroupNames
+        private ObservableCollection<string> _recipeWithGroupName = new ObservableCollection<string>();
+        public ObservableCollection<string> RecipeWithGroupName 
         {
-            get => _groupNames;
-            set => SetProperty(ref _groupNames, value);
+            get => _recipeWithGroupName;
+            set => SetProperty(ref _recipeWithGroupName, value);
         }
 
-        public ObservableCollection<string> RecipeNames
+        private ObservableCollection<string> _recipeWithRecipeName =new ObservableCollection<string>();
+        public ObservableCollection<string> RecipeWithRecipeName
         {
-            get => _recipeNames;
-            set => SetProperty(ref _recipeNames, value);
+            get => _recipeWithRecipeName;
+            set => SetProperty(ref _recipeWithRecipeName, value);
         }
+
+
+
 
         public Dictionary<string, string> RecipeSelectCache = new Dictionary<string, string>();
 
@@ -84,10 +108,6 @@ namespace Recipe.UI.RecipeUI
                 _selectGroupName = value;
 
 
-                RecipeNames = new ObservableCollection<string>(_recipeService.GetListAsync(p => p.GroupName == value && p.MachineName == AppGlobals.MachineName && p.RecipeName != string.Empty).Result.Select(p => p.RecipeName));
-
-                RecipeShowCount = RecipeNames.Count;
-
                 if (!RecipeSelectCache.ContainsKey(value))
                 {
                     RecipeSelectCache.Add(value, string.Empty);
@@ -96,8 +116,9 @@ namespace Recipe.UI.RecipeUI
                 SelectRecipeName = RecipeSelectCache[SelectGroupName];
                 if (SelectRecipeName == string.Empty)
                 {
-                    SelectRecipeName = RecipeNames.FirstOrDefault();
+                    SelectRecipeName = RecipeWithRecipeName.FirstOrDefault();
                 }
+                RefreshSelectGroupName();
                 RaisePropertyChanged(nameof(SelectGroupName));
             }
         }
@@ -118,6 +139,8 @@ namespace Recipe.UI.RecipeUI
                     RecipeSelectCache[SelectGroupName] = value;
                 }
                 RaisePropertyChanged(nameof(SelectRecipeName));
+
+
             }
         }
 
@@ -127,7 +150,12 @@ namespace Recipe.UI.RecipeUI
             set => SetProperty(ref _recipeShowCount, value);
         }
 
-        public int RecipeCount { get; set; }
+        private int _recipeCount;
+        public int RecipeCount 
+        {
+            get {  return _recipeCount; }
+            set {  SetProperty(ref _recipeCount, value);}
+        }
 
 
 
@@ -137,24 +165,27 @@ namespace Recipe.UI.RecipeUI
         /// </summary>
         public void RefreshSelectGroupName()
         {
-            GroupNames = new ObservableCollection<string>(_recipeService.GetListAsync(p => p.MachineName == AppGlobals.MachineName).Result.Select(p => p.GroupName).Distinct());
-            RecipeNames = new ObservableCollection<string> (_recipeService.GetListAsync(p => p.MachineName == AppGlobals.MachineName && p.RecipeName != string.Empty).Result.Select(p => p.RecipeName));
-            RecipeShowCount = RecipeNames.Count;
-
+            Recipes = new ObservableCollection<Recipe.Domain.Recipe>(_recipeService.GetListAsync(p => p.MachineName == AppGlobals.MachineName).Result);
+            RecipeWithGroupName = new ObservableCollection<string>(Recipes.Select(p => p.GroupName).Distinct().ToList());
+            RecipeCount = Recipes.Count;
             if (SelectGroupName == null)
             {
-                SelectGroupName = GroupNames.FirstOrDefault();
+                SelectGroupName = RecipeWithGroupName.FirstOrDefault();
             }
             if (SelectGroupName != null && !RecipeSelectCache.ContainsKey(SelectGroupName))
             {
                 RecipeSelectCache.Add(SelectGroupName, string.Empty);
             }
-
             if (SelectGroupName != null) SelectRecipeName = RecipeSelectCache[SelectGroupName];
+
+
+            RecipeWithRecipeName = new ObservableCollection<string>(Recipes.Where(P => P.GroupName == SelectGroupName).Select(p => p.RecipeName));
+            RecipeShowCount = RecipeWithRecipeName.Count;
             if (SelectRecipeName == string.Empty)
             {
-                SelectRecipeName = RecipeNames.FirstOrDefault();
+                SelectRecipeName = RecipeWithRecipeName.FirstOrDefault();
             }
+
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)

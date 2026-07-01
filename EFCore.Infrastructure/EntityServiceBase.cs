@@ -83,6 +83,15 @@ namespace EFCore.Infrastructure
             return affected > 0;
         }
 
+        public virtual async Task<bool> UpdateRangeAsync(Expression<Func<TEntity, bool>> predicate, Action<TEntity> updateAction, CancellationToken cancellationToken = default)
+        {
+            _repository.UpdateRange(predicate, updateAction);
+
+            var affected = await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+            return affected > 0;
+        }
+
         public virtual Task<TEntity?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             if (key is object[] keys)

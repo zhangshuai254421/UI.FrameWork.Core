@@ -8,7 +8,13 @@
              d:DesignHeight="830" d:DesignWidth="1200">
 
     <!-- 原来写几十行 Grid 的页面，现在只需填充内容 -->
-
+    <!--<UserControl.Resources>
+        <CollectionViewSource  x:Key="RecipesGroupNameCollectionViewSource" Source="{Binding  Recipes}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="@GroupName" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>-->
     <controls:LayoutPageControl IsRightPanelVisible="True">
 
         <!-- ═══ 主区域 ═══ -->
@@ -58,7 +64,7 @@
 
                 <!--文件夹-->
                 <Border Grid.Row="3" Grid.Column="1" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1">
-                    <ListBox ItemsSource="{Binding GroupNames}" SelectedItem="{Binding SelectGroupName}"   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox  x:Name="RecipesGroupNameListBox" ItemsSource="{Binding RecipeWithGroupName}"  SelectedItem="{Binding SelectGroupName}"   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Height="45" MinWidth="250" >
@@ -72,12 +78,13 @@
 
                 <!--配方-->
                 <Border Grid.Row="3" Grid.Column="3" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1">
-                    <ListBox ItemsSource="{Binding RecipeNames}" SelectedItem="{Binding SelectRecipeName}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox ItemsSource="{Binding RecipeWithRecipeName}"  SelectedItem="{Binding SelectRecipeName}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Height="45" MinWidth="250" >
                                     <Image VerticalAlignment="Center" Source="/Recipe.UI;component/RecipeUI/excel-5.png" Width="16" Height="16" Margin="0,0,2,2"></Image>
                                     <TextBlock VerticalAlignment="Center" Text="{Binding }"/>
+                             
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

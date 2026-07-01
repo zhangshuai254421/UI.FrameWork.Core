@@ -21,6 +21,10 @@ namespace EFCore.IRepository
 
         Task<bool> UpdateRangeAsync(
             IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
+        Task<bool> UpdateRangeAsync
+    (Expression<Func<TEntity, bool>> predicate, Action<TEntity> updateAction, CancellationToken cancellationToken = default);
+
+
 
         Task<TEntity?> GetAsync(TKey key, CancellationToken cancellationToken = default);
 
