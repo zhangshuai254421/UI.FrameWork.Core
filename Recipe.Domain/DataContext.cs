@@ -13,10 +13,10 @@ namespace Recipe.Domain
 {
     public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
     {
+        #region IDesignTimeDbContextFactory
+
         public DataContext CreateDbContext(string[] args)
         {
-
-
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
             var connectionString = AppGlobals.RecipeDbFliePath;
 
@@ -25,12 +25,21 @@ namespace Recipe.Domain
 
             return new DataContext(optionsBuilder.Options);
         }
+
+        #endregion
     }
+
     public partial class DataContext : DbContext
     {
+        #region 构造函数
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
+
+        #endregion
+
+        #region 方法
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,13 +57,16 @@ namespace Recipe.Domain
         {
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
 
-
             modelBuilder.Entity<Recipe>().HasData(
-    new Recipe(-1, "default", "-Default-" ,"ZS1A")
-    );
-
+                new Recipe(-1, "default", "-Default-", "ZS1A")
+            );
+            modelBuilder.Entity<RecipeManager>().HasData(
+                new RecipeManager(1, -1)  // 指向默认配方
+            );
 
             base.OnModelCreating(modelBuilder);
         }
+
+        #endregion
     }
 }

@@ -10,4 +10,11 @@ namespace Recipe.Infrastructure
         {
         }
     }
+
+    public class RecipeManagerService : EntityServiceBase<Recipe.Domain.RecipeManager, Guid>, IRecipeManagerService
+    {
+        public RecipeManagerService(IUnitOfWork unitofWork) : base(unitofWork)
+        {
+        }
+    }
 }

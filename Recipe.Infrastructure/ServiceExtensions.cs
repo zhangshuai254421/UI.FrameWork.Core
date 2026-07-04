@@ -11,6 +11,7 @@ namespace Recipe.Infrastructure
             services.AddScoped<IRecipeService, RecipeService>();
             services.AddScoped<IRecipeParameterService, RecipeParameterService>();
             services.AddScoped<ICameraConfigurationService, CameraConfigurationService>();
+            services.AddScoped<IRecipeManagerService, RecipeManagerService>();
             return services;
         }
     }

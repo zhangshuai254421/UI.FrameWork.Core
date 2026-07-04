@@ -6,4 +6,9 @@ namespace Recipe.Domain
     {
 
     }
+
+    public interface IRecipeManagerService : IEntityServiceBase<RecipeManager, Guid>
+    {
+
+    }
 }

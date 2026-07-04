@@ -251,7 +251,7 @@
                         <TextBlock Text="配方名称:" Foreground="{StaticResource PrimaryTextBrush}" FontSize="{StaticResource SubHeaderFontSize}" VerticalAlignment="Center"></TextBlock>
                     </Border>
                     <Border  Grid.Row="0" Grid.Column="1">
-                        <TextBlock Text="{Binding Infos.PPID}" VerticalAlignment="Center"></TextBlock>
+                        <TextBlock Text="{Binding Title}" VerticalAlignment="Center"></TextBlock>
                     </Border>
                     <Border  Grid.Row="1" Grid.Column="0">
                         <TextBlock Text="ID:" VerticalAlignment="Center"></TextBlock>

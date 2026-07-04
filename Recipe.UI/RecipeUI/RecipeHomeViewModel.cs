@@ -22,10 +22,12 @@ namespace Recipe.UI.RecipeUI
 
         private readonly IRecipeService _recipeService;
         private readonly IDialogService _dialogService;
+        private readonly IEventAggregator _eventAggregator;
 
         private DelegateCommand _renameCmd = null!;
         private DelegateCommand _copyRecipeCmd = null!;
         private DelegateCommand _deleteRecipeCmd = null!;
+        private DelegateCommand _applyRecipeCmd = null!;
         private ObservableCollection<Recipe.Domain.Recipe> recipes = new ObservableCollection<Recipe.Domain.Recipe>();
         private ObservableCollection<string> _recipeWithGroupName = new ObservableCollection<string>();
         private ObservableCollection<string> _recipeWithRecipeName = new ObservableCollection<string>();
@@ -46,6 +48,7 @@ namespace Recipe.UI.RecipeUI
         {
             _recipeService = recipeService;
             _dialogService = dialogService;
+            _eventAggregator = eventAggregator;
         }
 
         #endregion
@@ -226,6 +229,37 @@ namespace Recipe.UI.RecipeUI
 
         });
 
+        public DelegateCommand ApplyRecipeCmd => _applyRecipeCmd?? new DelegateCommand(() =>
+        {
+            // 这里可以放置你想要执行的逻辑
+            // 例如，打开一个新的窗口，或者执行某个操作
+            if (string.IsNullOrWhiteSpace(SelectRecipeName))
+            {
+                return; // 没有选中配方，不弹框
+            }
+
+            var result = _dialogService.ShowDialogAsync(
+            "ConfirmationDialog",
+            new DialogParameters
+            {
+                { "Title", "切换配方确认" },
+                { "Message", "确定要切换到选中的配方吗？此操作不可撤销。" }
+            });
+
+            if (result.Result.Result == ButtonResult.Yes)
+            {
+                // 执行切换配方逻辑
+            
+                    var selectedRecipe = _recipeService.GetListAsync(p => p.GroupName == SelectGroupName && p.RecipeName == SelectRecipeName).Result.FirstOrDefault();
+                    if (selectedRecipe != null)
+                    {
+                        IoC.Get<IRecipeManagerService>().UpdateRangeAsync( recipe =>true,o=>o.CurrentRecipeId=selectedRecipe.Id);
+                        _eventAggregator.GetEvent<ChangeRecipeEvent>().Publish(SelectRecipeName);
+                    }
+                
+            }   
+        });
+
         #endregion
 
         #region 方法
@@ -235,6 +269,9 @@ namespace Recipe.UI.RecipeUI
         /// </summary>
         public void RefreshSelectGroupName()
         {
+
+            var s = IoC.Get<IRecipeManagerService>().GetListAsync().Result;
+
             Recipes = new ObservableCollection<Recipe.Domain.Recipe>(_recipeService.GetListAsync(p => p.MachineName == AppGlobals.MachineName).Result);
             RecipeWithGroupName = new ObservableCollection<string>(Recipes.Select(p => p.GroupName).Distinct().ToList());
             RecipeCount = Recipes.Count;
@@ -252,7 +289,7 @@ namespace Recipe.UI.RecipeUI
             RecipeShowCount = RecipeWithRecipeName.Count;
             if (SelectRecipeName == string.Empty)
             {
-                SelectRecipeName = RecipeWithRecipeName.FirstOrDefault();
+                SelectRecipeName = RecipeWithRecipeName.FirstOrDefault();            
             }
         }
 

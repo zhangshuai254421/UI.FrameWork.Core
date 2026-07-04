@@ -10,23 +10,13 @@ using System.Threading.Tasks;
 [assembly: DefaultDbContext(typeof(DataContext))]
 namespace Recipe.Domain
 {
-    public class Recipe:Entity
+    public class Recipe : Entity
     {
+        #region 构造函数
 
-        /// <summary>
-        /// 配方名
-        /// </summary>
-        public string RecipeName { get; set; }
-
-        /// <summary>
-        /// 组名 -如“测试”
-        /// </summary>
-        public string GroupName { get; set; }
-
-        /// <summary>
-        /// 机器名-如FSD1A
-        /// </summary>
-        public string MachineName { get; set; }
+        public Recipe()
+        {
+        }
 
         public Recipe(int id, string recipeName, string groupName, string machineName)
         {
@@ -35,10 +25,53 @@ namespace Recipe.Domain
             GroupName = groupName;
             MachineName = machineName;
         }
-        public Recipe()
+
+        #endregion
+
+        #region 属性
+
+        /// <summary>
+        /// 配方名
+        /// </summary>
+        public string RecipeName { get; set; }
+
+        /// <summary>
+        /// 组名 -如”测试”
+        /// </summary>
+        public string GroupName { get; set; }
+
+        /// <summary>
+        /// 机器名-如FSD1A
+        /// </summary>
+        public string MachineName { get; set; }
+
+        public virtual ICollection<RecipeParameter>? Parameters { get; set; } = new HashSet<RecipeParameter>();
+
+        #endregion
+    }
+
+    public class RecipeManager : Entity
+    {
+        #region 构造函数
+
+        public RecipeManager()
         {
         }
 
-        public virtual ICollection<RecipeParameter>? Parameters { get; set; } = new HashSet<RecipeParameter>();
+        public RecipeManager(int id, int currentRecipeId)
+        {
+            base.Id = id;
+            CurrentRecipeId = currentRecipeId;
+        }
+
+        #endregion
+
+        #region 属性
+
+        public int CurrentRecipeId { get; set; }  // 存 Id，而不是整个对象
+
+        public Recipe? CurrentRecipe { get; set; } // 导航属性（可选）
+
+        #endregion
     }
 }

@@ -18,8 +18,13 @@ namespace EFCore.IRepository
         Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
 
         Task<bool> DeleteRangeAsync(Expression<Func<TEntity, bool>> predicate,CancellationToken cancellationToken = default);
- 
 
+        /// <summary>
+        /// 要传入跟踪实体  才能更新成功
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         Task<bool> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
         Task<bool> UpdateRangeAsync(
