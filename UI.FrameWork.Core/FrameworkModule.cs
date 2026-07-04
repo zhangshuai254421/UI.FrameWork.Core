@@ -1,4 +1,5 @@
 ﻿using Framework.Core.Common;
+using PrismUI.Core;
 using Recipe.UI.RecipeUI;
 using UI.FrameWork.Core.Main;
 using UI.FrameWork.Core.Main.Footer;
@@ -29,6 +30,6 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
         // 注册导航
        containerRegistry.RegisterViewsFromAssembly(GetType().Assembly);
 
-       
+
     }
 }

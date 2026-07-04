@@ -9,10 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Prism.Wpf" Version="9.0.537" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PrismUI.Core\PrismUI.Core.csproj" />
     <ProjectReference Include="..\Recipe.UI\Recipe.UI.csproj" />
     <ProjectReference Include="..\UI.FrameWork.Core\UI.FrameWork.Core.csproj" />
   </ItemGroup>

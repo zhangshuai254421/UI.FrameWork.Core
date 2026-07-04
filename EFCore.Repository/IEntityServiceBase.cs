@@ -17,6 +17,9 @@ namespace EFCore.IRepository
 
         Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
 
+        Task<bool> DeleteRangeAsync(Expression<Func<TEntity, bool>> predicate,CancellationToken cancellationToken = default);
+ 
+
         Task<bool> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
         Task<bool> UpdateRangeAsync(

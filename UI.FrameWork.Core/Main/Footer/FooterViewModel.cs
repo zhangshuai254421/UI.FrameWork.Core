@@ -1,5 +1,6 @@
 ﻿using Framework.Core.Common;
 using Microsoft.EntityFrameworkCore;
+using PrismUI.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

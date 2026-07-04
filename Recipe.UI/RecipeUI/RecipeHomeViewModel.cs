@@ -1,6 +1,7 @@
-﻿
+
 using Framework.Core.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PrismUI.Core;
 using Recipe.Domain;
 using System;
 using System.Collections.Generic;
@@ -17,84 +18,60 @@ namespace Recipe.UI.RecipeUI
 {
     public class RecipeHomeViewModel : BaseViewModel, INavigationAware
     {
+        #region 字段
+
         private readonly IRecipeService _recipeService;
         private readonly IDialogService _dialogService;
 
         private DelegateCommand _renameCmd = null!;
-        public DelegateCommand RenameCmd => _renameCmd ?? new DelegateCommand(() =>
-        {
-            if (string.IsNullOrWhiteSpace(SelectRecipeName))
-            {
-                return; // 没有选中配方，不弹框
-            }
+        private DelegateCommand _copyRecipeCmd = null!;
+        private DelegateCommand _deleteRecipeCmd = null!;
+        private ObservableCollection<Recipe.Domain.Recipe> recipes = new ObservableCollection<Recipe.Domain.Recipe>();
+        private ObservableCollection<string> _recipeWithGroupName = new ObservableCollection<string>();
+        private ObservableCollection<string> _recipeWithRecipeName = new ObservableCollection<string>();
 
-            // 将当前选中的配方名传入弹框
-            var parameters = new DialogParameters
-            {
-                { "RecipeName", SelectRecipeName }
-            };
+        private string _selectGroupName;
+        private ObservableCollection<string> _recipeNames;
+        private string _selectRecipeName;
+        private int _recipeShowCount;
+        private int _recipeCount;
 
-            var task = _dialogService.ShowDialogAsync(nameof(RenameRecipeDialogView), parameters);
-            var dialogResult = task.Result; // 同步等待弹框关闭
+        public Dictionary<string, string> RecipeSelectCache = new Dictionary<string, string>();
 
-            if (dialogResult.Result == ButtonResult.OK)
-            {
-                // 用户点了确认 — 获取新配方名并执行重命名
-                var newRecipeName = dialogResult.Parameters.GetValue<string>("NewRecipeName");
-                if (!string.IsNullOrWhiteSpace(newRecipeName) && newRecipeName != SelectRecipeName)
-                {
-                    // TODO: 调用 _recipeService 执行重命名逻辑
-     
+        #endregion
 
-                    _recipeService.UpdateRangeAsync(p => p.GroupName == SelectGroupName && p.RecipeName == SelectRecipeName, recipe => recipe.RecipeName = newRecipeName);
-                    // _recipeService.RenameAsync(SelectGroupName, SelectRecipeName, newRecipeName);
-                    RefreshSelectGroupName(); // 刷新列表
-                }
-            }
-            // Cancel 则什么都不做
-        });
-
+        #region 构造函数
 
         public RecipeHomeViewModel(IEventAggregator eventAggregator, IRecipeService recipeService, IDialogService dialogService) : base(eventAggregator)
         {
             _recipeService = recipeService;
             _dialogService = dialogService;
-           
         }
 
-        private ObservableCollection<Recipe.Domain.Recipe> recipes = new ObservableCollection<Recipe.Domain.Recipe>();
+        #endregion
+
+        #region 属性
 
         /// <summary>
-        /// 配方数据源   
+        /// 配方数据源
         /// </summary>
         public ObservableCollection<Recipe.Domain.Recipe> Recipes
         {
-            get =>recipes;
+            get => recipes;
             set => SetProperty(ref recipes, value);
         }
-        private ObservableCollection<string> _recipeWithGroupName = new ObservableCollection<string>();
-        public ObservableCollection<string> RecipeWithGroupName 
+
+        public ObservableCollection<string> RecipeWithGroupName
         {
             get => _recipeWithGroupName;
             set => SetProperty(ref _recipeWithGroupName, value);
         }
 
-        private ObservableCollection<string> _recipeWithRecipeName =new ObservableCollection<string>();
         public ObservableCollection<string> RecipeWithRecipeName
         {
             get => _recipeWithRecipeName;
             set => SetProperty(ref _recipeWithRecipeName, value);
         }
-
-
-
-
-        public Dictionary<string, string> RecipeSelectCache = new Dictionary<string, string>();
-
-        private string _selectGroupName ;
-        private ObservableCollection<string> _recipeNames;
-        private string _selectRecipeName;
-        private int _recipeShowCount;
 
         /// <summary>
         /// 选择分组
@@ -106,7 +83,6 @@ namespace Recipe.UI.RecipeUI
             {
                 if (value == _selectGroupName) return;
                 _selectGroupName = value;
-
 
                 if (!RecipeSelectCache.ContainsKey(value))
                 {
@@ -139,8 +115,6 @@ namespace Recipe.UI.RecipeUI
                     RecipeSelectCache[SelectGroupName] = value;
                 }
                 RaisePropertyChanged(nameof(SelectRecipeName));
-
-
             }
         }
 
@@ -150,15 +124,111 @@ namespace Recipe.UI.RecipeUI
             set => SetProperty(ref _recipeShowCount, value);
         }
 
-        private int _recipeCount;
-        public int RecipeCount 
+        public int RecipeCount
         {
-            get {  return _recipeCount; }
-            set {  SetProperty(ref _recipeCount, value);}
+            get { return _recipeCount; }
+            set { SetProperty(ref _recipeCount, value); }
         }
 
+        #endregion
+
+        #region 命令
+
+        public DelegateCommand RenameCmd => _renameCmd ?? new DelegateCommand(() =>
+        {
+            if (string.IsNullOrWhiteSpace(SelectRecipeName))
+            {
+                return; // 没有选中配方，不弹框
+            }
+
+            // 将当前选中的配方名传入弹框
+            var parameters = new DialogParameters
+            {
+                { "RecipeName", SelectRecipeName }
+            };
+
+            var task = _dialogService.ShowDialogAsync(nameof(RenameRecipeDialogView), parameters);
+            var dialogResult = task.Result; // 同步等待弹框关闭
+
+            if (dialogResult.Result == ButtonResult.OK)
+            {
+                // 用户点了确认 — 获取新配方名并执行重命名
+                var newRecipeName = dialogResult.Parameters.GetValue<string>("NewRecipeName");
+                if (!string.IsNullOrWhiteSpace(newRecipeName) && newRecipeName != SelectRecipeName)
+                {
+                    // TODO: 调用 _recipeService 执行重命名逻辑
 
 
+                    _recipeService.UpdateRangeAsync(p => p.GroupName == SelectGroupName && p.RecipeName == SelectRecipeName, recipe => recipe.RecipeName = newRecipeName);
+                    // _recipeService.RenameAsync(SelectGroupName, SelectRecipeName, newRecipeName);
+                    RefreshSelectGroupName(); // 刷新列表
+                }
+            }
+            // Cancel 则什么都不做
+        });
+
+        public DelegateCommand CopyRecipeCmd => _copyRecipeCmd ?? new DelegateCommand(() =>
+        {
+            if (string.IsNullOrWhiteSpace(SelectRecipeName))
+            {
+                return;
+            }
+
+            // 将当前选中的配方名传入弹框
+            var parameters = new DialogParameters
+            {
+                { "RecipeName", SelectRecipeName }
+            };
+
+            var task = _dialogService.ShowDialogAsync(nameof(CopyRecipeDialogView), parameters);
+            var dialogResult = task.Result;
+
+            if (dialogResult.Result == ButtonResult.OK)
+            {
+                var newRecipeName = dialogResult.Parameters.GetValue<string>("NewRecipeName");
+                if (!string.IsNullOrWhiteSpace(newRecipeName) && newRecipeName != SelectRecipeName)
+                {
+                    // TODO: 调用 _recipeService 执行拷贝逻辑
+                    _recipeService.AddAsync(new Recipe.Domain.Recipe()
+                    {
+                        GroupName = SelectGroupName,
+                        RecipeName = newRecipeName,
+                        MachineName = AppGlobals.MachineName
+                    });
+                    RefreshSelectGroupName();
+                }
+            }
+        });
+
+        public DelegateCommand DeleteRecipeCmd => _deleteRecipeCmd?? new DelegateCommand(() =>
+        {
+            // 这里可以放置你想要执行的逻辑
+            // 例如，打开一个新的窗口，或者执行某个操作
+            if (string.IsNullOrWhiteSpace(SelectRecipeName))
+            {
+                return; // 没有选中配方，不弹框
+            }
+
+            var result =  _dialogService.ShowDialogAsync(
+            "ConfirmationDialog",
+            new DialogParameters
+            {
+                { "Title", "删除确认" },
+                { "Message", "确定要删除选中的用户吗？此操作不可撤销。" }
+            });
+
+            if (result.Result.Result == ButtonResult.Yes)
+            {
+                // 执行删除
+                _recipeService.DeleteRangeAsync(p => p.GroupName == SelectGroupName && p.RecipeName == SelectRecipeName);
+                RefreshSelectGroupName(); // 刷新列表
+            }
+
+        });
+
+        #endregion
+
+        #region 方法
 
         /// <summary>
         /// 刷新显示列表
@@ -178,15 +248,17 @@ namespace Recipe.UI.RecipeUI
             }
             if (SelectGroupName != null) SelectRecipeName = RecipeSelectCache[SelectGroupName];
 
-
             RecipeWithRecipeName = new ObservableCollection<string>(Recipes.Where(P => P.GroupName == SelectGroupName).Select(p => p.RecipeName));
             RecipeShowCount = RecipeWithRecipeName.Count;
             if (SelectRecipeName == string.Empty)
             {
                 SelectRecipeName = RecipeWithRecipeName.FirstOrDefault();
             }
-
         }
+
+        #endregion
+
+        #region INavigationAware
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
@@ -195,12 +267,13 @@ namespace Recipe.UI.RecipeUI
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
-           return true;
+            return true;
         }
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-           
         }
+
+        #endregion
     }
 }

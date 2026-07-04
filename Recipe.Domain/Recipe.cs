@@ -35,6 +35,9 @@ namespace Recipe.Domain
             GroupName = groupName;
             MachineName = machineName;
         }
+        public Recipe()
+        {
+        }
 
         public virtual ICollection<RecipeParameter>? Parameters { get; set; } = new HashSet<RecipeParameter>();
     }

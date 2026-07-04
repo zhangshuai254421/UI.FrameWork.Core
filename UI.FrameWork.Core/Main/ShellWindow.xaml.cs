@@ -1,5 +1,6 @@
 ﻿using Framework.Core.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PrismUI.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

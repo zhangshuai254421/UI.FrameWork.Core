@@ -2,6 +2,7 @@ using EFCore.Repository;
 using Framework.Core.Common;
 using Log.Domain;
 using Prism.Commands;
+using PrismUI.Core;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 

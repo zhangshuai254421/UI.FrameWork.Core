@@ -1,5 +1,6 @@
 ﻿using Framework.Core.Common;
 using Prism.Events;
+using PrismUI.Core;
 using UI.FrameWork.Core.Common;
 namespace UI.FrameWork.Core.Main
 {

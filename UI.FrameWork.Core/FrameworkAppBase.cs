@@ -29,6 +29,7 @@ using UI.FrameWork.Core.Common;
 using UI.FrameWork.Core.Main;
 using UI.FrameWork.Core.Main.Footer;
 using Recipe.Domain;
+using PrismUI.Core;
 
 namespace UI.FrameWork.Core
 {
@@ -48,7 +49,7 @@ namespace UI.FrameWork.Core
 
             services.AddSerilogServices();
             services.AddRecipeServices();
-            services.AddSingleton<INavigationService, Framework.Core.Common.NavigationService>();
+            services.AddSingleton<INavigationService, PrismUI.Core.NavigationService>();
   
             return new DryIocContainerExtension(new DryIoc.Container(DryIocContainerExtension.DefaultRules) .WithDependencyInjectionAdapter(services));
         }

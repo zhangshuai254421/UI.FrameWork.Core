@@ -8,7 +8,6 @@ namespace Recipe.Domain
         public void Configure(EntityTypeBuilder<CameraConfiguration> builder)
         {
 
-
             builder
                 .Property(x => x.Id)
                 .ValueGeneratedOnAdd()

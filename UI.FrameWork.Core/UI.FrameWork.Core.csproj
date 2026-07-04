@@ -55,6 +55,7 @@
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
     <ProjectReference Include="..\Log.Domain\Serilog.Domain.csproj" />
     <ProjectReference Include="..\Log.Infrastructure\Serilog.Infrastructure.csproj" />
+    <ProjectReference Include="..\PrismUI.Core\PrismUI.Core.csproj" />
     <ProjectReference Include="..\Recipe.Infrastructure\Recipe.Infrastructure.csproj" />
     <ProjectReference Include="..\Recipe.UI\Recipe.UI.csproj" />
     <ProjectReference Include="..\SemiControl_Net\SemiControl_Net.csproj" />

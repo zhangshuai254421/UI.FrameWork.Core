@@ -1,5 +1,7 @@
 ﻿using Framework.Core.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,6 +11,21 @@ using System.Threading.Tasks;
 
 namespace Recipe.Domain
 {
+    public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
+    {
+        public DataContext CreateDbContext(string[] args)
+        {
+
+
+            var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
+            var connectionString = AppGlobals.RecipeDbFliePath;
+
+            // 2. 根据你使用的数据库提供程序配置 (此处以 SQL Server 为例)
+            optionsBuilder.UseSqlite(connectionString);
+
+            return new DataContext(optionsBuilder.Options);
+        }
+    }
     public partial class DataContext : DbContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)

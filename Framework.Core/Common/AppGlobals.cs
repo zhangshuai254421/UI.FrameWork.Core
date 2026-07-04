@@ -32,7 +32,7 @@ namespace Framework.Core.Common
         {
             get
             {
-                return "logs\\RecipeDomain.db";
+                return "Recipe\\RecipeDomain.db";
             }
         }
 

@@ -65,6 +65,14 @@ namespace EFCore.Infrastructure
             return result;
         }
 
+        public virtual async Task<bool> DeleteRangeAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+             _repository.DeleteRange(predicate); 
+             var affected = await _unitOfWork.SaveChangeAsync(cancellationToken);
+             return affected > 0;
+      
+        }
+
         public virtual async Task<bool> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             _repository.Update(entity);

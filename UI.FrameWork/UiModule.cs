@@ -1,4 +1,5 @@
 ﻿using Framework.Core.Common;
+using PrismUI.Core;
 using SemiAppliaction.Core;
 using SemiAppliaction.Views;
 using System;

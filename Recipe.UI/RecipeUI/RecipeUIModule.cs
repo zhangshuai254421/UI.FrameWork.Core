@@ -20,6 +20,9 @@ namespace Recipe.UI.RecipeUI
 
             // 注册弹框：View 类型 → ViewModel 类型 或 自动匹配
             containerRegistry.RegisterDialog<RenameRecipeDialogView, RenameRecipeDialogViewModel>();
+            containerRegistry.RegisterDialog<CopyRecipeDialogView, CopyRecipeDialogViewModel>();
+
+
         }
     }
 }

@@ -10,7 +10,8 @@ namespace Recipe.Domain
             builder
                 .HasKey(x => x.Id);
 
-
+            // 【关键】在基类上启用 TPC 映射策略
+            builder.UseTpcMappingStrategy();
             builder
                 .Property(x => x.Id)
                 .ValueGeneratedOnAdd()
