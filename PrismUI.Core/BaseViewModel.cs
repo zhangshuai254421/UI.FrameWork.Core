@@ -10,12 +10,18 @@ namespace PrismUI.Core
     /// </summary>
     public class BaseViewModel : BindableBase
     {
+        protected readonly ILogger Logger;  // 非泛型 ILogger，但内部类别名是子类的
         private DelegateCommand _exitCommand = null!;
         public DelegateCommand _enterCommand = null!;
-        private readonly ILogger<BaseViewModel> _logger;
 
         public IEventAggregator EventAggregator { get; set; }
 
+
+        public BaseViewModel(ILoggerFactory loggerFactory, IEventAggregator eventAggregator)
+        {
+            Logger = loggerFactory.CreateLogger(GetType());  // ← GetType() 返回实际子类类型
+            EventAggregator = eventAggregator;
+        }
 
         public BaseViewModel(IEventAggregator eventAggregator)
         {
@@ -24,7 +30,7 @@ namespace PrismUI.Core
 
         public virtual void EnterCommandExecute()
         {
-            //_logger.LogInformation("Navigating to recipe context view.");
+            Logger?.LogInformation("Navigating to recipe context view.");
             // 这里可以放置你想要执行的逻辑
             //IoC.Get<INavigationService>().NavigateToAsync(ViewNames.RecipeContextView, RegionNames.MainRegion);
         }

@@ -1,5 +1,6 @@
 ﻿using Framework.Core.Common;
 using Microsoft.Extensions.Logging;
+using PrismUI.Core;
 using Serilog;
 using Serilog.Sinks.RichTextBox.Themes;
 using System;
@@ -10,11 +11,12 @@ using System.Threading.Tasks;
 
 namespace UI.FrameWork.Core.Main.Footer
 {
-    public class LogShowViewModel : BindableBase, INavigationAware
+    public class LogShowViewModel : BaseViewModel, INavigationAware
     {
-        private readonly ILogger<LogShowViewModel> _logger;
-        public LogShowViewModel(ILogger<LogShowViewModel> logger) {
-            _logger = logger;
+
+        public LogShowViewModel(ILoggerFactory loggerFactory, IEventAggregator eventAggregator)
+     : base(loggerFactory, eventAggregator)  // ← 多传一个参数，其余不变
+        {
         }
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
@@ -24,7 +26,7 @@ namespace UI.FrameWork.Core.Main.Footer
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            _logger.LogInformation("离开日志显示页面");
+            Logger.LogInformation("离开日志显示页面");
             CancellationTokenSource.Cancel();
         }
 
@@ -32,7 +34,7 @@ namespace UI.FrameWork.Core.Main.Footer
         {
             // 重新创建 CTS，比 TryReset 更可靠
             CancellationTokenSource = new CancellationTokenSource();
-            _logger.LogInformation("进入日志显示页面");
+            Logger.LogInformation("进入日志显示页面");
            
             Task.Run(() => {
                 while (!CancellationTokenSource.IsCancellationRequested)

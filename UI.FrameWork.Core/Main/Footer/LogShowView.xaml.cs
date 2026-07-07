@@ -154,7 +154,7 @@ public partial class LogShowView : UserControl
 
 
             Serilog.Log.Logger = new LoggerConfiguration()
-                         //.Enrich.WithMachineName()             // 添加 MachineName
+                        // .Enrich.WithMachineName()             // 添加 MachineName
                         // .Enrich.WithThreadId()                // 添加 ThreadId
                         // .Enrich.WithEnvironmentUserName()     // 添加当前用户名
                         //.MinimumLevel.Debug()

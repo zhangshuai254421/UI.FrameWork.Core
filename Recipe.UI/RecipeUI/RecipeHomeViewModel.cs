@@ -1,6 +1,7 @@
 
 using Framework.Core.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Logging;
 using PrismUI.Core;
 using Recipe.Domain;
 using System;
@@ -45,7 +46,8 @@ namespace Recipe.UI.RecipeUI
 
         #region 构造函数
 
-        public RecipeHomeViewModel(IEventAggregator eventAggregator, IRecipeService recipeService, IDialogService dialogService) : base(eventAggregator)
+        public RecipeHomeViewModel(IEventAggregator eventAggregator, ILoggerFactory loggerFactory,
+            IRecipeService recipeService, IDialogService dialogService) : base(loggerFactory, eventAggregator)
         {
             _recipeService = recipeService;
             _dialogService = dialogService;
@@ -268,6 +270,7 @@ namespace Recipe.UI.RecipeUI
 
         public override void EnterCommandExecute()
         {
+            Logger.LogInformation("RecipeHomeViewModel EnterCommandExecute");
             base.EnterCommandExecute();
             IoC.Get<INavigationService>().NavigateToAsync(ViewNames.RecipeContextView, RegionNames.MainRegion);
         }

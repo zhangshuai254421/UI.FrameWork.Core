@@ -126,21 +126,21 @@ namespace UI.FrameWork.Core
 
             #region 日志模块
             // 1. 初始化 Serilog
-            //Serilog.Log.Logger = new LoggerConfiguration()
-            //     //.Enrich.WithMachineName()             // 添加 MachineName
-            //     .Enrich.WithThreadId()                // 添加 ThreadId              
-            //     .Enrich.WithEnvironmentUserName()     // 添加当前用户名
-            //    .MinimumLevel.Debug()
-            //    .WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug, tableName: "SerilogHistory")  // 指定数据库文件路径
-            //    //.WriteTo.File(
-            //    //    "logs/log-.txt",
-            //    //    rollingInterval: RollingInterval.Day,   // 按天分文件
-            //    //    retainedFileCountLimit: 10,            // 保留10天
-            //    //    outputTemplate:
-            //    //    "{Timestamp:HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-            //    //)
-            //    //.WriteTo.RichTextBox(LogShowView.Instance, theme: RichTextBoxConsoleTheme.Colored)
-            //    .CreateLogger();
+            Serilog.Log.Logger = new LoggerConfiguration()
+                 .Enrich.WithMachineName()             // 添加 MachineName
+                 .Enrich.WithThreadId()                // 添加 ThreadId              
+                 .Enrich.WithEnvironmentUserName()     // 添加当前用户名
+                .MinimumLevel.Debug()
+                .WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug, tableName: "SerilogHistory")  // 指定数据库文件路径
+                .WriteTo.File(
+                    "logs/log-.txt",
+                    rollingInterval: RollingInterval.Day,   // 按天分文件
+                    retainedFileCountLimit: 10,            // 保留10天
+                    outputTemplate:
+                    "{Timestamp:HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+                )
+                //.WriteTo.RichTextBox(LogShowView.Instance, theme: RichTextBoxConsoleTheme.Colored)
+                .CreateLogger();
 
             // 2. 接入微软日志抽象
             var loggerFactory = LoggerFactory.Create(builder =>
