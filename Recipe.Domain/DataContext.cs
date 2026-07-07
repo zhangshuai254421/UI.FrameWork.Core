@@ -64,6 +64,13 @@ namespace Recipe.Domain
                 new RecipeManager(1, -1)  // 指向默认配方
             );
 
+            modelBuilder.Entity<CameraConfiguration>().HasData(
+                new CameraConfiguration(1,-1, "CameraA"),
+                 new CameraConfiguration(2,-1, "CameraB"),
+                  new CameraConfiguration(3,-1, "CameraC"),
+                   new CameraConfiguration(4,-1, "CameraD")
+            );
+
             base.OnModelCreating(modelBuilder);
         }
 

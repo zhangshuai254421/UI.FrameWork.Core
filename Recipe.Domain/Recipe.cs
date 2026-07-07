@@ -36,7 +36,7 @@ namespace Recipe.Domain
         public string RecipeName { get; set; }
 
         /// <summary>
-        /// 组名 -如”测试”
+        /// 组名 -如"测试"
         /// </summary>
         public string GroupName { get; set; }
 

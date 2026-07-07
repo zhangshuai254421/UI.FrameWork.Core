@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Main\RecipeUI\**" />
-    <EmbeddedResource Remove="Main\RecipeUI\**" />
-    <None Remove="Main\RecipeUI\**" />
-    <Page Remove="Main\RecipeUI\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="Main\View\LayoutPageControl.cs" />
   </ItemGroup>
 

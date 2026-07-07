@@ -9,6 +9,7 @@ namespace Recipe.Domain
 {
     public class RecipeParameter : Entity
     {
+        public int RecipeId { get; set; }  
         public virtual Recipe? Recipe { get; set; }
     }
 }
