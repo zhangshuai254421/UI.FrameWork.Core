@@ -7,8 +7,41 @@
     <!-- 底部区域高度资源（保持与原代码一致） -->
     <system:Double x:Key="Framework_BottomHeight">180</system:Double>
 
+    <Style
+				TargetType="{x:Type control:IconButton}"
+				BasedOn="{StaticResource IconButtonBaseStyle}"
+				x:Key="RightButtonStyle">
+        <Setter
+					Property="Width"
+					Value="140" />
+        <Setter
+					Property="Height"
+					Value="75" />
+        <Setter
+					Property="Margin"
+					Value="0,0,10,0" />
+        <Setter
+					Property="HorizontalAlignment"
+					Value="Right" />
+        <Setter
+					Property="FontSize"
+					Value="18" />
+        <Setter
+					Property="BorderBrush"
+					Value="#fff" />
+        <Setter
+					Property="BorderThickness"
+					Value="1" />
+        <Setter
+					Property="control:BorderElement.CornerRadius"
+					Value="10" />
+        <Setter
+					Property="FontFamily"
+					Value="arial" />
+    </Style>
     <Style TargetType="{x:Type control:LayoutPageControl}">
         <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundBrush}"/>
+        
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type control:LayoutPageControl}">

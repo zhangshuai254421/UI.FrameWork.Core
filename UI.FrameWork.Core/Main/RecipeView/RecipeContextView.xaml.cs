@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PrismUI.Core
+namespace UI.FrameWork.Core.Main.RecipeView
 {
     /// <summary>
-    /// UserControl1.xaml 的交互逻辑
+    /// RecipeHome.xaml 的交互逻辑
     /// </summary>
-    public partial class UserControl1 : UserControl
+    public partial class RecipeContextView : UserControl
     {
-        public UserControl1()
+        public RecipeContextView()
         {
             InitializeComponent();
         }

@@ -272,7 +272,6 @@
         <!-- ═══ 右侧面板 ═══ -->
         <controls:LayoutPageControl.RightContent>
             <StackPanel Margin="8,0,0,0">
-                <TextBlock Text="属性" FontWeight="Bold"/>
                 <Border Background="{DynamicResource CardBackgroundBrush}" >
                     <!-- 属性编辑面板 -->
                 </Border>

@@ -15,7 +15,7 @@
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
     </UserControl.Resources>-->
-    <controls:LayoutPageControl IsRightPanelVisible="True">
+    <controls:LayoutPageControl IsRightPanelVisible="True" >
 
         <!-- ═══ 主区域 ═══ -->
         <controls:LayoutPageControl.MainContent>
@@ -95,14 +95,16 @@
         </controls:LayoutPageControl.MainContent>
 
         <!-- ═══ 右侧面板 ═══ -->
-        <controls:LayoutPageControl.RightContent>
+        <!--<controls:LayoutPageControl.RightContent>
             <StackPanel Margin="8,0,0,0">
                 <TextBlock Text="属性" FontWeight="Bold"/>
                 <Border Background="{DynamicResource CardBackgroundBrush}" >
-                    <!-- 属性编辑面板 -->
+                    --><!-- 属性编辑面板 --><!--
                 </Border>
+        
+        
             </StackPanel>
-        </controls:LayoutPageControl.RightContent>
+        </controls:LayoutPageControl.RightContent>-->
 
         <!-- ═══ 底部工具栏 ═══ -->
         <controls:LayoutPageControl.ToolBoxContent>

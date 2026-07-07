@@ -9,42 +9,6 @@ using Prism.Events;
 
 namespace PrismUI.Core
 {
-    public static class RegionNames
-    {
-        #region ShellWindow
-        /// <summary>
-        /// 主页面
-        /// </summary>
-        public static string MainRegion => nameof(MainRegion);
-
-        /// <summary>
-        /// 下方的工具栏区域
-        /// </summary>
-        public static string ToolBoxRegion => nameof(ToolBoxRegion);
-
-       
-
-        /// <summary>
-        /// 右下角的页脚区域
-        /// </summary>
-        public static string FooterRegion => nameof(FooterRegion);
-        #endregion
-
-        public static string HeaderViewRegion => nameof(HeaderViewRegion);
-    }
-
-    public static class ViewNames
-    {
-        public static string NumberKeyPadView => nameof(NumberKeyPadView);
-        public static string StringKeyPadView => nameof(StringKeyPadView);
-        public static string AxisView => nameof(AxisView);
-        public static string DirectView => nameof(DirectView);
-        public static string MainView => nameof(MainView);
-
-        public const string DefaultView = nameof(DefaultView);
-        public const string EmptyView = nameof(EmptyView);
-        public const string EmptyView2 = nameof(EmptyView2);
-    }
     public interface INavigationService
     {
         Task NavigateToAsync(string viewName, string? regionName = null, NavigationParameters? parameters = null);

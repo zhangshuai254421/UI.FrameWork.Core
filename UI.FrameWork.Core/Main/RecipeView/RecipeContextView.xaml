@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="UI.FrameWork.Core.Main.RecipeView.RecipeHome"
+﻿<UserControl x:Class="UI.FrameWork.Core.Main.RecipeView.RecipeContextView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -17,15 +17,15 @@
             <hc:PropertyGrid></hc:PropertyGrid>
         </controls:LayoutPageControl.MainContent>
 
-        <!-- ═══ 右侧面板 ═══ -->
+        <!-- ═══ 右侧面板 ═══ --><!--
         <controls:LayoutPageControl.RightContent>
             <StackPanel Margin="8,0,0,0">
                 <TextBlock Text="属性" FontWeight="Bold"/>
                 <Border Background="{DynamicResource CardBackgroundBrush}" >
-                    <!-- 属性编辑面板 -->
+                    --><!-- 属性编辑面板 --><!--
                 </Border>
             </StackPanel>
-        </controls:LayoutPageControl.RightContent>
+        </controls:LayoutPageControl.RightContent>-->
 
         <!-- ═══ 底部工具栏 ═══ -->
         <controls:LayoutPageControl.ToolBoxContent>

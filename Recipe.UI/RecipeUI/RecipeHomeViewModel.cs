@@ -28,6 +28,7 @@ namespace Recipe.UI.RecipeUI
         private DelegateCommand _copyRecipeCmd = null!;
         private DelegateCommand _deleteRecipeCmd = null!;
         private DelegateCommand _applyRecipeCmd = null!;
+
         private ObservableCollection<Recipe.Domain.Recipe> recipes = new ObservableCollection<Recipe.Domain.Recipe>();
         private ObservableCollection<string> _recipeWithGroupName = new ObservableCollection<string>();
         private ObservableCollection<string> _recipeWithRecipeName = new ObservableCollection<string>();
@@ -260,9 +261,17 @@ namespace Recipe.UI.RecipeUI
             }   
         });
 
+
         #endregion
 
         #region 方法
+
+        public override void EnterCommandExecute()
+        {
+            base.EnterCommandExecute();
+            IoC.Get<INavigationService>().NavigateToAsync(ViewNames.RecipeContextView, RegionNames.MainRegion);
+        }
+
 
         /// <summary>
         /// 刷新显示列表
