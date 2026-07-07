@@ -1,5 +1,6 @@
 ﻿using Framework.Core.Common;
 using Serilog;
+using Serilog.Core;
 using Serilog.Sinks.RichTextBox.Themes;
 using System;
 using System.Collections.Generic;
@@ -152,7 +153,7 @@ public partial class LogShowView : UserControl
 
             // 1. 初始化 Serilog（自定义浅色背景 + 黑色文字主题）
 
-
+            
             Serilog.Log.Logger = new LoggerConfiguration()
                         // .Enrich.WithMachineName()             // 添加 MachineName
                         // .Enrich.WithThreadId()                // 添加 ThreadId
