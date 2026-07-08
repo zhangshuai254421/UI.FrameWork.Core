@@ -155,18 +155,18 @@ public partial class LogShowView : UserControl
 
             
             Serilog.Log.Logger = new LoggerConfiguration()
-                        // .Enrich.WithMachineName()             // 添加 MachineName
-                        // .Enrich.WithThreadId()                // 添加 ThreadId
-                        // .Enrich.WithEnvironmentUserName()     // 添加当前用户名
-                        //.MinimumLevel.Debug()
-                        //.WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug, tableName: "SerilogHistory")  // 指定数据库文件路径
-                        //.WriteTo.File(
-                        //    "logs/log-.txt",
-                        //    rollingInterval: RollingInterval.Day,   // 按天分文件
-                        //    retainedFileCountLimit: 10,            // 保留10天
-                        //    outputTemplate:
-                        //    "{Timestamp:HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-                        //)
+                         .Enrich.WithMachineName()             // 添加 MachineName
+                         .Enrich.WithThreadId()                // 添加 ThreadId
+                         .Enrich.WithEnvironmentUserName()     // 添加当前用户名
+                        .MinimumLevel.Debug()
+                        .WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug, tableName: "SerilogHistory")  // 指定数据库文件路径
+                        .WriteTo.File(
+                            "logs/log-.txt",
+                            rollingInterval: RollingInterval.Day,   // 按天分文件
+                            retainedFileCountLimit: 10,            // 保留10天
+                            outputTemplate:
+                            "{Timestamp:HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+                        )
                         .WriteTo.RichTextBox(this.LogRichTextBox, theme: ColoredCustom)
                         .CreateLogger();
         }

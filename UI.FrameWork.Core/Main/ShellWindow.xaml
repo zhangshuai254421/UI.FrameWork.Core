@@ -10,105 +10,91 @@
         mc:Ignorable="d"
         Title="ShellWindow"   
         Height="1080"
-        Width="1280"
+        Width="1920"
         Focusable="False"
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
         ResizeMode="NoResize">
 
-
-    <Grid Background="{DynamicResource BackgroundLightBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1280"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <!--头部-->
-        <ContentControl Grid.Row="0" regions:RegionManager.RegionName="HeaderViewRegion"/>
-        
-        <!--标题栏-->
-        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="35" Margin="0 5 0 0" Background="{DynamicResource PrimaryDeepBrush}"  VerticalAlignment="Center" HorizontalAlignment="Stretch"  BorderBrush="{DynamicResource PrimarySecondControlBrush}" BorderThickness="0 2 0 2">
-            <TextBlock Text="标题栏" VerticalAlignment="Center" TextAlignment="Center" FontSize="{DynamicResource HeaderMenuFontSize}" Foreground="{DynamicResource PrimaryDefaultBrush}" FontWeight="Bold"></TextBlock>
-        </Border>
+        <ContentControl Grid.Column="0"  Visibility="Collapsed" regions:RegionManager.RegionName="LeftViewRegion"/>
 
-        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"   Background="{DynamicResource SecondaryBrush}" >
+        <Grid Grid.Column="1" Background="{DynamicResource BackgroundLightBrush}" Width="1280">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="105"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
+            <!--头部-->
+            <ContentControl Grid.Row="0" regions:RegionManager.RegionName="HeaderViewRegion"/>
 
-            <!--左侧工具箱-->
-            <StackPanel Grid.Row="0" Grid.Column="0"  Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10" Width="{DynamicResource Framework_SideMenuWidth}" >
-                <Button Style="{DynamicResource ControlButton}"  Content="传感器"  Height="65" Width="65" Margin="0 5"  />
-                <!--<Button Style="{DynamicResource ControlButton}" s:ButtonAttach.IconGeometory="{DynamicResource LineChartGeometry}" Content="曲线图"  Height="65" Width="65" Margin="0 5"  CommandParameter="Graph"/>
+            <!--标题栏-->
+            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="35" Margin="0 5 0 0" Background="{DynamicResource PrimaryDeepBrush}"  VerticalAlignment="Center" HorizontalAlignment="Stretch"  BorderBrush="{DynamicResource PrimarySecondControlBrush}" BorderThickness="0 2 0 2">
+                <TextBlock Text="标题栏" VerticalAlignment="Center" TextAlignment="Center" FontSize="{DynamicResource HeaderMenuFontSize}" Foreground="{DynamicResource PrimaryDefaultBrush}" FontWeight="Bold"></TextBlock>
+            </Border>
+
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"   Background="{DynamicResource SecondaryBrush}" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="105"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <!--左侧工具箱-->
+                <StackPanel Grid.Row="0" Grid.Column="0"  Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10" Width="{DynamicResource Framework_SideMenuWidth}" >
+                    <Button Style="{DynamicResource ControlButton}"  Content="传感器"  Height="65" Width="65" Margin="0 5"  />
+                    <!--<Button Style="{DynamicResource ControlButton}" s:ButtonAttach.IconGeometory="{DynamicResource LineChartGeometry}" Content="曲线图"  Height="65" Width="65" Margin="0 5"  CommandParameter="Graph"/>
             <Button Style="{DynamicResource ControlButton}" s:ButtonAttach.IconGeometory="{DynamicResource BladeGeometry}" Content="Blade"  Height="65" Width="65" Margin="0 5" CommandParameter="Blade"/>-->
-                <controls:IconButton  Focusable="False" Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource NavigateForwardGeometry}"
+                    <controls:IconButton  Focusable="False" Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource NavigateForwardGeometry}"
               FontSize="14" Content="前进" Click="BtnNavigateForwarddCommand"   />
 
-                <controls:IconButton  Focusable="False" Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource NavigateBackGeometry}" 
+                    <controls:IconButton  Focusable="False" Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource NavigateBackGeometry}" 
                        Content="后退" Click="BtnNavigateBackCommand"  />
-               
-            </StackPanel>
 
-            <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" regions:RegionManager.RegionName="MainRegion"/>
-            <!--主界面-->
+                    <controls:IconButton  Content="日志"  Focusable="False"  Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource MainMenuSmall1Geometry}" Command="{Binding BtnLogShowCommand}"/>
+
+                </StackPanel>
+
+                <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" regions:RegionManager.RegionName="MainRegion"/>
+                <!--主界面-->
 
 
-            <Border Height="178" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" >
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="165"/>
-                    </Grid.ColumnDefinitions>
-
-                    <!--工具页-->
-                    <ContentControl Grid.Column="0" regions:RegionManager.RegionName="ToolBoxRegion" VerticalAlignment="Bottom"
-                                    Visibility="{Binding IsToolBoxVisible}"/>
-                    <Border BorderThickness="2 0 0 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Column="1" VerticalAlignment="Top">
-                        <!--页脚-->
-                        <ContentControl regions:RegionManager.RegionName="FooterRegion"/>
-                    </Border>
-                </Grid>
-            </Border>
-            <!--最下面-->
-            <!--<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="BorderFooter" BorderThickness="0 2 0 0"
-                    BorderBrush="{DynamicResource PrimaryControlToolBrush}" HorizontalAlignment="Stretch" 
-                    VerticalAlignment="Bottom"  Height="{DynamicResource Framework_BottomHeight}">
-
-                <StackPanel Height="178" >
+                <Border Height="178" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" >
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="105"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="165"></ColumnDefinition>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="165"/>
                         </Grid.ColumnDefinitions>
 
-                        --><!--工具页--><!--
-                        <ContentControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" regions:RegionManager.RegionName="ToolBoxRegion"/>
-                        <Border BorderThickness="2 0 0 0"  BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Row="0" Grid.Column="2">
-                            --><!--页脚--><!--
-                            <ContentControl  regions:RegionManager.RegionName="FooterRegion"/>
+                        <!--工具页-->
+                        <ContentControl Grid.Column="0" regions:RegionManager.RegionName="ToolBoxRegion" VerticalAlignment="Bottom"
+                                    Visibility="{Binding IsToolBoxVisible}"/>
+                        <Border BorderThickness="2 0 0 0" BorderBrush="{DynamicResource PrimaryControlToolBrush}" Grid.Column="1" VerticalAlignment="Top">
+                            <!--页脚-->
+                            <ContentControl regions:RegionManager.RegionName="FooterRegion"/>
                         </Border>
-                       
                     </Grid>
-                </StackPanel>
-                --><!--<GroupBox Height="178"/>--><!--
-            </Border>-->
+                </Border>
+            </Grid>
+
+
+
+
         </Grid>
 
-
-
-
-
-       
+        <ContentControl Grid.Column="2" Visibility="Hidden"  Width="0" regions:RegionManager.RegionName="RightViewRegion"/>
     </Grid>  
 </Window>

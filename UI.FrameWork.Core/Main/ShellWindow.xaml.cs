@@ -43,8 +43,8 @@ namespace UI.FrameWork.Core.Main
             WindowStyle = WindowStyle.None;
             //WindowState = WindowState.Maximized;
 
-            Width = 1280;
-            Height = 1024;
+            //Width = 1280;
+            //Height = 1080;
 
         }
 

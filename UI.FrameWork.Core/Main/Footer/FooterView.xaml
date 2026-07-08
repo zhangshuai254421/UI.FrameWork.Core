@@ -32,8 +32,8 @@
                       Content="全自动操作" IconGeometry="{StaticResource HomePageF1Geometry}" Command="{Binding AutoCutStandByViewCmd}"/>-->
         <controls:ToggleIconButton Grid.Row="1" Grid.Column="1" Focusable="False"  IconHeight="100"  IconGeometry="{StaticResource MainMenuSmall1Geometry}" 
                                 Command="{Binding BtnLogShowCommand}" IsChecked="{Binding LogShowChecked}"/>
-        <controls:IconButton Visibility="Collapsed" Grid.Row="1" Grid.Column="3" Focusable="False" Style="{StaticResource FooterButtonStyle}"  IconGeometry="{StaticResource NavigateForwardGeometry}"
-                                   FontSize="14" Content="前进"   Command="{Binding BtnNavigateForwarddCommand}"/>
+        <!--<controls:IconButton Visibility="Collapsed" Grid.Row="1" Grid.Column="3" Focusable="False" Style="{StaticResource FooterButtonStyle}"  IconGeometry="{StaticResource NavigateForwardGeometry}"
+                                   FontSize="14" Content="前进"   Command="{Binding BtnNavigateForwarddCommand}"/>-->
 
         <!--<controls:ToggleIconButton Grid.Row="1" Grid.Column="1" Focusable="False" IconGeometry="{StaticResource AxisControlGeometry}" 
                             IconHeight="40" IconWidth="40" IsChecked="{Binding AxisChecked}" IsEnabled="{Binding IsAxisButtonEnable}"  Command="{Binding BtnAxisControlCommand}"/>
