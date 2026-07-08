@@ -30,8 +30,8 @@
         </Grid.ColumnDefinitions>
         <!--<s:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F1" 
                       Content="全自动操作" IconGeometry="{StaticResource HomePageF1Geometry}" Command="{Binding AutoCutStandByViewCmd}"/>-->
-        <controls:ToggleIconButton Grid.Row="1" Grid.Column="1" Focusable="False"  IconHeight="100"  IconGeometry="{StaticResource MainMenuSmall1Geometry}" 
-                                Command="{Binding BtnLogShowCommand}" IsChecked="{Binding LogShowChecked}"/>
+        <!--<controls:ToggleIconButton Grid.Row="1" Grid.Column="1" Focusable="False"  IconHeight="100"  IconGeometry="{StaticResource MainMenuSmall1Geometry}" 
+                                Command="{Binding BtnLogShowCommand}" IsChecked="{Binding LogShowChecked}"/>-->
         <!--<controls:IconButton Visibility="Collapsed" Grid.Row="1" Grid.Column="3" Focusable="False" Style="{StaticResource FooterButtonStyle}"  IconGeometry="{StaticResource NavigateForwardGeometry}"
                                    FontSize="14" Content="前进"   Command="{Binding BtnNavigateForwarddCommand}"/>-->
 

@@ -8,9 +8,11 @@
         mvvm:ViewModelLocator.AutoWireViewModel="True"
         xmlns:regions="http://prismlibrary.com/" xmlns:controls="https://github.io/semicontrol"
         mc:Ignorable="d"
-        Title="ShellWindow"   
-        Height="1080"
+        Title="ShellWindow"
+        Height="1024"
         Width="1920"
+        AllowsTransparency="True"
+        Background="Transparent"
         Focusable="False"
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
@@ -22,7 +24,7 @@
             <ColumnDefinition Width="1280"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ContentControl Grid.Column="0"  Visibility="Collapsed" regions:RegionManager.RegionName="LeftViewRegion"/>
+        <ContentControl Grid.Column="0" Background="Transparent" Width="320" regions:RegionManager.RegionName="LeftViewRegion"/>
 
         <Grid Grid.Column="1" Background="{DynamicResource BackgroundLightBrush}" Width="1280">
             <Grid.RowDefinitions>
@@ -64,7 +66,8 @@
                     <controls:IconButton  Focusable="False" Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource NavigateBackGeometry}" 
                        Content="后退" Click="BtnNavigateBackCommand"  />
 
-                    <controls:IconButton  Content="日志"  Focusable="False"  Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource MainMenuSmall1Geometry}" Command="{Binding BtnLogShowCommand}"/>
+                    <controls:IconButton  Content="日志"  Focusable="False"  Style="{StaticResource FooterButtonStyle}" Height="65" Width="65" Margin="0 5" IconGeometry="{StaticResource MainMenuSmall1Geometry}"
+                                          Click=" BtnLogShowCommand"/>
 
                 </StackPanel>
 
@@ -95,6 +98,21 @@
 
         </Grid>
 
-        <ContentControl Grid.Column="2" Visibility="Hidden"  Width="0" regions:RegionManager.RegionName="RightViewRegion"/>
+        <!--<ContentControl x:Name="RightViewRegion" Grid.Column="2" Background="Transparent"  Width="320" regions:RegionManager.RegionName="RightViewRegion"/>-->
+
+        <ScrollViewer x:Name="LogScrollViewer" Grid.Column="2" Background="Transparent"
+               Margin="5"
+               VerticalScrollBarVisibility="Auto"
+               HorizontalScrollBarVisibility="Disabled">
+            <RichTextBox x:Name="LogRichTextBox"
+                  Background="{DynamicResource PrimaryControlToolBrush}"                         
+                  Foreground="Black"
+                  FontFamily="Consolas, Courier New, monospace"
+                  FontSize="14"
+                  VerticalScrollBarVisibility="Disabled"
+                  HorizontalScrollBarVisibility="Disabled"
+                  IsReadOnly="True"
+                  BorderThickness="0" />
+        </ScrollViewer>
     </Grid>  
 </Window>

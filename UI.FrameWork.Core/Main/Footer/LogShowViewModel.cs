@@ -39,13 +39,13 @@ namespace UI.FrameWork.Core.Main.Footer
             Task.Run(() => {
                 while (!CancellationTokenSource.IsCancellationRequested)
                 {
-                    //_logger.LogInformation("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
-                    //_logger.LogDebug("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
-                    //_logger.LogError("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
-                    //_logger.LogCritical("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
-                    //_logger.LogTrace("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
-                    //_logger.LogWarning("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
-                    //Task.Delay(1).Wait();
+                     Logger.LogInformation("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
+                     Logger.LogDebug("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
+                     Logger.LogError("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
+                     Logger.LogCritical("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
+                     Logger.LogTrace("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
+                     Logger.LogWarning("这是一个测试日志，当前时间：{time}", DateTime.Now.ToString("fffffff"));
+                     Task.Delay(1).Wait();
                 }
             }, CancellationTokenSource.Token);
         }

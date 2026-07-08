@@ -14,7 +14,7 @@
         <!-- ═══ 主区域 ═══ -->
         <controls:LayoutPageControl.MainContent>
 
-            <hc:PropertyGrid></hc:PropertyGrid>
+            <hc:PropertyGrid  SelectedObject="{Binding CameraConfiguration}"></hc:PropertyGrid>
         </controls:LayoutPageControl.MainContent>
 
         <!-- ═══ 右侧面板 ═══ --><!--

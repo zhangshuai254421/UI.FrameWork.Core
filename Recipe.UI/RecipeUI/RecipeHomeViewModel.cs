@@ -270,7 +270,7 @@ namespace Recipe.UI.RecipeUI
 
         public override void EnterCommandExecute()
         {
-            Logger.LogInformation("RecipeHomeViewModel EnterCommandExecute");
+            //Logger.LogInformation("RecipeHomeViewModel EnterCommandExecute");
             base.EnterCommandExecute();
             IoC.Get<INavigationService>().NavigateToAsync(ViewNames.RecipeContextView, RegionNames.MainRegion);
         }

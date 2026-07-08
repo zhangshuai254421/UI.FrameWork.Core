@@ -30,7 +30,7 @@ namespace PrismUI.Core
 
         public virtual void EnterCommandExecute()
         {
-            Logger?.LogInformation("Navigating to recipe context view.");
+            //Logger?.LogInformation("Navigating to recipe context view.");
             // 这里可以放置你想要执行的逻辑
             //IoC.Get<INavigationService>().NavigateToAsync(ViewNames.RecipeContextView, RegionNames.MainRegion);
         }
