@@ -1,4 +1,4 @@
-﻿using DryIoc;
+using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
 using EFCore.Infrastructure;
 using EFCore.Repository;
@@ -36,8 +36,18 @@ namespace UI.FrameWork.Core
 
     public abstract class FrameworkAppBase : PrismApplicationBase
     {
+        #region 字段
+
+        private readonly ServiceCollection _services = new ServiceCollection();
+        private static Mutex AppMutex;
+
+        #endregion
+
+        #region 方法
+
         [DllImport("USER32.DLL")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
+
         protected override IContainerExtension CreateContainerExtension()
         {
             IServiceCollection services = new ServiceCollection();
@@ -50,17 +60,16 @@ namespace UI.FrameWork.Core
             services.AddSerilogServices();
             services.AddRecipeServices();
             services.AddSingleton<INavigationService, PrismUI.Core.NavigationService>();
-  
+
             return new DryIocContainerExtension(new DryIoc.Container(DryIocContainerExtension.DefaultRules) .WithDependencyInjectionAdapter(services));
         }
-        private readonly ServiceCollection _services = new ServiceCollection();
+
         protected override Window CreateShell()
         {
             Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Recipe.Domain.DataContext>();
             Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Log.Domain.DataContext>();
             return Container.Resolve<ShellWindow>(); ;
         }
-        private static Mutex AppMutex;
 
         /// <summary>
         /// TODO 3
@@ -108,15 +117,16 @@ namespace UI.FrameWork.Core
             if (result == false)
             {
                 base.OnInitialized();
-      
+
             }
             else
             {
                 // 登录失败或取消 → 退出程序
                 Current.Shutdown();
             }
-           
+
         }
+
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             // 注册全局依赖，比如主题服务、消息总线等
@@ -128,7 +138,7 @@ namespace UI.FrameWork.Core
             // 1. 初始化 Serilog
             //Serilog.Log.Logger = new LoggerConfiguration()
             //     .Enrich.WithMachineName()             // 添加 MachineName
-            //     .Enrich.WithThreadId()                // 添加 ThreadId              
+            //     .Enrich.WithThreadId()                // 添加 ThreadId
             //     .Enrich.WithEnvironmentUserName()     // 添加当前用户名
             //    .MinimumLevel.Debug()
             //    .WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug, tableName: "SerilogHistory")  // 指定数据库文件路径
@@ -154,8 +164,9 @@ namespace UI.FrameWork.Core
 
             #endregion
         }
+
         /// <summary>
-        /// TODO 1. 
+        /// TODO 1.
         /// </summary>
         /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
@@ -169,5 +180,7 @@ namespace UI.FrameWork.Core
             //host.Dispose();
             base.OnExit(e);
         }
+
+        #endregion
     }
 }

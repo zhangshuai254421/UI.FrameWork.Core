@@ -10,12 +10,15 @@ namespace PrismUI.Core
     /// </summary>
     public class BaseViewModel : BindableBase
     {
+        #region 字段
+
         protected readonly ILogger Logger;  // 非泛型 ILogger，但内部类别名是子类的
         private DelegateCommand _exitCommand = null!;
         public DelegateCommand _enterCommand = null!;
 
-        public IEventAggregator EventAggregator { get; set; }
+        #endregion
 
+        #region 构造函数
 
         public BaseViewModel(ILoggerFactory loggerFactory, IEventAggregator eventAggregator)
         {
@@ -27,6 +30,34 @@ namespace PrismUI.Core
         {
             EventAggregator = eventAggregator;
         }
+
+        #endregion
+
+        #region 属性
+
+        public IEventAggregator EventAggregator { get; set; }
+
+        #endregion
+
+        #region 命令
+
+        public  DelegateCommand ExitCommand => _exitCommand ?? new DelegateCommand(() =>
+        {
+            // 这里可以放置你想要执行的逻辑
+
+            ExitCommandExecute();
+        });
+
+        public  DelegateCommand EnterCommand => _enterCommand ?? new DelegateCommand(() =>
+        {
+            EnterCommandExecute();
+            // 这里可以放置你想要执行的逻辑
+
+        });
+
+        #endregion
+
+        #region 方法
 
         public virtual void EnterCommandExecute()
         {
@@ -40,18 +71,6 @@ namespace PrismUI.Core
             IoC.Get<INavigationService>().GoBack();
         }
 
-        public  DelegateCommand ExitCommand => _exitCommand ?? new DelegateCommand(() =>
-        {
-            // 这里可以放置你想要执行的逻辑
-
-            ExitCommandExecute();
-        });
-
-        public  DelegateCommand EnterCommand => _enterCommand ?? new DelegateCommand(() =>
-        {
-            EnterCommandExecute();
-            // 这里可以放置你想要执行的逻辑
-           
-        });
+        #endregion
     }
 }

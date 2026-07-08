@@ -1,4 +1,4 @@
-﻿using Framework.Core.Common;
+using Framework.Core.Common;
 using Microsoft.Extensions.Logging;
 using PrismUI.Core;
 using Serilog;
@@ -13,16 +13,27 @@ namespace UI.FrameWork.Core.Main.Footer
 {
     public class LogShowViewModel : BaseViewModel, INavigationAware
     {
+        #region 构造函数
 
         public LogShowViewModel(ILoggerFactory loggerFactory, IEventAggregator eventAggregator)
      : base(loggerFactory, eventAggregator)  // ← 多传一个参数，其余不变
         {
         }
+
+        #endregion
+
+        #region 属性
+
+        public CancellationTokenSource CancellationTokenSource { get; set; } = new CancellationTokenSource();
+
+        #endregion
+
+        #region INavigationAware
+
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
             return true;  // 复用同一个 View 实例，避免重复创建导致 Serilog sink 丢失
         }
-        public CancellationTokenSource CancellationTokenSource { get; set; } = new CancellationTokenSource();
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
@@ -35,7 +46,7 @@ namespace UI.FrameWork.Core.Main.Footer
             // 重新创建 CTS，比 TryReset 更可靠
             CancellationTokenSource = new CancellationTokenSource();
             Logger.LogInformation("进入日志显示页面");
-           
+
             Task.Run(() => {
                 while (!CancellationTokenSource.IsCancellationRequested)
                 {
@@ -50,6 +61,6 @@ namespace UI.FrameWork.Core.Main.Footer
             }, CancellationTokenSource.Token);
         }
 
-
+        #endregion
     }
 }

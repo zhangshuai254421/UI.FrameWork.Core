@@ -1,4 +1,4 @@
-﻿using Framework.Core.Common;
+using Framework.Core.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using PrismUI.Core;
@@ -29,6 +29,8 @@ namespace UI.FrameWork.Core.Main
     /// </summary>
     public partial class ShellWindow : Window, INotifyPropertyChanged
     {
+        #region 字段
+
         public static RichTextBoxConsoleTheme ColoredCustom { get; } = new RichTextBoxConsoleTheme(new Dictionary<RichTextBoxThemeStyle, RichTextBoxConsoleThemeStyle>
         {
             // 普通文本 - 深灰，保证可读性
@@ -145,6 +147,11 @@ namespace UI.FrameWork.Core.Main
         private const double ScrollTolerance = 20.0;
 
         private bool _isAutoScroll = true;
+        private Visibility _isToolBoxVisible = Visibility.Collapsed;
+
+        #endregion
+
+        #region 构造函数
 
         public ShellWindow()
         {
@@ -163,7 +170,7 @@ namespace UI.FrameWork.Core.Main
             //WindowState = WindowState.Maximized;
 
             //Width = 1280;
-            //Height = 1080;     
+            //Height = 1080;
 
             // 自动滚动 + 行数限制
             LogRichTextBox.TextChanged += OnLogTextChanged;
@@ -186,6 +193,28 @@ namespace UI.FrameWork.Core.Main
               .CreateLogger();
 
         }
+
+        #endregion
+
+        #region 属性
+
+        public Visibility IsToolBoxVisible
+        {
+            get => _isToolBoxVisible;
+            set
+            {
+                if (_isToolBoxVisible != value)
+                {
+                    _isToolBoxVisible = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        #endregion
+
+        #region 方法
+
         private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             // 用户手动滚动：如果距离底部超过容差，暂停自动滚动
@@ -219,36 +248,15 @@ namespace UI.FrameWork.Core.Main
                 }
             }
         }
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        // CallerMemberName 会自动填充调用该方法的属性名称
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-
-
-        private Visibility _isToolBoxVisible = Visibility.Collapsed;
-
-        public Visibility IsToolBoxVisible
-        {
-            get => _isToolBoxVisible;
-            set
-            {
-                if (_isToolBoxVisible != value)
-                {
-                    _isToolBoxVisible = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        
-
         private void BtnNavigateBackCommand(object sender, RoutedEventArgs e)
         {
-           
+
             //var s = IoC.Get<INavigationService>();
             IoC.Get<INavigationService>().GoBack();
         }
@@ -265,24 +273,34 @@ namespace UI.FrameWork.Core.Main
                .GetEvent<ToolBoxVisibilityChangedEvent>()
                .Subscribe(visible => IsToolBoxVisible = visible ? Visibility.Visible : Visibility.Collapsed);
 
- 
-        }
 
+        }
 
         private void BtnLogShowCommand(object sender, RoutedEventArgs e)
         {
+            var Logger = IoC.Get<ILoggerFactory>().CreateLogger<ShellWindow>();
             if (LogScrollViewer.Visibility==Visibility.Visible) {
                 LogScrollViewer.Visibility = Visibility.Collapsed;
+                Logger.LogInformation("隐藏日志显示页面");
             }
             else
             {
                 LogScrollViewer.Visibility = Visibility.Visible;
+                Logger.LogInformation("显示日志显示页面");
             }
-            var Logger= IoC.Get<ILoggerFactory>().CreateLogger<ShellWindow>();
-            Logger.LogInformation("进入日志显示页面");
+            
+           
 
-  
+
 
         }
+
+        #endregion
+
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
     }
 }

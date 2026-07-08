@@ -1,4 +1,4 @@
-﻿using PrismUI.Core;
+using PrismUI.Core;
 using Recipe.Domain;
 using Recipe.Infrastructure;
 using System;
@@ -12,21 +12,30 @@ namespace UI.FrameWork.Core.Main.RecipeView
 {
     public class RecipeContextViewModel : BaseViewModel, INavigationAware
     {
+        #region 字段
 
-        public class CameraConfigurationModel
-        {
-            public string CameraName { get; set; }
-        }
-
-        public ObservableCollection<CameraConfiguration> CameraConfigurations { get; set; } = new ObservableCollection<CameraConfiguration>();  
-
-        public CameraConfigurationModel CameraConfiguration { get; set; } = new CameraConfigurationModel();
         private readonly CameraConfigurationService cameraConfigurationService;
+
+        #endregion
+
+        #region 构造函数
 
         public RecipeContextViewModel(IEventAggregator eventAggregator,CameraConfigurationService cameraConfigurationService) : base(eventAggregator)
         {
             this.cameraConfigurationService = cameraConfigurationService;
         }
+
+        #endregion
+
+        #region 属性
+
+        public ObservableCollection<CameraConfiguration> CameraConfigurations { get; set; } = new ObservableCollection<CameraConfiguration>();
+
+        public CameraConfigurationModel CameraConfiguration { get; set; } = new CameraConfigurationModel();
+
+        #endregion
+
+        #region INavigationAware
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
@@ -45,6 +54,13 @@ namespace UI.FrameWork.Core.Main.RecipeView
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
             //throw new NotImplementedException();
+        }
+
+        #endregion
+
+        public class CameraConfigurationModel
+        {
+            public string CameraName { get; set; }
         }
     }
 }
