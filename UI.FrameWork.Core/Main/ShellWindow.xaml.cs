@@ -256,8 +256,6 @@ namespace UI.FrameWork.Core.Main
 
         private void BtnNavigateBackCommand(object sender, RoutedEventArgs e)
         {
-
-            //var s = IoC.Get<INavigationService>();
             IoC.Get<INavigationService>().GoBack();
         }
 
@@ -288,11 +286,6 @@ namespace UI.FrameWork.Core.Main
                 LogScrollViewer.Visibility = Visibility.Visible;
                 Logger.LogInformation("显示日志显示页面");
             }
-            
-           
-
-
-
         }
 
         #endregion

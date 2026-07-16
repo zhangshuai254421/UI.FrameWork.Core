@@ -241,16 +241,16 @@ namespace Recipe.UI.RecipeUI
                 return; // 没有选中配方，不弹框
             }
 
-            var result = _dialogService.ShowDialogAsync(
-            "ConfirmationDialog",
-            new DialogParameters
-            {
-                { "Title", "切换配方确认" },
-                { "Message", "确定要切换到选中的配方吗？此操作不可撤销。" }
-            });
+            //var result = _dialogService.ShowDialogAsync(
+            //"ConfirmationDialog",
+            //new DialogParameters
+            //{
+            //    { "Title", "切换配方确认" },
+            //    { "Message", "确定要切换到选中的配方吗？此操作不可撤销。" }
+            //});
 
-            if (result.Result.Result == ButtonResult.Yes)
-            {
+            //if (result.Result.Result == ButtonResult.Yes)
+            //{
                 // 执行切换配方逻辑
             
                     var selectedRecipe = _recipeService.GetListAsync(p => p.GroupName == SelectGroupName && p.RecipeName == SelectRecipeName).Result.FirstOrDefault();
@@ -260,7 +260,7 @@ namespace Recipe.UI.RecipeUI
                         _eventAggregator.GetEvent<ChangeRecipeEvent>().Publish(SelectRecipeName);
                     }
                 
-            }   
+            //}   
         });
 
 
@@ -272,6 +272,7 @@ namespace Recipe.UI.RecipeUI
         {
             //Logger.LogInformation("RecipeHomeViewModel EnterCommandExecute");
             base.EnterCommandExecute();
+            ApplyRecipeCmd.Execute();
             IoC.Get<INavigationService>().NavigateToAsync(ViewNames.RecipeContextView, RegionNames.MainRegion);
         }
 

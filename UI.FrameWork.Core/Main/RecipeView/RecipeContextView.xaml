@@ -14,7 +14,20 @@
         <!-- ═══ 主区域 ═══ -->
         <controls:LayoutPageControl.MainContent>
 
-            <hc:PropertyGrid  SelectedObject="{Binding CameraConfiguration}"></hc:PropertyGrid>
+            <ListBox ItemsSource="{Binding RecipeContextViewDto}" >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <hc:PropertyGrid  SelectedObject="{Binding }"></hc:PropertyGrid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        
         </controls:LayoutPageControl.MainContent>
 
         <!-- ═══ 右侧面板 ═══ --><!--

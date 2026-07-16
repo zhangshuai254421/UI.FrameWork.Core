@@ -9,12 +9,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PrismUI.Core;
+using Recipe.Domain;
+using Recipe.Infrastructure;
 using Serilog;
 using Serilog.Infrastructure;
 using Serilog.Sinks.RichTextBox.Themes;
 using System;
 using System.Collections.Generic;
-using Recipe.Infrastructure;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -28,8 +30,6 @@ using System.Windows.Navigation;
 using UI.FrameWork.Core.Common;
 using UI.FrameWork.Core.Main;
 using UI.FrameWork.Core.Main.Footer;
-using Recipe.Domain;
-using PrismUI.Core;
 
 namespace UI.FrameWork.Core
 {
@@ -60,6 +60,8 @@ namespace UI.FrameWork.Core
             services.AddSerilogServices();
             services.AddRecipeServices();
             services.AddSingleton<INavigationService, PrismUI.Core.NavigationService>();
+
+           
 
             return new DryIocContainerExtension(new DryIoc.Container(DryIocContainerExtension.DefaultRules) .WithDependencyInjectionAdapter(services));
         }

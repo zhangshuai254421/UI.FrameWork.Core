@@ -84,11 +84,19 @@ namespace EFCore.Infrastructure
 
         public virtual async Task<bool> UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
-            _repository.UpdateRange(entities);
+            try
+            {
+                _repository.UpdateRange(entities);
 
-            var affected = await _unitOfWork.SaveChangeAsync(cancellationToken);
+                var affected = await _unitOfWork.SaveChangeAsync(cancellationToken);
 
-            return affected > 0;
+                return affected > 0;
+            }
+            catch (Exception e )
+            {
+              throw e;
+            }
+
         }
 
         public virtual async Task<bool> UpdateRangeAsync(Expression<Func<TEntity, bool>> predicate, Action<TEntity> updateAction, CancellationToken cancellationToken = default)

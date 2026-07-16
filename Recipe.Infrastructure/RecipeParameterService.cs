@@ -1,13 +1,17 @@
-﻿using EFCore.Infrastructure;
+﻿using EFCore.IRepository;
 using EFCore.Repository;
 using Recipe.Domain;
+using System.Linq.Expressions;
 
 namespace Recipe.Infrastructure
 {
-    public class RecipeParameterService : EntityServiceBase<Recipe.Domain.RecipeParameter, Guid>, IRecipeParameterService
+
+    public class RecipeParameterService : RecipeParameterServiceBase<Recipe.Domain.RecipeParameter, Guid>,IRecipeParameterService
     {
         public RecipeParameterService(IUnitOfWork unitofWork) : base(unitofWork)
-        {
+        { 
         }
+
+  
     }
 }

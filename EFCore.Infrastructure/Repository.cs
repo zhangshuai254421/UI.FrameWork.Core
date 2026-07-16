@@ -93,6 +93,7 @@ namespace EFCore.Infrastructure
 
         public virtual void UpdateRange(IEnumerable<TEntity> entities)
         {
+            _context.ChangeTracker.Clear();
             _context.UpdateRange(entities);
         }
 
