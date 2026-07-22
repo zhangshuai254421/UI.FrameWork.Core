@@ -59,6 +59,8 @@ namespace UI.FrameWork.Core
 
             services.AddSerilogServices();
             services.AddRecipeServices();
+
+            
             services.AddSingleton<INavigationService, PrismUI.Core.NavigationService>();
 
            
@@ -154,15 +156,15 @@ namespace UI.FrameWork.Core
             //    //.WriteTo.RichTextBox(LogShowView.Instance, theme: RichTextBoxConsoleTheme.Colored)
             //    .CreateLogger();
 
-            // 2. 接入微软日志抽象
-            var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddSerilog();
-            });
+            //// 2. 接入微软日志抽象
+            //var loggerFactory = LoggerFactory.Create(builder =>
+            //{
+            //    builder.AddSerilog();
+            //});
 
-            // 3. 注册到 Prism 容器
-            containerRegistry.RegisterInstance<ILoggerFactory>(loggerFactory);
-            containerRegistry.Register(typeof(ILogger<>), typeof(Logger<>));
+            //// 3. 注册到 Prism 容器
+            //containerRegistry.RegisterInstance<ILoggerFactory>(loggerFactory);
+            //containerRegistry.Register(typeof(ILogger<>), typeof(Logger<>));
 
             #endregion
         }

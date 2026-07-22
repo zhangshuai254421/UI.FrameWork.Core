@@ -12,7 +12,7 @@ using UI.FrameWork.Core.Main.Footer;
 namespace SemiAppliaction.Views
 {
     // 作者：Zhang Shuai
-    // 描述：Main 视图模型，负责与主界面交互的逻辑（示例：记录日志）。
+    // 描述：Main 视图模型，负责与主界面交互的逻辑（示例：记录日志）。f
     public class MainViewModel:BindableBase
     {
         private readonly ILogger<MainViewModel> _logger;

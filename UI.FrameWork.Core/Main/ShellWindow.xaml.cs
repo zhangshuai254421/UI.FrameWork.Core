@@ -288,6 +288,7 @@ namespace UI.FrameWork.Core.Main
             }
         }
 
+
         #endregion
 
         #region INotifyPropertyChanged

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Serilog.Infrastructure
 {
-    public class SerilogService : EntityServiceBase<Log.Domain.SerilogHistory, Guid>, ISerilogService
+    public class SerilogService : EntityServiceBase<SerilogHistory, Guid>, ISerilogService
     {
         public SerilogService(IUnitOfWork unitofWork) : base(unitofWork)
         {

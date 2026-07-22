@@ -35,6 +35,9 @@ namespace UI.FrameWork.Core.Main
             _ = LoadDataAsync();
         }
 
+
+
+
         #region 属性
 
         private ObservableCollection<SerilogHistory> _logEntries = new();

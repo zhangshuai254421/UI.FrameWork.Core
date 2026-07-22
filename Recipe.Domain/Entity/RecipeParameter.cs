@@ -11,5 +11,7 @@ namespace Recipe.Domain
     {
         public int RecipeId { get; set; }  
         public virtual Recipe? Recipe { get; set; }
+
+        // 声明一个抽象拷贝方法，要求所有子类实现
     }
 }

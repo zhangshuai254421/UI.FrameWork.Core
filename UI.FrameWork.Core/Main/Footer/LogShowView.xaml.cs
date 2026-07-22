@@ -152,8 +152,9 @@ public partial class LogShowView : UserControl
             LogScrollViewer.ScrollChanged += OnScrollChanged;
 
             // 1. 初始化 Serilog（自定义浅色背景 + 黑色文字主题）
+          
 
-            
+
             Serilog.Log.Logger = new LoggerConfiguration()
                          .Enrich.WithMachineName()             // 添加 MachineName
                          .Enrich.WithThreadId()                // 添加 ThreadId

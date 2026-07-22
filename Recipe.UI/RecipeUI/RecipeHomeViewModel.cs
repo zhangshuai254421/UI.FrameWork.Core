@@ -1,4 +1,6 @@
 
+using Baksteen.Extensions.DeepCopy;
+using EFCore.Repository;
 using Framework.Core.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
@@ -10,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -194,12 +197,25 @@ namespace Recipe.UI.RecipeUI
                 var newRecipeName = dialogResult.Parameters.GetValue<string>("NewRecipeName");
                 if (!string.IsNullOrWhiteSpace(newRecipeName) && newRecipeName != SelectRecipeName)
                 {
+                    var s = _recipeService.GetListAsync(p => p.GroupName == SelectGroupName && p.RecipeName == SelectRecipeName).Result.FirstOrDefault()?.Parameters;
+
+                    ICollection<RecipeParameter> parametersToCopy= new List<RecipeParameter>();
+
+                    foreach (var parameter in s ?? new List<RecipeParameter>())
+                    {
+                        var temp = parameter.DeepCopy();
+                        temp.ResetId();
+                        parametersToCopy.Add(temp);
+                    }
+
                     // TODO: 调用 _recipeService 执行拷贝逻辑
                     _recipeService.AddAsync(new Recipe.Domain.Recipe()
                     {
                         GroupName = SelectGroupName,
                         RecipeName = newRecipeName,
-                        MachineName = AppGlobals.MachineName
+                        MachineName = AppGlobals.MachineName,
+                        //TODO. 这里要用反射 继承的字类  但是不需要
+                        Parameters = parametersToCopy
                     });
                     RefreshSelectGroupName();
                 }
@@ -234,6 +250,7 @@ namespace Recipe.UI.RecipeUI
 
         public DelegateCommand ApplyRecipeCmd => _applyRecipeCmd?? new DelegateCommand(() =>
         {
+            Logger.LogInformation("ApplyRecipeCmd");
             // 这里可以放置你想要执行的逻辑
             // 例如，打开一个新的窗口，或者执行某个操作
             if (string.IsNullOrWhiteSpace(SelectRecipeName))

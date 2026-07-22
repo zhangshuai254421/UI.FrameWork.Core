@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Baksteen.Extensions.DeepCopy" Version="1.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="RecipeUI\excel-5.png" />
     <Resource Include="RecipeUI\folder-3.png" />
   </ItemGroup>

@@ -1,5 +1,6 @@
 ﻿namespace EFCore.Repository
 {
+
     public class Entity
     {
         int? _requestedHashCode;
@@ -18,6 +19,14 @@
         public bool IsTransient()
         {
             return this.Id == default;
+        }
+
+        public bool ResetId()
+        {
+            if (!IsTransient()) {
+                this.Id = default;
+            }
+            return true;
         }
 
         public override bool Equals(object obj)
