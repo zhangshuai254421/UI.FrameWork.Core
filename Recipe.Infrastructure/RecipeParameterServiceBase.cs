@@ -6,7 +6,7 @@ using Recipe.Domain;
 namespace Recipe.Infrastructure
 {
     public abstract class RecipeParameterServiceBase<TEntity, TKey>
-    : EntityServiceBase<TEntity, TKey>,IRecipeParameterServiceBase<TEntity, TKey>
+    : EntityServiceBase<TEntity, TKey>, IRecipeParameterServiceBase<TEntity, TKey>
     where TEntity : RecipeParameter
     where TKey : notnull
     {
@@ -28,5 +28,15 @@ namespace Recipe.Infrastructure
       where TKey : notnull
     {
         public GenericRecipeParameterService(IUnitOfWork unitofWork) : base(unitofWork) { }
+    }
+
+    public class GenericSystemParemeterService<TEntity, TKey>
+        : EntityServiceBase<TEntity, TKey>
+          where TEntity : Entity
+      where TKey : notnull
+    {
+        public GenericSystemParemeterService(IUnitOfWork unitofWork) : base(unitofWork)
+        {
+        }
     }
 }

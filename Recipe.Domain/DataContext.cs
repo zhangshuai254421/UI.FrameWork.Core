@@ -1,4 +1,5 @@
-﻿using Framework.Core.Common;
+﻿using EFCore.Repository;
+using Framework.Core.Common;
 using Framework.Core.CustomAttribute;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -74,6 +75,11 @@ namespace Recipe.Domain
                 modelBuilder.Entity(type);
             }
 
+            foreach(var type in FindSystemParameterDerivedTypes())
+            {
+                modelBuilder.Entity(type);
+            }
+
             modelBuilder.Entity<Recipe>().HasData(
                 new Recipe(-1, "default", "-Default-", "ZS1A")
             );
@@ -119,6 +125,37 @@ namespace Recipe.Domain
                 }
             }
         }
+
+        /// <summary>
+        /// 找出所有程序集里 RecipeParameter 的非抽象派生类
+        /// </summary>
+        private static IEnumerable<Type> FindSystemParameterDerivedTypes()
+        {
+            foreach (var asm in GetExtensionAssemblies())
+            {
+                Type[] types;
+                try
+                {
+                    types = asm.GetTypes();
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    // 插件引用了缺失依赖时 GetTypes 会抛这个，必须吞掉继续
+                    types = ex.Types.Where(t => t != null).Cast<Type>().ToArray();
+                }
+
+                foreach (var t in types)
+                {
+                    if (t.IsClass && !t.IsAbstract &&
+                        t != typeof(Entity) && typeof(Entity).IsAssignableFrom(t))
+                    {
+                        yield return t;
+                    }
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// 只返回“声明默认 DbContext 是 Recipe.DataContext”的外部程序集

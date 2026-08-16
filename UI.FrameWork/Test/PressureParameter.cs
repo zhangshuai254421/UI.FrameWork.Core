@@ -1,4 +1,5 @@
-﻿using Framework.Core.CustomAttribute;
+﻿using EFCore.Repository;
+using Framework.Core.CustomAttribute;
 using Recipe.Domain;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,15 @@ using System.Threading.Tasks;
 namespace SemiAppliaction.Test
 {
 
-public class PressureParameter : RecipeParameter
+    public class PressureParameter : RecipeParameter
     {
         public double TargetPressure { get; set; }
         public double MinTolerance { get; set; }
     }
+
+    public class ComputerParameter : Entity
+    {
+       public string Name { get; set; } = string.Empty;
+    }
 }
+
