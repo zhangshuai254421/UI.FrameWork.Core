@@ -56,6 +56,22 @@ namespace Framework.Core.Common
 
         public static string AppDebug { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
+        private static string DeviceDbFilePathNoDebug
+        {
+            get
+            {
+                return "Device\\DeviceDomain.db";
+            }
+        }
+
+        public static string DeviceDbFliePath
+        {
+            get
+            {
+                return $"Data Source={Path.Combine(AppDebug, DeviceDbFilePathNoDebug)}";
+            }
+        }
+
         public static string MachineName = "ZS1A";
     }
 
