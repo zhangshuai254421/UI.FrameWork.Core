@@ -6,7 +6,7 @@ using Recipe.Domain;
 namespace Recipe.Infrastructure
 {
     public abstract class RecipeParameterServiceBase<TEntity, TKey>
-    : EntityServiceBase<TEntity, TKey>
+    : EntityServiceBase<TEntity, TKey>,IRecipeParameterServiceBase<TEntity, TKey>
     where TEntity : RecipeParameter
     where TKey : notnull
     {
@@ -20,5 +20,13 @@ namespace Recipe.Infrastructure
             int crrentRecipeId = IoC.Get<IRecipeManagerService>().GetListAsync().Result.FirstOrDefault().CurrentRecipeId;
             return _repository.GetListAsync(p => p.RecipeId == crrentRecipeId,cancellationToken);
         }
+    }
+
+    public class GenericRecipeParameterService<TEntity, TKey>
+      : RecipeParameterServiceBase<TEntity, TKey>
+      where TEntity : RecipeParameter
+      where TKey : notnull
+    {
+        public GenericRecipeParameterService(IUnitOfWork unitofWork) : base(unitofWork) { }
     }
 }

@@ -12,6 +12,9 @@ namespace Recipe.Infrastructure
             services.AddScoped<IRecipeParameterService, RecipeParameterService>();
             services.AddScoped<ICameraConfigurationService, CameraConfigurationService>();
             services.AddScoped<IRecipeManagerService, RecipeManagerService>();
+
+            // 插件实体走开放泛型兜底；内置实体仍命中下面的闭合注册，互不冲突
+            services.AddScoped(typeof(IRecipeParameterServiceBase<,>), typeof(GenericRecipeParameterService<,>));
             return services;
         }
     }

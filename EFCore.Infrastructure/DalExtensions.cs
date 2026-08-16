@@ -1,6 +1,8 @@
 ﻿using EFCore.Repository;
 using Framework.Core.CustomAttribute;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EFCore.Infrastructure
@@ -37,9 +39,13 @@ namespace EFCore.Infrastructure
 
             var serviceProvider = serviceScope.ServiceProvider;
 
+            // EnsureCreated 方法会创建数据库和所有表，如果数据库已存在，则不会执行任何操作
             var context = serviceProvider.GetRequiredService<TDbContext>();
-
             context.Database.EnsureCreated();
+
+            // EnsureCreated 换成 CreateTables：只创建模型中存在、库里缺失的表
+            //var creator = context.GetService<IRelationalDatabaseCreator>();
+            //creator!.CreateTables();
 
             return provider;
         }

@@ -1,4 +1,5 @@
 ﻿using Framework.Core.Common;
+using Framework.Core.CustomAttribute;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -55,7 +57,22 @@ namespace Recipe.Domain
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // 1. 扫描当前程序集里声明归属本 DataContext 的插件
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+
+            // 2. 【新增】扩展点：扫描其它程序集里声明归属本 DataContext 的插件
+            foreach (var assembly in GetExtensionAssemblies())
+            {
+                // 应用插件自带的 IEntityTypeConfiguration（表名、索引、HasData 都在插件里配）
+                modelBuilder.ApplyConfigurationsFromAssembly(assembly);
+            }
+
+
+            // 3. 【新增】兜底：插件即使没写任何配置，派生实体也自动进模型
+            foreach (var type in FindRecipeParameterDerivedTypes())
+            {
+                modelBuilder.Entity(type);
+            }
 
             modelBuilder.Entity<Recipe>().HasData(
                 new Recipe(-1, "default", "-Default-", "ZS1A")
@@ -72,6 +89,52 @@ namespace Recipe.Domain
             );
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        /// <summary>
+        /// 找出所有程序集里 RecipeParameter 的非抽象派生类
+        /// </summary>
+        private static IEnumerable<Type> FindRecipeParameterDerivedTypes()
+        {
+            foreach (var asm in GetExtensionAssemblies())
+            {
+                Type[] types;
+                try
+                {
+                    types = asm.GetTypes();
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    // 插件引用了缺失依赖时 GetTypes 会抛这个，必须吞掉继续
+                    types = ex.Types.Where(t => t != null).Cast<Type>().ToArray();
+                }
+
+                foreach (var t in types)
+                {
+                    if (t.IsClass && !t.IsAbstract &&
+                        t != typeof(RecipeParameter) && typeof(RecipeParameter).IsAssignableFrom(t))
+                    {
+                        yield return t;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 只返回“声明默认 DbContext 是 Recipe.DataContext”的外部程序集
+        /// </summary>
+        private static IEnumerable<Assembly> GetExtensionAssemblies()
+        {
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (asm.IsDynamic || asm == typeof(DataContext).Assembly) continue;
+
+                var attr = asm.GetCustomAttribute<DefaultDbContextAttribute>();
+                if (attr?.DbContextType == typeof(DataContext))
+                {
+                    yield return asm;
+                }
+            }
         }
 
         #endregion

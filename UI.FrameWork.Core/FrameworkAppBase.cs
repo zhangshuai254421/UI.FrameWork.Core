@@ -12,8 +12,6 @@ using Microsoft.Extensions.Logging;
 using PrismUI.Core;
 using Recipe.Domain;
 using Recipe.Infrastructure;
-using Device.Domain;
-using Device.Infrastructure;
 using Serilog;
 using Serilog.Infrastructure;
 using Serilog.Sinks.RichTextBox.Themes;
@@ -56,13 +54,11 @@ namespace UI.FrameWork.Core
 
             services.AddDbContext<Recipe.Domain.DataContext>();
             services.AddDbContext<Log.Domain.DataContext>();
-            services.AddDbContext<Device.Domain.DataContext>();
             /// TODO 2. 注册数据访问层（DAL）和业务逻辑层（BLL）的服务
             services.AddRepository();
 
             services.AddSerilogServices();
             services.AddRecipeServices();
-            services.AddDeviceServices();
 
             
             services.AddSingleton<INavigationService, PrismUI.Core.NavigationService>();
@@ -74,9 +70,12 @@ namespace UI.FrameWork.Core
 
         protected override Window CreateShell()
         {
+            AssemblyPreloader.PreloadPluginAssemblies(AppDomain.CurrentDomain.BaseDirectory);
+
             Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Recipe.Domain.DataContext>();
             Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Log.Domain.DataContext>();
-            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Device.Domain.DataContext>();
+
+          
             return Container.Resolve<ShellWindow>(); ;
         }
 
@@ -88,6 +87,8 @@ namespace UI.FrameWork.Core
             IoC.GetInstance = this.Container.Resolve;
             //IoC.BuildUp = this.Container.BuildUp;
 #if DEBUG
+
+
             var s = IoC.Get<IUnitOfWork>();
             var ss = s.GetRepository<Log.Domain.SerilogHistory>();
             var s2 = ss.GetListAsync();
@@ -128,8 +129,7 @@ namespace UI.FrameWork.Core
                 // 初始化硬件设备管理器（同步等待，避免阻塞UI线程过久）
                 try
                 {
-                    var deviceManager = Container.Resolve<IDeviceManager>();
-                    deviceManager.InitializeAllAsync().GetAwaiter().GetResult();
+
                 }
                 catch (Exception ex)
                 {
@@ -200,8 +200,7 @@ namespace UI.FrameWork.Core
             // 关闭所有设备
             try
             {
-                var deviceManager = Container.Resolve<IDeviceManager>();
-                deviceManager?.ShutdownAllAsync().GetAwaiter().GetResult();
+              
             }
             catch
             {

@@ -1,7 +1,9 @@
 ﻿using Framework.Core.Common;
 using Microsoft.Extensions.Logging;
 using PrismUI.Core;
+using Recipe.Domain;
 using Recipe.UI.RecipeUI;
+using SemiAppliaction.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +27,11 @@ namespace SemiAppliaction.Views
         private DelegateCommand _ShowRecipe = null!;
         public DelegateCommand ShowRecipe => _ShowRecipe ?? new DelegateCommand(() =>
         {
+
+            var svc = IoC.Get<IRecipeParameterServiceBase<PressureParameter, Guid>>();
+            svc.AddAsync(new PressureParameter { RecipeId = 1, TargetPressure = 0.5 });
+            var list = svc.GetCurrentRecipeParameterAsync();
+
             IoC.Get<INavigationService>().NavigateToAsync(nameof(RecipeHomeView), RegionNames.MainRegion);
         });
     }
