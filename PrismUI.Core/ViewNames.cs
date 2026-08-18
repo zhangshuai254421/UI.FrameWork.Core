@@ -2,6 +2,11 @@
 {
     public static class ViewNames
     {
+
+        #region 公共平台的配方系统
+
+        public static string LogViewerView => nameof(LogViewerView);
+        #endregion
         public static string NumberKeyPadView => nameof(NumberKeyPadView);
         public static string StringKeyPadView => nameof(StringKeyPadView);
         public static string AxisView => nameof(AxisView);

@@ -1,13 +1,14 @@
-<UserControl x:Class="UI.FrameWork.Core.Main.LogViewerView"
+<UserControl x:Class="Log.UI.LogViewerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:UI.FrameWork.Core.Main"
+             xmlns:local="clr-namespace:Log.UI"          
              xmlns:mvvm="http://prismlibrary.com/"
              mvvm:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d"
-             xmlns:hc="https://handyorg.github.io/handycontrol" xmlns:controls="https://github.io/semicontrol" >
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:controls="https://github.io/semicontrol" >
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -104,6 +105,7 @@
                     Foreground="#555"
                     VerticalAlignment="Center"
                     Margin="0,0,12,0"/>
+                       
                         <hc:DateTimePicker SelectedDateTime="{Binding StartDate}"
                                Width="200"
                                Height="30"

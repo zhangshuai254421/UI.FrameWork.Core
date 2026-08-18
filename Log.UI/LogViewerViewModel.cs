@@ -6,7 +6,7 @@ using PrismUI.Core;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
-namespace UI.FrameWork.Core.Main
+namespace Log.UI
 {
     /// <summary>
     /// 日志查看器 ViewModel — 分页展示 SerilogHistory 数据，支持按时间范围筛选

@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace UI.FrameWork.Core.Main
+namespace Log.UI
 {
     /// <summary>
     /// LogViewerView.xaml 的交互逻辑

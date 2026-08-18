@@ -27,7 +27,7 @@ namespace UI.FrameWork.Core.Main
         {
             //_regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(NumberKeyPadView));
             //Task.Delay(1000);
-            _navigationService.NavigateToAsync(nameof(LogViewerView));
+            _navigationService.NavigateToAsync(ViewNames.LogViewerView);
             //_regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(LogViewerView));
            
         }
