@@ -33,7 +33,7 @@ namespace SemiAppliaction.Views
             svc.AddAsync(new PressureParameter { RecipeId = 1, TargetPressure = 0.5 });
             var list = svc.GetCurrentRecipeParameterAsync();
 
-            var temp=IoC.Get<GenericSystemParemeterService<ComputerParameter, Guid>>();
+            var temp=IoC.Get<GenericSystemParameterService<ComputerParameter, Guid>>();
             temp.AddAsync(new ComputerParameter { Name = "Computer1" });
             var list2 = temp.GetListAsync().Result;
 

@@ -30,12 +30,12 @@ namespace Recipe.Infrastructure
         public GenericRecipeParameterService(IUnitOfWork unitofWork) : base(unitofWork) { }
     }
 
-    public class GenericSystemParemeterService<TEntity, TKey>
+    public class GenericSystemParameterService<TEntity, TKey>
         : EntityServiceBase<TEntity, TKey>
           where TEntity : Entity
       where TKey : notnull
     {
-        public GenericSystemParemeterService(IUnitOfWork unitofWork) : base(unitofWork)
+        public GenericSystemParameterService(IUnitOfWork unitofWork) : base(unitofWork)
         {
         }
     }

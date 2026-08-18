@@ -17,7 +17,7 @@ namespace Recipe.Infrastructure
 
             // 插件实体走开放泛型兜底；内置实体仍命中下面的闭合注册，互不冲突
             services.AddScoped(typeof(IRecipeParameterServiceBase<,>), typeof(GenericRecipeParameterService<,>));
-            services.AddScoped(typeof(IEntityServiceBase<,>), typeof(GenericSystemParemeterService<,>));
+            services.AddScoped(typeof(IEntityServiceBase<,>), typeof(GenericSystemParameterService<,>));
             return services;
         }
     }
