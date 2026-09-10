@@ -1,6 +1,5 @@
 ﻿using Framework.Core.Common;
 using Framework.Device;
-using Framework.Device.HikVision;
 using Prism.Events;
 using PrismUI.Core;
 using UI.FrameWork.Core.Common;
@@ -30,10 +29,6 @@ namespace UI.FrameWork.Core.Main
             //_regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(NumberKeyPadView));
             //Task.Delay(1000);
             _navigationService.NavigateToAsync(ViewNames.LogViewerView);
-
-            //IDevice Camera = new CameraHikVision();
-            //Camera.Open();
-            //_regionManager.RequestNavigate(RegionNames.BaseViewMainRegion, nameof(LogViewerView));
 
         }
 
