@@ -4,6 +4,7 @@ using EFCore.Infrastructure;
 using EFCore.Repository;
 using Example;
 using Framework.Core.Common;
+using Framework.Device.Domain;
 using Log.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,11 +55,13 @@ namespace UI.FrameWork.Core
 
             services.AddDbContext<Recipe.Domain.DataContext>();
             services.AddDbContext<Log.Domain.DataContext>();
+            services.AddDbContext<Framework.Device.Domain.DeviceDataContext>();
             /// TODO 2. 注册数据访问层（DAL）和业务逻辑层（BLL）的服务
             services.AddRepository();
 
             services.AddSerilogServices();
             services.AddRecipeServices();
+            services.AddDeviceServices();
 
             
             services.AddSingleton<INavigationService, PrismUI.Core.NavigationService>();
@@ -74,6 +77,7 @@ namespace UI.FrameWork.Core
 
             Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Recipe.Domain.DataContext>();
             Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Log.Domain.DataContext>();
+            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Framework.Device.Domain.DeviceDataContext>();
 
           
             return Container.Resolve<ShellWindow>(); ;

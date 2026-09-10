@@ -28,6 +28,13 @@ namespace Framework.Device
             }
         }
 
+        /// <summary>从配置读取器（生产实现为数据库）读取配置并初始化。</summary>
+        public void Initialize(IDeviceConfigurationReader reader)
+        {
+            if (reader == null) throw new ArgumentNullException(nameof(reader));
+            Initialize(reader.Read());
+        }
+
         /// <summary>通过设备标识取得已初始化的设备（而非具体类型）。未找到返回 null。</summary>
         public IDevice? GetDevice(string id)
         {

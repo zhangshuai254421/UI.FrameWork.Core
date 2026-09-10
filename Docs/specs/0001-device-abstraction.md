@@ -58,6 +58,6 @@
 ## Further Notes
 
 - 现有 `CameraHikVision` 与本次共识冲突，需重构而非修补。
-- 现有配方参数中的相机引用与新的设备级配置需厘清关系。
+- **边界已厘清**：配方相机引用（`Recipe.Domain.CameraConfiguration`，仅含相机名 + 配方归属，回答「这一步用哪台相机」）与设备级配置（`Framework.Device.Domain.DeviceConfigurationEntity`，含设备类型 / 厂商 / 连接方式，回答「如何抵达这台设备」）是两类概念，仅通过设备标识 / 相机名这个字符串弱关联，不得混用或合并成一张表。
 - 已记录 ADR：按厂商独立适配器，不采用通用 GenICam 抽象。
 - 全篇词汇以 CONTEXT.md 术语表为准（设备 / 设备类型 / 厂商 / 连接方式 / 相机 / 运动控制卡 / 适配器）。
