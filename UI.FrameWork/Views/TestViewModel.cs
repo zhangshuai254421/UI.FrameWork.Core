@@ -1,4 +1,4 @@
-﻿using Framework.Device;
+using Framework.Device;
 using Framework.Device.HikVision;
 using Microsoft.Extensions.Logging;
 using PrismUI.Core;
@@ -14,14 +14,14 @@ namespace SemiAppliaction.Views
     {
         IDevice device;
         public DelegateCommand Test1Command { get; }
-        public TestViewModel() 
+        public TestViewModel()
         {
             Test1Command = new DelegateCommand(Test1);
         }
         public void Test1()
         {
              device = new CameraHikVision();
-            device.Open();
+            device.Open(new TcpConnection("192.168.1.64", 8000));
         }
     }
 }

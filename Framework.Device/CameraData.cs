@@ -1,18 +1,16 @@
-﻿namespace Framework.Device
-{ 
+namespace Framework.Device
+{
+    /// <summary>
+    /// 一帧相机图像，以托管字节数组 + 宽高 + 像素格式为规范表示，不泄漏裸指针。
+    /// </summary>
     public class CameraData
     {
-        public CameraData() { }
+        public byte[] ImageData { get; set; } = Array.Empty<byte>();
 
-        public  IntPtr ImageAddr { get; set; }
-        public byte[] ImageData { get; set;}
+        public int Width { get; set; }
 
-        private uint nBufSize;
+        public int Height { get; set; }
 
-        public uint nFrameLen;
-
-        public ushort nWidth;
-        public ushort nHeight;
-        public PixelType nPixelType;
+        public PixelFormat PixelFormat { get; set; }
     }
 }

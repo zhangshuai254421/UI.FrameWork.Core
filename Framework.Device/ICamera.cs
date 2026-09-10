@@ -1,35 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace Framework.Device
 {
-
-    public interface  ICamera: IDevice 
+    /// <summary>
+    /// 相机契约：强类型的最小相机能力，屏蔽厂商差异。
+    /// </summary>
+    public interface ICamera : IDevice
     {
-        //bool Open(string? serialNumber);
-        //设置相机的枚举类型的参数
-        public  void SetEnumValue(string strKey, uint nValue);
+        /// <summary>实时图像通道（连续预览），有界、丢最旧帧。</summary>
+        Channel<CameraData> ChannelCameraData { get; }
 
-        public  void SetCommandValue(string CommandValue);
-        public  void TriggerSoftware();
-        public  void GetFloatValue(string strKey, ref float nValue);
+        void StartAcquisition();
 
-        public  void SetFloatValue(string strKey, float nValue);
+        void StopAcquisition();
 
-        public Channel<CameraData> ChannelCameraData { get; set; }
-        public CameraData GetOneImage();
+        CameraData GetOneImage();
 
-        public  float GetExposureTime();
+        void SetExposureTime(double exposureTimeUs);
 
-        public  void SetUserSetSelector();
-        public  void SetUserSetDefault();
-        public  void UserSetLoad();
-        public  void UserSetSave();
-        public  long UserSetCurrent();
+        double GetExposureTime();
 
+        void SetGain(double gain);
+
+        double GetGain();
+
+        void TriggerSoftware();
     }
 }
