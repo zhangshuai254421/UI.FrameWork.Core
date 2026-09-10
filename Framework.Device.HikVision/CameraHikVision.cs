@@ -10,6 +10,7 @@ namespace Framework.Device.HikVision
     /// 海康相机适配器：把强类型相机契约翻译成海康 SDK 的私有调用。
     /// 图像以托管字节数组返回，SDK 对象与裸指针不外泄；SDK 错误码翻译成统一错误类别供上层判读。
     /// </summary>
+    [DeviceAdapter(DeviceKind.Camera, "HikVision")]
     public class CameraHikVision : CameraBase
     {
         private const uint GrabTimeoutMs = 1000;
@@ -20,7 +21,12 @@ namespace Framework.Device.HikVision
         private readonly ILogger<CameraHikVision> _logger;
         private SdkDevice? _camera;
 
-        public CameraHikVision(ILogger<CameraHikVision>? logger = null)
+        /// <summary>无参构造：供适配器工厂按「(设备类型, 厂商)」反射实例化（不注入日志）。</summary>
+        public CameraHikVision() : this(null)
+        {
+        }
+
+        public CameraHikVision(ILogger<CameraHikVision>? logger)
         {
             _logger = logger ?? NullLogger<CameraHikVision>.Instance;
         }

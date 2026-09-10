@@ -4,6 +4,7 @@ using EFCore.Infrastructure;
 using EFCore.Repository;
 using Example;
 using Framework.Core.Common;
+using Framework.Device;
 using Framework.Device.Domain;
 using Log.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,7 @@ namespace UI.FrameWork.Core
 
         private readonly ServiceCollection _services = new ServiceCollection();
         private static Mutex AppMutex;
+        private DeviceManager? _deviceManager;
 
         #endregion
 
@@ -133,7 +135,12 @@ namespace UI.FrameWork.Core
                 // 初始化硬件设备管理器（同步等待，避免阻塞UI线程过久）
                 try
                 {
+                    _deviceManager = Container.Resolve<DeviceManager>();
 
+                    // 配置读取器为作用域服务（依赖 DbContext），初始化完成后即释放。
+                    using var scope = Container.Resolve<IServiceProvider>().CreateScope();
+                    var reader = scope.ServiceProvider.GetRequiredService<IDeviceConfigurationReader>();
+                    _deviceManager.Initialize(reader);
                 }
                 catch (Exception ex)
                 {
@@ -204,7 +211,7 @@ namespace UI.FrameWork.Core
             // 关闭所有设备
             try
             {
-              
+                _deviceManager?.Dispose();
             }
             catch
             {
