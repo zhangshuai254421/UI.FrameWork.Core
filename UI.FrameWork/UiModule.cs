@@ -21,12 +21,14 @@ namespace SemiAppliaction
             regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
             //IoC.Get<INavigationService>().NavigateToAsync(nameof(MainView));
             containerProvider.Resolve<INavigationService>().NavigateToAsync(nameof(MainView));
+
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             //throw new NotImplementedException();
             containerRegistry.RegisterForNavigation<MainView, MainViewModel>();
+            containerRegistry.RegisterForNavigation<TestView, TestViewModel>();
         }
     }
 }

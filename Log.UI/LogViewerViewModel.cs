@@ -15,8 +15,7 @@ namespace Log.UI
     {
         private readonly ISerilogService _serilogService;
 
-        public LogViewerViewModel(ISerilogService serilogService, IEventAggregator eventAggregator)
-            : base(eventAggregator)
+        public LogViewerViewModel(ISerilogService serilogService)
         {
             _serilogService = serilogService;
 

@@ -15,8 +15,7 @@ namespace UI.FrameWork.Core.Main.Footer
     {
         #region 构造函数
 
-        public LogShowViewModel(ILoggerFactory loggerFactory, IEventAggregator eventAggregator)
-     : base(loggerFactory, eventAggregator)  // ← 多传一个参数，其余不变
+        public LogShowViewModel() // ← 多传一个参数，其余不变
         {
         }
 

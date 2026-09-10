@@ -46,6 +46,8 @@
   <ItemGroup>
     <ProjectReference Include="..\EFCore.Infrastructure\EFCore.Infrastructure.csproj" />
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
+    <ProjectReference Include="..\Framework.Device.HikVision\Framework.Device.HikVision.csproj" />
+    <ProjectReference Include="..\Framework.Device\Framework.Device.csproj" />
     <ProjectReference Include="..\Log.Domain\Serilog.Domain.csproj" />
     <ProjectReference Include="..\Log.Infrastructure\Serilog.Infrastructure.csproj" />
     <ProjectReference Include="..\PrismUI.Core\PrismUI.Core.csproj" />

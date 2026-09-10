@@ -26,7 +26,7 @@ namespace Recipe.UI.RecipeUI
 
         private readonly IRecipeService _recipeService;
         private readonly IDialogService _dialogService;
-        private readonly IEventAggregator _eventAggregator;
+        private readonly IEventAggregator EventAggregator;
 
         private DelegateCommand _renameCmd = null!;
         private DelegateCommand _copyRecipeCmd = null!;
@@ -49,12 +49,10 @@ namespace Recipe.UI.RecipeUI
 
         #region 构造函数
 
-        public RecipeHomeViewModel(IEventAggregator eventAggregator, ILoggerFactory loggerFactory,
-            IRecipeService recipeService, IDialogService dialogService) : base(loggerFactory, eventAggregator)
+        public RecipeHomeViewModel(IRecipeService recipeService, IDialogService dialogService) 
         {
             _recipeService = recipeService;
             _dialogService = dialogService;
-            _eventAggregator = eventAggregator;
         }
 
         #endregion
@@ -274,7 +272,7 @@ namespace Recipe.UI.RecipeUI
                     if (selectedRecipe != null)
                     {
                         IoC.Get<IRecipeManagerService>().UpdateRangeAsync( recipe =>true,o=>o.CurrentRecipeId=selectedRecipe.Id);
-                        _eventAggregator.GetEvent<ChangeRecipeEvent>().Publish(SelectRecipeName);
+                        EventAggregator.GetEvent<ChangeRecipeEvent>().Publish(SelectRecipeName);
                     }
                 
             //}   

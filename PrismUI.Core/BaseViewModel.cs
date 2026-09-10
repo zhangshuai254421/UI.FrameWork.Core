@@ -20,15 +20,11 @@ namespace PrismUI.Core
 
         #region 构造函数
 
-        public BaseViewModel(ILoggerFactory loggerFactory, IEventAggregator eventAggregator)
-        {
-            Logger = loggerFactory.CreateLogger(GetType());  // ← GetType() 返回实际子类类型
-            EventAggregator = eventAggregator;
-        }
 
-        public BaseViewModel(IEventAggregator eventAggregator)
+        public BaseViewModel()
         {
-            EventAggregator = eventAggregator;
+            Logger = IoC.Get< ILoggerFactory >().CreateLogger(GetType());  // ← GetType() 返回实际子类类型
+            EventAggregator = IoC.Get <IEventAggregator>();
         }
 
         #endregion

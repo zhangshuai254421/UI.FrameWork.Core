@@ -39,7 +39,7 @@ namespace UI.FrameWork.Core.Main.RecipeView
 
         #region 构造函数
 
-        public RecipeContextViewModel(IEventAggregator eventAggregator,CameraConfigurationService cameraConfigurationService,IRecipeManagerService recipeManagerService) : base(eventAggregator)
+        public RecipeContextViewModel(CameraConfigurationService cameraConfigurationService,IRecipeManagerService recipeManagerService) 
         {
             this.cameraConfigurationService = cameraConfigurationService;
             this.recipeManagerService = recipeManagerService;
