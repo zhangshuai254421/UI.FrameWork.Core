@@ -2,12 +2,30 @@ using Framework.Core.Common;
 using Framework.Core.CustomAttribute;
 using Framework.Device.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Logging;
 
 [assembly: DefaultDbContext(typeof(Framework.Device.Domain.DeviceDataContext))]
 
 namespace Framework.Device.Domain
 {
+    public class DataContextFactory : IDesignTimeDbContextFactory<DeviceDataContext>
+    {
+        #region IDesignTimeDbContextFactory
+
+        public DeviceDataContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<DeviceDataContext>();
+            var connectionString = AppGlobals.DeviceDbFliePath;
+
+            // 2. 根据你使用的数据库提供程序配置 (此处以 SQL Server 为例)
+            optionsBuilder.UseSqlite(connectionString);
+
+            return new DeviceDataContext(optionsBuilder.Options);
+        }
+
+        #endregion
+    }
     /// <summary>
     /// 设备数据库上下文：持久化设备级配置（Device\DeviceDomain.db）。
     /// 与配方库（Recipe.Domain.DataContext）、日志库（Log.Domain.DataContext）各自独立。
