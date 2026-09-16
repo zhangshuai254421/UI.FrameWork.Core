@@ -22,8 +22,12 @@ namespace Log.Domain
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();
 #endif
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-            optionsBuilder.UseSqlite(AppGlobals.LogDFliePath);
+         // 仅当未显式传入选项（如测试传入内存库）时才落到磁盘库。
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlite(AppGlobals.LogDFliePath);
+            }
+
             base.OnConfiguring(optionsBuilder);
         }
 
