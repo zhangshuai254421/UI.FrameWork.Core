@@ -17,7 +17,7 @@ namespace Recipe.Infrastructure
 
         public virtual Task<IEnumerable<TEntity>> GetCurrentRecipeParameterAsync(CancellationToken cancellationToken = default)
         {
-            int crrentRecipeId = IoC.Get<IRecipeManagerService>().GetListAsync().Result.FirstOrDefault().CurrentRecipeId;
+            int crrentRecipeId = IoC.Get<IRecipeManagerService>().GetListAsync(cancellationToken).Result.FirstOrDefault().CurrentRecipeId;
             return _repository.GetListAsync(p => p.RecipeId == crrentRecipeId,cancellationToken);
         }
     }

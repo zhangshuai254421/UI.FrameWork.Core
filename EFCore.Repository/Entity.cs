@@ -1,6 +1,16 @@
-﻿namespace EFCore.Repository
+﻿// Copyright (c) 2026 ZhangShuai. All rights reserved.
+// 项目：UI.FrameWork —— EFCore.Repository（EF Core 数据访问抽象层）
+
+namespace EFCore.Repository
 {
 
+    /// <summary>
+    /// 数据库实体基类：约定 int 自增主键 <see cref="Id"/>，并提供基于主键的值相等语义——
+    /// 同类型且 Id 相等的两个实体视为相等（Equals / GetHashCode / == / != 保持一致），
+    /// 使实体可以按"业务身份"而非对象引用参与集合去重与比对。
+    /// <para><see cref="IsTransient"/>：判定实体是否尚未持久化（Id 为默认值 0）；
+    /// <see cref="ResetId"/>：把已持久化实体的主键重置为瞬态。</para>
+    /// </summary>
     public class Entity
     {
         int? _requestedHashCode;

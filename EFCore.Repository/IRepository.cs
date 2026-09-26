@@ -1,7 +1,16 @@
-﻿using System.Linq.Expressions;
+﻿// Copyright (c) 2026 ZhangShuai. All rights reserved.
+// 项目：UI.FrameWork —— EFCore.Repository（EF Core 数据访问抽象层）
+
+using System.Linq.Expressions;
 
 namespace EFCore.Repository
 {
+    /// <summary>
+    /// 泛型仓储接口：约定对单一实体类型 <typeparamref name="TEntity"/> 的增、删、改、查与分页操作。
+    /// 只负责对上下文施加变更，不负责提交——持久化时机由 <see cref="IUnitOfWork.SaveChangeAsync"/> 决定。
+    /// <para>实现约定：<c>GetListAsync</c> 系列查询为无跟踪（AsNoTracking），返回脱离上下文的实体；
+    /// 需要跟踪实体时用 <see cref="GetQueryable"/>（默认跟踪）自行组合查询。</para>
+    /// </summary>
     public interface IRepository<TEntity> where TEntity : class
     {
         IQueryable<TEntity> GetQueryable(bool isTracking = true);

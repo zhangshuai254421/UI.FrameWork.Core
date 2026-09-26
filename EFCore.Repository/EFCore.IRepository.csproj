@@ -4,6 +4,19 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- 程序集信息（编译进 DLL 的版本资源，右键 dll → 属性 可见） -->
+    <Company>ZhangShuai</Company>
+    <Authors>ZhangShuai</Authors>
+    <Product>UI.FrameWork</Product>
+    <Description>EF Core 数据访问抽象层：实体基类、仓储与工作单元接口、分页参数及实体服务接口约定。</Description>
+    <Copyright>Copyright © 2026 ZhangShuai. All rights reserved.</Copyright>
+    <Version>1.0.0</Version>
+
+    <!-- 生成 XML 文档文件，让 /// 注释在引用方的 IntelliSense 中显示 -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- 公共成员暂未全部写注释，屏蔽"缺少 XML 注释"警告 -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
 </Project>

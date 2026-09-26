@@ -1,13 +1,21 @@
-﻿using EFCore.Repository;
+﻿// Copyright (c) 2026 ZhangShuai. All rights reserved.
+// 项目：UI.FrameWork —— EFCore.Repository（EF Core 数据访问抽象层）
+
+using EFCore.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace EFCore.IRepository
 {
+    /// <summary>
+    /// 实体服务通用接口：面向业务层约定增、删、改、查与分页操作。与
+    /// <see cref="IRepository{TEntity}"/> 只改不提交不同，本接口的方法自带提交语义：
+    /// 调用返回时变更已写入数据库，true/false 表示是否实际影响了数据行。
+    /// <typeparamref name="TEntity"/> 为实体类型，<typeparamref name="TKey"/> 为主键类型。
+    /// </summary>
     public interface IEntityServiceBase<TEntity, TKey> where TEntity : class
     {
         Task<bool> AddAsync(TEntity entity, CancellationToken cancellationToken = default);

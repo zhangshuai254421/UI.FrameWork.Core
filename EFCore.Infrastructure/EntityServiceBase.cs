@@ -92,7 +92,7 @@ namespace EFCore.Infrastructure
 
                 return affected > 0;
             }
-            catch (Exception e )
+            catch (Exception e)
             {
               throw e;
             }

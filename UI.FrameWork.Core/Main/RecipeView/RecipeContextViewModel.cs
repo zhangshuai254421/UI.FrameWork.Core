@@ -5,7 +5,6 @@ using Recipe.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,18 +13,6 @@ using System.Xml.Linq;
 
 namespace UI.FrameWork.Core.Main.RecipeView
 {
-    public class BaseViewShowModel:BindableBase
-    {
-        private int id;
-
-        [Browsable(false)]
-        public int Id 
-        { 
-            get => id;
-            set => SetProperty(ref id, value);
-        }
-  
-    }
     //public class Recipe
     public class RecipeContextViewModel : BaseViewModel, INavigationAware
     {
