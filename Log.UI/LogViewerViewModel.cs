@@ -1,21 +1,22 @@
 using EFCore.Repository;
 using Framework.Core.Common;
-using Log.Domain;
+using Log.Infrastructure.Contracts;
 using Prism.Commands;
 using PrismUI.Core;
+using Serilog.Infrastructure;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace Log.UI
 {
     /// <summary>
-    /// 日志查看器 ViewModel — 分页展示 SerilogHistory 数据，支持按时间范围筛选
+    /// 日志查看器 ViewModel — 分页展示日志（DTO 只读投影），支持按时间范围筛选（ADR 0002 迁移第④步）
     /// </summary>
     public class LogViewerViewModel : BaseViewModel, INavigationAware
     {
-        private readonly ISerilogService _serilogService;
+        private readonly SerilogService _serilogService;
 
-        public LogViewerViewModel(ISerilogService serilogService)
+        public LogViewerViewModel(SerilogService serilogService)
         {
             _serilogService = serilogService;
 
@@ -39,8 +40,8 @@ namespace Log.UI
 
         #region 属性
 
-        private ObservableCollection<SerilogHistory> _logEntries = new();
-        public ObservableCollection<SerilogHistory> LogEntries
+        private ObservableCollection<LogEntryDto> _logEntries = new();
+        public ObservableCollection<LogEntryDto> LogEntries
         {
             get => _logEntries;
             set => SetProperty(ref _logEntries, value);
@@ -205,26 +206,13 @@ namespace Log.UI
                     PageSize = PageSize
                 };
 
-                PagedResult<SerilogHistory> result;
-
-                if (IsDateFilterActive)
-                {
-                    // 将日期转为字符串比较（Serilog Timestamp 格式天然支持字典序）
-                    var start = StartDate.Value.ToString("yyyy-MM-dd");
-                    var end = EndDate.Value.AddDays(1).ToString("yyyy-MM-dd");
-
-                    result = await _serilogService.GetPageAsync(
-                        x => string.Compare(x.Timestamp, start) >= 0
-                          && string.Compare(x.Timestamp, end) < 0,
-                        parameter);
-                }
-                else
-                {
-                    result = await _serilogService.GetPageAsync(parameter);
-                }
+                var result = await _serilogService.GetLogPageAsync(
+                    parameter,
+                    IsDateFilterActive ? StartDate : null,
+                    IsDateFilterActive ? EndDate : null);
 
                 TotalCount = result.Total;
-                LogEntries = new ObservableCollection<SerilogHistory>(result.Data);
+                LogEntries = new ObservableCollection<LogEntryDto>(result.Data);
 
                 // 如果当前页超出范围，回退到最后一页
                 if (TotalPages > 0 && CurrentPage > TotalPages)

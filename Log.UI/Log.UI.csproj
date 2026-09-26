@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
     <ProjectReference Include="..\Log.Domain\Serilog.Domain.csproj" />
+    <ProjectReference Include="..\Log.Infrastructure\Serilog.Infrastructure.csproj" />
     <ProjectReference Include="..\PrismUI.Core\PrismUI.Core.csproj" />
     <ProjectReference Include="..\SemiControl_Net\SemiControl_Net.csproj" />
   </ItemGroup>
