@@ -106,7 +106,9 @@ namespace Recipe.Infrastructure
         /// </summary>
         public async Task<bool> CopyRecipeAsync(string groupName, string recipeName, string newRecipeName, string machineName, string? targetGroupName = null, CancellationToken cancellationToken = default)
         {
-            var source = await _repository.GetQueryable()
+            // 无跟踪加载源：全局共享的 DbContext 里可能已有同键实体（如相机配置页保存后残留），
+            // 跟踪查询 + Add 会让 EF 的关系修正把两者纠缠在一起（CameraConfiguration 主键冲突即此因）
+            var source = await _repository.GetQueryable(false)
                 .Include(r => r.Parameters)
                 .FirstOrDefaultAsync(r => r.MachineName == machineName
                     && r.GroupName == groupName
@@ -117,21 +119,32 @@ namespace Recipe.Infrastructure
                 return false;
             }
 
+            var parameters = source.Parameters?
+                .Select(p =>
+                {
+                    var clone = (RecipeParameter)p.DeepCopy();
+                    clone.ResetId();
+                    clone.RecipeId = 0;  // FK 一并清零，落库时由导航关系回填新配方 Id
+                    clone.Recipe = null; // 切断深拷贝出的整张旧对象图（含源配方与其它参数的克隆）
+                    return clone;
+                })
+                .ToList()
+                ?? new List<RecipeParameter>();
+
             var copy = new Recipe.Domain.Recipe
             {
                 GroupName = string.IsNullOrWhiteSpace(targetGroupName) ? source.GroupName : targetGroupName.Trim(),
                 RecipeName = newRecipeName,
                 MachineName = source.MachineName,
-                Parameters = source.Parameters?
-                    .Select(p =>
-                    {
-                        var clone = (RecipeParameter)p.DeepCopy();
-                        clone.ResetId();
-                        clone.Recipe = null; // 防止深拷贝出的旧图引用被 EF 级联跟踪
-                        return clone;
-                    })
-                    .ToList()
+                Parameters = parameters
             };
+
+            // 显式挂到新父级：Add 只跟踪 copy + clones 这一张干净的新图，
+            // 杜绝 EF 按 RecipeId 旧值把克隆修正（fixup）回已跟踪的源配方
+            foreach (var clone in parameters)
+            {
+                clone.Recipe = copy;
+            }
 
             var added = await AddAsync(copy, cancellationToken);
 

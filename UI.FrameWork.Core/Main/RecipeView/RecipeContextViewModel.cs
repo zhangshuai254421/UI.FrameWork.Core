@@ -46,8 +46,6 @@ namespace UI.FrameWork.Core.Main.RecipeView
 
         #region 命令
 
-        /// <summary>把编辑行的 Input 原样交回 service 落库；不保存离开页面即为取消。</summary>
-        public DelegateCommand SaveCmd => _saveCmd ?? new DelegateCommand(async () => await SaveAsync());
 
         #endregion
 
