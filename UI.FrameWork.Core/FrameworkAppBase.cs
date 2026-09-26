@@ -92,23 +92,7 @@ namespace UI.FrameWork.Core
         {
             IoC.GetInstance = this.Container.Resolve;
             //IoC.BuildUp = this.Container.BuildUp;
-#if DEBUG
 
-
-            var s = IoC.Get<IUnitOfWork>();
-            var ss = s.GetRepository<Log.Domain.SerilogHistory>();
-            var s2 = ss.GetListAsync();
-
-            var s3 = IoC.Get<ISerilogService>();
-            var s4 = s3.GetListAsync();
-            var ss4 = s3.GetPageAsync(new PageParameter());
-            var s5 = ss4.Result;
-
-            var a = IoC.Get<IRecipeService>();
-            var a1= a.GetListAsync();
-             var a2 = a.GetPageAsync(new PageParameter());
-             var a3 = a2.Result;
-#endif
             bool createdNew = false;
             FrameworkAppBase.AppMutex = new Mutex(true, "title", out createdNew);
             bool flag6 = !createdNew;

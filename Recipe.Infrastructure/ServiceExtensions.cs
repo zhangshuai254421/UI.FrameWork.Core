@@ -3,6 +3,7 @@ using EFCore.Infrastructure;
 using EFCore.IRepository;
 using Microsoft.Extensions.DependencyInjection;
 using Recipe.Domain;
+using Recipe.Infrastructure.Contracts;
 
 namespace Recipe.Infrastructure
 {

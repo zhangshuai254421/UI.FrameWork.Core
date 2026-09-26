@@ -1,5 +1,7 @@
-﻿using PrismUI.Core;
-using Recipe.Domain;
+using PrismUI.Core;
+using Recipe.Infrastructure.Contracts;
+using System;
+using System.Threading.Tasks;
 
 namespace UI.FrameWork.Core.Main
 {
@@ -7,7 +9,7 @@ namespace UI.FrameWork.Core.Main
     {
         #region 字段
 
-        private readonly IRecipeManagerService _recipeManagerService;
+        private readonly IRecipeService _recipeService;
         private readonly IEventAggregator _eventAggregator;
         private string _title = "Default Title";
 
@@ -15,15 +17,15 @@ namespace UI.FrameWork.Core.Main
 
         #region 构造函数
 
-        public HeaderViewModel(IRecipeManagerService recipeManagerService, IEventAggregator eventAggregator)
+        public HeaderViewModel(IRecipeService recipeService, IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
-            _recipeManagerService = recipeManagerService;
-            UpdateTitle();
+            _recipeService = recipeService;
+            _ = UpdateTitleAsync();
 
             _eventAggregator.GetEvent<ChangeRecipeEvent>().Subscribe((recipeName) =>
             {
-                UpdateTitle();
+                _ = UpdateTitleAsync();
             });
         }
 
@@ -41,10 +43,21 @@ namespace UI.FrameWork.Core.Main
 
         #region 方法
 
-        public void UpdateTitle()
+        /// <summary>
+        /// 从 service 拉当前配方 DTO 刷新标题（ADR 0002：VM 不碰实体、不同步阻塞）。
+        /// 标题是纯展示，加载失败时保持现状即可。
+        /// </summary>
+        private async Task UpdateTitleAsync()
         {
-            Title = $"{_recipeManagerService.GetListAsync().Result.FirstOrDefault()?.CurrentRecipe.GroupName}/" +
-                    $"{_recipeManagerService.GetListAsync().Result.FirstOrDefault()?.CurrentRecipe.RecipeName}";
+            try
+            {
+                var current = await _recipeService.GetCurrentRecipeAsync();
+                Title = $"{current?.GroupName}/{current?.RecipeName}";
+            }
+            catch (Exception)
+            {
+                // 保持现状
+            }
         }
 
         #endregion

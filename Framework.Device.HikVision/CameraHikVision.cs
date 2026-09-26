@@ -13,12 +13,15 @@ namespace Framework.Device.HikVision
     [DeviceAdapter(DeviceKind.Camera, "HikVision")]
     public class CameraHikVision : CameraBase
     {
+        /// <summary>单帧取流超时（毫秒）。</summary>
         private const uint GrabTimeoutMs = 1000;
 
         private static readonly object SdkInitLock = new();
         private static bool _sdkInitialized;
 
         private readonly ILogger<CameraHikVision> _logger;
+
+        /// <summary>当前打开的 SDK 设备；未打开为 null。各方法先把它拷贝到局部变量再用，避免执行中途被 <see cref="Close"/> 置空。</summary>
         private SdkDevice? _camera;
 
         /// <summary>无参构造：供适配器工厂按「(设备类型, 厂商)」反射实例化（不注入日志）。</summary>
@@ -31,11 +34,13 @@ namespace Framework.Device.HikVision
             _logger = logger ?? NullLogger<CameraHikVision>.Instance;
         }
 
+        /// <summary>适配器名。</summary>
         public override string Name => "HikVisionCamera";
 
         /// <summary>最近一次 SDK 调用失败翻译出的统一错误类别。</summary>
         public DeviceErrorCategory LastError { get; private set; } = DeviceErrorCategory.None;
 
+        /// <summary>按 TCP 连接中的 IP 定位并打开相机；重复打开先释放旧设备。失败原因见 <see cref="LastError"/>。</summary>
         public override bool Open(DeviceConnection connection)
         {
             if (!EnsureSdkInitialized())
@@ -73,11 +78,13 @@ namespace Framework.Device.HikVision
             return true;
         }
 
+        /// <summary>停止取流并释放设备；未打开时为空操作，可重复调用。</summary>
         public override void Close()
         {
             ReleaseCamera();
         }
 
+        /// <summary>开始取流；未打开时记录错误并忽略。</summary>
         public override void StartAcquisition()
         {
             var camera = _camera;
@@ -94,6 +101,7 @@ namespace Framework.Device.HikVision
             }
         }
 
+        /// <summary>停止取流；未打开时静默忽略。</summary>
         public override void StopAcquisition()
         {
             var camera = _camera;
@@ -109,6 +117,7 @@ namespace Framework.Device.HikVision
             }
         }
 
+        /// <summary>阻塞取一帧（超时 <see cref="GrabTimeoutMs"/> 毫秒）；未打开、超时或失败返回空 <see cref="CameraData"/>，SDK 帧缓冲在本方法内归还。</summary>
         public override CameraData GetOneImage()
         {
             var camera = _camera;
@@ -142,6 +151,7 @@ namespace Framework.Device.HikVision
             }
         }
 
+        /// <summary>设置曝光时间（微秒），写入 SDK 的 ExposureTime 节点。</summary>
         public override void SetExposureTime(double exposureTimeUs)
         {
             var camera = _camera;
@@ -158,6 +168,7 @@ namespace Framework.Device.HikVision
             }
         }
 
+        /// <summary>读取曝光时间（微秒）；未打开或读取失败返回 0。</summary>
         public override double GetExposureTime()
         {
             var camera = _camera;
@@ -177,6 +188,7 @@ namespace Framework.Device.HikVision
             return value?.CurValue ?? 0;
         }
 
+        /// <summary>设置增益（dB），写入 SDK 的 Gain 节点。</summary>
         public override void SetGain(double gain)
         {
             var camera = _camera;
@@ -193,6 +205,7 @@ namespace Framework.Device.HikVision
             }
         }
 
+        /// <summary>读取增益（dB）；未打开或读取失败返回 0。</summary>
         public override double GetGain()
         {
             var camera = _camera;
@@ -212,6 +225,7 @@ namespace Framework.Device.HikVision
             return value?.CurValue ?? 0;
         }
 
+        /// <summary>执行一次软触发；若相机未处于软触发模式，SDK 返回错误并记录。</summary>
         public override void TriggerSoftware()
         {
             var camera = _camera;
@@ -296,6 +310,7 @@ namespace Framework.Device.HikVision
             }
         }
 
+        /// <summary>枚举 GigE/USB 设备并按 IP 匹配，创建 SDK 设备实例；枚举失败或找不到时返回 null 并置 <see cref="LastError"/>。</summary>
         private SdkDevice? CreateCameraByIp(string ipAddress)
         {
             List<IDeviceInfo> devices = new();
@@ -308,6 +323,7 @@ namespace Framework.Device.HikVision
                 return null;
             }
 
+            // TCP 连接按 IP 匹配，仅对 GigE 设备生效；USB 设备无 IP 概念，不会命中。
             foreach (var info in devices)
             {
                 if (info is IGigEDeviceInfo gige && FormatIp(gige.CurrentIp) == ipAddress)
@@ -321,9 +337,11 @@ namespace Framework.Device.HikVision
             return null;
         }
 
+        /// <summary>把 SDK 返回的大端序 uint IP 转成点分十进制字符串。</summary>
         private static string FormatIp(uint ip) =>
             $"{(ip >> 24) & 0xff}.{(ip >> 16) & 0xff}.{(ip >> 8) & 0xff}.{ip & 0xff}";
 
+        /// <summary>进程内一次性初始化 SDK（双检锁）；仅成功才置位，失败由下次 Open 重试。</summary>
         private static bool EnsureSdkInitialized()
         {
             if (_sdkInitialized)
@@ -344,6 +362,7 @@ namespace Framework.Device.HikVision
             }
         }
 
+        /// <summary>按「停流 → 关闭 → 释放」顺序清理设备；未打开为空操作。Open 失败与 Close 共用。</summary>
         private void ReleaseCamera()
         {
             var camera = _camera;
@@ -358,6 +377,7 @@ namespace Framework.Device.HikVision
             camera.Dispose();
         }
 
+        /// <summary>统一错误出口：翻译 SDK 错误码到 <see cref="LastError"/> 并写日志。</summary>
         private void RecordError(int sdkErrorCode, string operation)
         {
             LastError = TranslateError(sdkErrorCode);
@@ -366,6 +386,7 @@ namespace Framework.Device.HikVision
                 operation, sdkErrorCode, LastError);
         }
 
+        /// <summary>未打开设备就调用的错误出口：标记 <see cref="LastError"/> 并写日志。</summary>
         private void RecordNotOpen(string operation)
         {
             LastError = DeviceErrorCategory.OpenFailed;

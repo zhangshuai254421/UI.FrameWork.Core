@@ -197,6 +197,27 @@ namespace Recipe.Infrastructure
             return await _recipeManagerService.UpdateRangeAsync(r => true, m => m.CurrentRecipeId = recipeId, cancellationToken);
         }
 
+        /// <summary>
+        /// 当前配方：读 RecipeManager.CurrentRecipeId 后按 Id 投影 DTO；未设置时返回 null。
+        /// </summary>
+        public async Task<RecipeListItemDto?> GetCurrentRecipeAsync(CancellationToken cancellationToken = default)
+        {
+            var currentId = await _unitOfWork.GetRepository<RecipeManager>()
+                .GetQueryable(false)
+                .Select(m => (int?)m.CurrentRecipeId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (currentId == null)
+            {
+                return null;
+            }
+
+            return await _repository.GetQueryable(false)
+                .Where(r => r.Id == currentId.Value)
+                .Select(r => new RecipeListItemDto { Id = r.Id, GroupName = r.GroupName, RecipeName = r.RecipeName })
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         private void PublishChange(RecipeChangeKind kind, int recipeId, string groupName, string recipeName)
         {
             _eventAggregator.GetEvent<RecipeChangedEvent>().Publish(new RecipeChangedPayload
