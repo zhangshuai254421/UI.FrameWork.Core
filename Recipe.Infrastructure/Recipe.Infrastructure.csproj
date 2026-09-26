@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Baksteen.Extensions.DeepCopy" Version="1.0.5" />
+    <PackageReference Include="Prism.Core" Version="9.0.537" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Recipe.Domain\Recipe.Domain.csproj" />
   </ItemGroup>
 

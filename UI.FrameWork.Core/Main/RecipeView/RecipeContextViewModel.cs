@@ -66,6 +66,10 @@ namespace UI.FrameWork.Core.Main.RecipeView
                 Logger.LogError(ex, "保存相机配置失败");
             }
         }
+        public override  void EnterCommandExecute()
+        {
+             _= SaveAsync();
+        }
 
         private async Task LoadAsync()
         {
