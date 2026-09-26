@@ -20,6 +20,8 @@ namespace Recipe.UI.RecipeUI
         private DelegateCommand _copyRecipeCmd = null!;
         private DelegateCommand _deleteRecipeCmd = null!;
         private DelegateCommand _applyRecipeCmd = null!;
+        private DelegateCommand _newGroupCmd = null!;
+        private DelegateCommand _deleteGroupCmd = null!;
 
         private ObservableCollection<RecipeListItemDto> recipes = new ObservableCollection<RecipeListItemDto>();
         private ObservableCollection<string> _recipeWithGroupName = new ObservableCollection<string>();
@@ -75,7 +77,7 @@ namespace Recipe.UI.RecipeUI
                 if (value == _selectGroupName) return;
                 _selectGroupName = value;
 
-                if (!RecipeSelectCache.ContainsKey(value))
+                if (value != null && !RecipeSelectCache.ContainsKey(value))
                 {
                     RecipeSelectCache.Add(value, string.Empty);
                 }
@@ -129,6 +131,12 @@ namespace Recipe.UI.RecipeUI
 
         /// <summary>应用选中配方：写 RecipeManager.CurrentRecipeId 并广播配方切换事件。</summary>
         public DelegateCommand ApplyRecipeCmd => _applyRecipeCmd ?? new DelegateCommand(async () => await ApplyAsync());
+
+        /// <summary>创建文件夹：弹框输入文件夹名，service 建占位配方并发变更事件。</summary>
+        public DelegateCommand NewGroupCmd => _newGroupCmd ?? new DelegateCommand(async () => await CreateGroupAsync());
+
+        /// <summary>删除选中文件夹：确认后连同其下配方一起删除。</summary>
+        public DelegateCommand DeleteGroupCmd => _deleteGroupCmd ?? new DelegateCommand(async () => await DeleteGroupAsync());
 
         #endregion
 
@@ -235,18 +243,65 @@ namespace Recipe.UI.RecipeUI
             }
         }
 
+        private async Task CreateGroupAsync()
+        {
+            var dialogResult = await _dialogService.ShowDialogAsync(
+                nameof(NewGroupDialogView),
+                new DialogParameters());
+
+            if (dialogResult.Result != ButtonResult.OK)
+            {
+                return;
+            }
+
+            var newGroupName = dialogResult.Parameters.GetValue<string>("NewGroupName");
+            if (string.IsNullOrWhiteSpace(newGroupName))
+            {
+                return;
+            }
+
+            await _recipeService.CreateGroupAsync(newGroupName, AppGlobals.MachineName);
+
+            // 创建后选中新文件夹；随后的变更事件刷新会把空配方列表带出来
+            SelectGroupName = newGroupName;
+        }
+
+        private async Task DeleteGroupAsync()
+        {
+            if (string.IsNullOrWhiteSpace(SelectGroupName))
+            {
+                return; // 没有选中文件夹，不弹框
+            }
+
+            var result = await _dialogService.ShowDialogAsync(
+                "ConfirmationDialog",
+                new DialogParameters
+                {
+                    { "Title", "删除文件夹确认" },
+                    { "Message", $"确定要删除文件夹“{SelectGroupName}”吗？其下所有配方将一并删除，此操作不可撤销。" }
+                });
+
+            if (result.Result != ButtonResult.Yes)
+            {
+                return;
+            }
+
+            await _recipeService.DeleteGroupAsync(SelectGroupName, AppGlobals.MachineName);
+        }
+
         /// <summary>
-        /// 全量刷新：本机配方整条重查（DTO 投影），再按当前分组过滤配方名。
+        /// 全量刷新：文件夹列表与配方列表整条重查（DTO 投影），再按当前分组过滤配方名。
+        /// 当前分组已被删除时，回退选中第一个分组。
         /// </summary>
         public async Task RefreshSelectGroupNameAsync()
         {
             Recipes = new ObservableCollection<RecipeListItemDto>(
                 await _recipeService.GetRecipeListAsync(AppGlobals.MachineName));
             RecipeWithGroupName = new ObservableCollection<string>(
-                Recipes.Select(p => p.GroupName).Distinct().ToList());
+                await _recipeService.GetGroupListAsync(AppGlobals.MachineName));
             RecipeCount = Recipes.Count;
 
-            if (SelectGroupName == null)
+            if (SelectGroupName == null || !RecipeWithGroupName.Contains(SelectGroupName))
             {
                 SelectGroupName = RecipeWithGroupName.FirstOrDefault(); // 触发 setter 过滤配方名
             }

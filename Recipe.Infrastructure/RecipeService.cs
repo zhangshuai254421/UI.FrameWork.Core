@@ -27,14 +27,75 @@ namespace Recipe.Infrastructure
 
         /// <summary>
         /// 本机配方列表（查询投影、无跟踪，不返回实体）。
+        /// 过滤掉空文件夹的占位行（见 <see cref="CreateGroupAsync"/>）。
         /// </summary>
         public async Task<IReadOnlyList<RecipeListItemDto>> GetRecipeListAsync(string machineName, CancellationToken cancellationToken = default)
         {
             return await _repository.GetQueryable(false)
-                .Where(p => p.MachineName == machineName)
+                .Where(p => p.MachineName == machineName && p.RecipeName != string.Empty)
                 .OrderBy(p => p.GroupName).ThenBy(p => p.RecipeName)
                 .Select(p => new RecipeListItemDto { Id = p.Id, GroupName = p.GroupName, RecipeName = p.RecipeName })
                 .ToListAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// 本机文件夹（分组）列表：GroupName 去重。空文件夹由占位行撑起，因此也会出现。
+        /// </summary>
+        public async Task<IReadOnlyList<string>> GetGroupListAsync(string machineName, CancellationToken cancellationToken = default)
+        {
+            return await _repository.GetQueryable(false)
+                .Where(p => p.MachineName == machineName)
+                .Select(p => p.GroupName)
+                .Distinct()
+                .OrderBy(g => g)
+                .ToListAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// 创建文件夹：分组并非独立实体，而是配方行的 GroupName；
+        /// 空文件夹用一条占位配方（RecipeName 为空串）表示，查询投影会将其过滤。
+        /// 文件夹已存在时返回 false。
+        /// </summary>
+        public async Task<bool> CreateGroupAsync(string groupName, string machineName, CancellationToken cancellationToken = default)
+        {
+            var exists = await _repository.GetQueryable(false)
+                .AnyAsync(p => p.MachineName == machineName && p.GroupName == groupName, cancellationToken);
+            if (exists)
+            {
+                return false;
+            }
+
+            var marker = new Recipe.Domain.Recipe
+            {
+                GroupName = groupName,
+                RecipeName = string.Empty, // 占位：空串配方名代表文件夹本身，不作为配方展示
+                MachineName = machineName,
+            };
+
+            var added = await AddAsync(marker, cancellationToken);
+
+            if (added)
+            {
+                PublishChange(RecipeChangeKind.Added, marker.Id, groupName, string.Empty);
+            }
+
+            return added;
+        }
+
+        /// <summary>
+        /// 删除文件夹：连同其下全部配方（含占位行）一起删除。
+        /// </summary>
+        public async Task<bool> DeleteGroupAsync(string groupName, string machineName, CancellationToken cancellationToken = default)
+        {
+            var deleted = await DeleteRangeAsync(
+                p => p.MachineName == machineName && p.GroupName == groupName, cancellationToken);
+
+            if (deleted)
+            {
+                PublishChange(RecipeChangeKind.Removed, 0, groupName, string.Empty);
+            }
+
+            return deleted;
         }
 
         /// <summary>
