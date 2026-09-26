@@ -1,4 +1,4 @@
-﻿using EFCore.Infrastructure;
+using EFCore.Infrastructure;
 using EFCore.Repository;
 using Framework.Core.Common;
 using Recipe.Domain;
@@ -10,15 +10,33 @@ namespace Recipe.Infrastructure
     where TEntity : RecipeParameter
     where TKey : notnull
     {
-        protected RecipeParameterServiceBase(IUnitOfWork unitofWork) : base(unitofWork)
+        protected readonly IRecipeManagerService _recipeManagerService;
+
+        protected RecipeParameterServiceBase(IUnitOfWork unitofWork, IRecipeManagerService recipeManagerService)
+        : base(unitofWork)
         {
-            
+            _recipeManagerService = recipeManagerService;
         }
 
-        public virtual Task<IEnumerable<TEntity>> GetCurrentRecipeParameterAsync(CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetCurrentRecipeParameterAsync(CancellationToken cancellationToken = default)
         {
-            int crrentRecipeId = IoC.Get<IRecipeManagerService>().GetListAsync(cancellationToken).Result.FirstOrDefault().CurrentRecipeId;
-            return _repository.GetListAsync(p => p.RecipeId == crrentRecipeId,cancellationToken);
+            int currentRecipeId = await GetCurrentRecipeIdAsync(cancellationToken);
+
+            return await _repository.GetListAsync(p => p.RecipeId == currentRecipeId, cancellationToken);
+        }
+
+        /// <summary>
+        /// 解析当前配方 Id：RecipeManager 表的唯一记录持有 <see cref="RecipeManager.CurrentRecipeId"/>，
+        /// 各类"按当前配方查询"的参数都挂在这个 Id 下。
+        /// </summary>
+        protected async Task<int> GetCurrentRecipeIdAsync(CancellationToken cancellationToken = default)
+        {
+            var managers = await _recipeManagerService.GetListAsync(cancellationToken);
+
+            var manager = managers.FirstOrDefault()
+                ?? throw new InvalidOperationException("RecipeManager 表为空：尚未创建配方管理器记录，无法解析当前配方。");
+
+            return manager.CurrentRecipeId;
         }
     }
 
@@ -27,7 +45,8 @@ namespace Recipe.Infrastructure
       where TEntity : RecipeParameter
       where TKey : notnull
     {
-        public GenericRecipeParameterService(IUnitOfWork unitofWork) : base(unitofWork) { }
+        public GenericRecipeParameterService(IUnitOfWork unitofWork, IRecipeManagerService recipeManagerService)
+        : base(unitofWork, recipeManagerService) { }
     }
 
     public class GenericSystemParameterService<TEntity, TKey>

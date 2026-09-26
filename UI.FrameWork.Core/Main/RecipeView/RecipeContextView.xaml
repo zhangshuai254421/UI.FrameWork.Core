@@ -42,7 +42,9 @@
 
         <!-- ═══ 底部工具栏 ═══ -->
         <controls:LayoutPageControl.ToolBoxContent>
-            <Grid/>
+            <Grid>
+                <Button Content="保存" Command="{Binding SaveCmd}" HorizontalAlignment="Right" Margin="0,0,12,0" Padding="24,4" MinWidth="88"/>
+            </Grid>
         </controls:LayoutPageControl.ToolBoxContent>
 
 

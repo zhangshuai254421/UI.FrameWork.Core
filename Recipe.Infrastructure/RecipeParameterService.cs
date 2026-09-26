@@ -8,8 +8,8 @@ namespace Recipe.Infrastructure
 
     public class RecipeParameterService : RecipeParameterServiceBase<Recipe.Domain.RecipeParameter, Guid>,IRecipeParameterService
     {
-        public RecipeParameterService(IUnitOfWork unitofWork) : base(unitofWork)
-        { 
+        public RecipeParameterService(IUnitOfWork unitofWork, IRecipeManagerService recipeManagerService) : base(unitofWork, recipeManagerService)
+        {
         }
 
   
