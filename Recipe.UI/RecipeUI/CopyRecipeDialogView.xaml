@@ -115,6 +115,7 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
@@ -180,8 +181,33 @@
                 </TextBox>
             </Grid>
 
+            <!-- 目标文件夹（可编辑下拉：可选已有文件夹，也可输入新文件夹名） -->
+            <Grid Grid.Row="4" Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="目标文件夹:"
+                           Style="{StaticResource DialogLabelStyle}"/>
+
+                <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding FolderNames}"
+                          Text="{Binding TargetGroupName, UpdateSourceTrigger=PropertyChanged}"
+                          IsEditable="True"
+                          FontSize="13"
+                          Height="34"
+                          VerticalContentAlignment="Center"
+                          Padding="10,0"
+                          BorderBrush="{DynamicResource PrimaryBorderBrush}"
+                          BorderThickness="1"
+                          Background="{DynamicResource CardBackgroundBrush}"
+                          Foreground="{DynamicResource PrimaryTextBrush}"/>
+            </Grid>
+
             <!-- 错误提示 -->
-            <TextBlock Grid.Row="4"
+            <TextBlock Grid.Row="5"
                        Text="{Binding ErrorMessage}"
                        FontSize="12"
                        Foreground="#E84A4A"
@@ -189,7 +215,7 @@
                        Margin="80,4,0,0"/>
 
             <!-- 底部按钮 -->
-            <StackPanel Grid.Row="5"
+            <StackPanel Grid.Row="6"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="0,12,0,0">

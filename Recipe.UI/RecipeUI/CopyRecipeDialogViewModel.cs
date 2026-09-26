@@ -8,6 +8,8 @@ namespace Recipe.UI.RecipeUI
 
         private string _originalRecipeName = string.Empty;
         private string _newRecipeName = string.Empty;
+        private string _targetGroupName = string.Empty;
+        private IEnumerable<string> _folderNames = Array.Empty<string>();
         private string _errorMessage = string.Empty;
         private bool _hasError;
 
@@ -51,6 +53,30 @@ namespace Recipe.UI.RecipeUI
         }
 
         /// <summary>
+        /// 目标文件夹名（用户输入；可选已有文件夹，也可输入新文件夹名）
+        /// </summary>
+        public string TargetGroupName
+        {
+            get => _targetGroupName;
+            set
+            {
+                if (SetProperty(ref _targetGroupName, value))
+                {
+                    Validate();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 可选文件夹列表（下拉提示）
+        /// </summary>
+        public IEnumerable<string> FolderNames
+        {
+            get => _folderNames;
+            set => SetProperty(ref _folderNames, value);
+        }
+
+        /// <summary>
         /// 校验错误提示
         /// </summary>
         public string ErrorMessage
@@ -82,15 +108,17 @@ namespace Recipe.UI.RecipeUI
             var parameters = new DialogParameters
             {
                 { "NewRecipeName", NewRecipeName?.Trim() },
+                { "NewGroupName", TargetGroupName?.Trim() },
                 { "IsSaved", true }
             };
             var result = new DialogResult(ButtonResult.OK);
             result.Parameters = parameters;
             RequestClose.Invoke(result);
         },
-        () => !HasError && !string.IsNullOrWhiteSpace(NewRecipeName))
+        () => !HasError && !string.IsNullOrWhiteSpace(NewRecipeName) && !string.IsNullOrWhiteSpace(TargetGroupName))
         .ObservesProperty(() => HasError)
-        .ObservesProperty(() => NewRecipeName);
+        .ObservesProperty(() => NewRecipeName)
+        .ObservesProperty(() => TargetGroupName);
 
         public DelegateCommand CancelCommand => new DelegateCommand(() =>
         {
@@ -116,6 +144,17 @@ namespace Recipe.UI.RecipeUI
             {
                 OriginalRecipeName = parameters.GetValue<string>("RecipeName");
                 NewRecipeName = OriginalRecipeName;
+            }
+
+            // 目标文件夹：默认当前文件夹，可下拉选已有文件夹，也可输入新文件夹名
+            if (parameters.ContainsKey("GroupName"))
+            {
+                TargetGroupName = parameters.GetValue<string>("GroupName") ?? string.Empty;
+            }
+
+            if (parameters.ContainsKey("GroupNames"))
+            {
+                FolderNames = parameters.GetValue<IEnumerable<string>>("GroupNames") ?? Array.Empty<string>();
             }
         }
 
@@ -152,6 +191,15 @@ namespace Recipe.UI.RecipeUI
                 return;
             }
 
+            // 目标文件夹名
+            var target = TargetGroupName?.Trim() ?? string.Empty;
+            if (!string.IsNullOrEmpty(target) && string.IsNullOrWhiteSpace(target))
+            {
+                ErrorMessage = "文件夹名不能为空白字符";
+                HasError = true;
+                return;
+            }
+
             ErrorMessage = string.Empty;
             HasError = false;
         }
@@ -173,6 +221,13 @@ namespace Recipe.UI.RecipeUI
             if (trimmed == (OriginalRecipeName?.Trim() ?? string.Empty))
             {
                 ErrorMessage = "新配方名与原配方名相同";
+                HasError = true;
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(TargetGroupName))
+            {
+                ErrorMessage = "请选择或输入目标文件夹";
                 HasError = true;
                 return false;
             }

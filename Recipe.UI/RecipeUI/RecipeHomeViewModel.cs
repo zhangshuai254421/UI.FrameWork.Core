@@ -183,7 +183,12 @@ namespace Recipe.UI.RecipeUI
 
             var dialogResult = await _dialogService.ShowDialogAsync(
                 nameof(CopyRecipeDialogView),
-                new DialogParameters { { "RecipeName", SelectRecipeName } });
+                new DialogParameters
+                {
+                    { "RecipeName", SelectRecipeName },
+                    { "GroupName", SelectGroupName },
+                    { "GroupNames", RecipeWithGroupName.ToList() }
+                });
 
             if (dialogResult.Result != ButtonResult.OK)
             {
@@ -191,12 +196,13 @@ namespace Recipe.UI.RecipeUI
             }
 
             var newRecipeName = dialogResult.Parameters.GetValue<string>("NewRecipeName");
+            var newGroupName = dialogResult.Parameters.GetValue<string>("NewGroupName");
             if (string.IsNullOrWhiteSpace(newRecipeName) || newRecipeName == SelectRecipeName)
             {
                 return;
             }
 
-            await _recipeService.CopyRecipeAsync(SelectGroupName, SelectRecipeName, newRecipeName, AppGlobals.MachineName);
+            await _recipeService.CopyRecipeAsync(SelectGroupName, SelectRecipeName, newRecipeName, AppGlobals.MachineName, newGroupName);
         }
 
         private async Task DeleteAsync()

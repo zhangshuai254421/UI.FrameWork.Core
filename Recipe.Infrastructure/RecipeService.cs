@@ -100,9 +100,11 @@ namespace Recipe.Infrastructure
 
         /// <summary>
         /// 复制配方：连同参数一起克隆（按运行时类型深拷贝，兼容插件派生参数）。
+        /// <paramref name="targetGroupName"/> 为空时拷入原文件夹；给出时拷入目标文件夹
+        /// （目标文件夹不存在则随本次复制创建，无需占位行）。
         /// 修复旧 VM 实现无 Include 导致"只拷壳不拷参数"的缺陷。
         /// </summary>
-        public async Task<bool> CopyRecipeAsync(string groupName, string recipeName, string newRecipeName, string machineName, CancellationToken cancellationToken = default)
+        public async Task<bool> CopyRecipeAsync(string groupName, string recipeName, string newRecipeName, string machineName, string? targetGroupName = null, CancellationToken cancellationToken = default)
         {
             var source = await _repository.GetQueryable()
                 .Include(r => r.Parameters)
@@ -117,7 +119,7 @@ namespace Recipe.Infrastructure
 
             var copy = new Recipe.Domain.Recipe
             {
-                GroupName = source.GroupName,
+                GroupName = string.IsNullOrWhiteSpace(targetGroupName) ? source.GroupName : targetGroupName.Trim(),
                 RecipeName = newRecipeName,
                 MachineName = source.MachineName,
                 Parameters = source.Parameters?
