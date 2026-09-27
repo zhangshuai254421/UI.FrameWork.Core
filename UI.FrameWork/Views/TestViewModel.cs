@@ -25,6 +25,10 @@ namespace SemiAppliaction.Views
         {
             // 通过设备标识从设备管理器取已初始化设备，不硬编码具体厂商适配器。
             IDevice? device = _deviceManager.GetDevice("CameraA");
+            var s = device as CameraBase;
+            s.StartAcquisition();
+             var result = s.GetOneImage();
+            CameraImageFile.Save(result, @"D://1.bmp");
         }
     }
 }

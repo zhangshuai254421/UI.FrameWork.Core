@@ -25,5 +25,11 @@ namespace Framework.Device
         public abstract double GetGain();
 
         public abstract void TriggerSoftware();
+
+        /// <summary>取一帧并保存为图片文件（默认 BMP 格式）；目标目录不存在自动创建，同名文件覆盖。取图为空帧或写盘失败返回 false。</summary>
+        public bool SaveImage(string filePath, ImageFileFormat format = ImageFileFormat.Bmp)
+        {
+            return CameraImageFile.Save(GetOneImage(), filePath, format);
+        }
     }
 }
