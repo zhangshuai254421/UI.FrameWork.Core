@@ -84,7 +84,7 @@ namespace Framework.Device.HikVision
             ReleaseCamera();
         }
 
-        /// <summary>开始取流；未打开时记录错误并忽略。</summary>
+        /// <summary>开始取流；未打开时记录错误并忽略。Callback 模式在启动前注册帧回调，帧持续推入 <see cref="ChannelCameraData"/>。</summary>
         public override void StartAcquisition()
         {
             var camera = _camera;
@@ -94,14 +94,26 @@ namespace Framework.Device.HikVision
                 return;
             }
 
+            // 回调取流必须在 StartGrabbing 前注册；先退订再订阅，避免重复 Start 导致回调叠加。
+            if (GrabMode == CameraGrabMode.Callback)
+            {
+                camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabed;
+                camera.StreamGrabber.FrameGrabedEvent += OnFrameGrabed;
+            }
+
             int ret = camera.StreamGrabber.StartGrabbing();
             if (ret != MvError.MV_OK)
             {
+                if (GrabMode == CameraGrabMode.Callback)
+                {
+                    // 启动失败要退订，避免残留回调。
+                    camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabed;
+                }
                 RecordError(ret, nameof(StartAcquisition));
             }
         }
 
-        /// <summary>停止取流；未打开时静默忽略。</summary>
+        /// <summary>停止取流；未打开时静默忽略。Callback 模式同时注销帧回调。</summary>
         public override void StopAcquisition()
         {
             var camera = _camera;
@@ -111,13 +123,17 @@ namespace Framework.Device.HikVision
             }
 
             int ret = camera.StreamGrabber.StopGrabbing();
+            camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabed;
             if (ret != MvError.MV_OK)
             {
                 RecordError(ret, nameof(StopAcquisition));
             }
         }
 
-        /// <summary>阻塞取一帧（超时 <see cref="GrabTimeoutMs"/> 毫秒）；未打开、超时或失败返回空 <see cref="CameraData"/>，SDK 帧缓冲在本方法内归还。</summary>
+        /// <summary>
+        /// 阻塞取一帧（超时 <see cref="GrabTimeoutMs"/> 毫秒）；未打开、超时或失败返回空 <see cref="CameraData"/>，SDK 帧缓冲在本方法内归还。
+        /// Callback 模式下改为从预览通道取最新缓存帧（丢弃积压旧帧），无帧返回空。
+        /// </summary>
         public override CameraData GetOneImage()
         {
             var camera = _camera;
@@ -125,6 +141,18 @@ namespace Framework.Device.HikVision
             {
                 RecordNotOpen(nameof(GetOneImage));
                 return new CameraData();
+            }
+
+            // 回调模式下 SDK 不允许同时主动取流，从通道取帧替代。
+            if (GrabMode == CameraGrabMode.Callback)
+            {
+                var latest = new CameraData();
+                while (ChannelCameraData.Reader.TryRead(out var buffered))
+                {
+                    latest = buffered;
+                }
+
+                return latest;
             }
 
             int ret = camera.StreamGrabber.GetImageBuffer(GrabTimeoutMs, out IFrameOut? frame);
@@ -373,6 +401,7 @@ namespace Framework.Device.HikVision
             }
 
             camera.StreamGrabber.StopGrabbing();
+            camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabed;
             camera.Close();
             camera.Dispose();
         }
@@ -391,6 +420,35 @@ namespace Framework.Device.HikVision
         {
             LastError = DeviceErrorCategory.OpenFailed;
             _logger.LogError("海康相机未打开，无法执行 {Operation}", operation);
+        }
+
+        /// <summary>
+        /// SDK 帧回调（FrameGrabedEvent 非 Ex 版本：SDK 在回调返回后自动归还帧缓冲，这里只需拷贝）。
+        /// 运行在 SDK 回调线程上：只做拷贝与入队，绝不能阻塞或让异常逃逸。
+        /// </summary>
+        private void OnFrameGrabed(object? sender, FrameGrabbedEventArgs e)
+        {
+            try
+            {
+                var image = e.FrameOut?.Image;
+                if (image is null)
+                {
+                    return;
+                }
+
+                // PixelData 是 SDK 拷出的托管数组；通道满时 DropOldest 丢最旧帧，TryWrite 永不阻塞。
+                ChannelCameraData.Writer.TryWrite(new CameraData
+                {
+                    ImageData = image.PixelData ?? Array.Empty<byte>(),
+                    Width = (int)image.Width,
+                    Height = (int)image.Height,
+                    PixelFormat = TranslatePixelFormat((int)image.PixelType),
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "海康相机回调帧处理失败，已丢弃该帧");
+            }
         }
     }
 }

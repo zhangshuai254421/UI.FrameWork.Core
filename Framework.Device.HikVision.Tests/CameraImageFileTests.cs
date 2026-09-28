@@ -179,6 +179,13 @@ namespace Framework.Device.HikVision.Tests
         {
             var path = TempPath(".bmp");
             var camera = new FakeCamera();
+            camera.SetNextFrame(new CameraData
+            {
+                ImageData = new byte[] { 1, 2, 3, 4 }, // 上行 1,2；下行 3,4
+                Width = 2,
+                Height = 2,
+                PixelFormat = PixelFormat.Mono8,
+            });
 
             Assert.True(camera.SaveImage(path));
 
@@ -195,49 +202,5 @@ namespace Framework.Device.HikVision.Tests
             b[offset] | b[offset + 1] << 8 | b[offset + 2] << 16 | b[offset + 3] << 24;
 
         private static int ReadUInt16(byte[] b, int offset) => b[offset] | b[offset + 1] << 8;
-
-        /// <summary>固定返回一帧 2×2 Mono8 图的相机桩。</summary>
-        private sealed class FakeCamera : CameraBase
-        {
-            public override string Name => "FakeCamera";
-
-            public override bool Open(DeviceConnection connection) => true;
-
-            public override void Close()
-            {
-            }
-
-            public override void StartAcquisition()
-            {
-            }
-
-            public override void StopAcquisition()
-            {
-            }
-
-            public override CameraData GetOneImage() => new()
-            {
-                ImageData = new byte[] { 1, 2, 3, 4 }, // 上行 1,2；下行 3,4
-                Width = 2,
-                Height = 2,
-                PixelFormat = PixelFormat.Mono8,
-            };
-
-            public override void SetExposureTime(double exposureTimeUs)
-            {
-            }
-
-            public override double GetExposureTime() => 0;
-
-            public override void SetGain(double gain)
-            {
-            }
-
-            public override double GetGain() => 0;
-
-            public override void TriggerSoftware()
-            {
-            }
-        }
     }
 }

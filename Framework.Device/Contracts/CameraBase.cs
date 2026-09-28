@@ -10,6 +10,9 @@ namespace Framework.Device
                 FullMode = BoundedChannelFullMode.DropOldest
             });
 
+        /// <summary>取流模式（StartAcquisition 前设置）：Pull 主动拉帧；Callback 回调持续推帧进 <see cref="ChannelCameraData"/>。</summary>
+        public CameraGrabMode GrabMode { get; set; } = CameraGrabMode.Pull;
+
         public abstract void StartAcquisition();
 
         public abstract void StopAcquisition();

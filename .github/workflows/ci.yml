@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [deveop, master]
+  pull_request:
+  workflow_dispatch: # 允许在 GitHub 页面上手动触发
+
+jobs:
+  test:
+    runs-on: windows-latest # 解决方案含 WPF/海康 x64 依赖，用 Windows runner
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: 还原依赖
+        run: dotnet restore Framework.Device.HikVision.Tests/Framework.Device.HikVision.Tests.csproj
+
+      - name: 构建并运行单元测试
+        run: dotnet test Framework.Device.HikVision.Tests/Framework.Device.HikVision.Tests.csproj --no-restore --verbosity normal
