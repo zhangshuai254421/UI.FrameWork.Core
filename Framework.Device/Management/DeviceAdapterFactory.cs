@@ -61,6 +61,7 @@ namespace Framework.Device
             return (IDevice)Activator.CreateInstance(type)!;
         }
 
+        /// <summary>登记一个适配器类型；无标记、抽象类型或未实现 IDevice 的类型忽略，同 (类型, 厂商) 键后注册覆盖先注册。</summary>
         private void Register(Type type)
         {
             var attribute = type.GetCustomAttribute<DeviceAdapterAttribute>();

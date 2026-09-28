@@ -9,10 +9,14 @@ namespace Framework.Device
     /// </summary>
     public class DeviceManager : IDisposable
     {
+        /// <summary>适配器工厂：按 (设备类型, 厂商) 实例化适配器。</summary>
         private readonly IDeviceAdapterFactory _factory;
         private readonly ILogger<DeviceManager> _logger;
+
+        /// <summary>已打开设备表：配置 Id → 实例。</summary>
         private readonly Dictionary<string, IDevice> _devices = new();
 
+        /// <summary>构造：注入适配器工厂与可选日志。</summary>
         public DeviceManager(IDeviceAdapterFactory factory, ILogger<DeviceManager>? logger = null)
         {
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
@@ -52,6 +56,7 @@ namespace Framework.Device
             _devices.Clear();
         }
 
+        /// <summary>释放并关闭所有已打开设备。</summary>
         public void Dispose() => CloseAll();
 
         private void OpenDevice(DeviceConfiguration config)

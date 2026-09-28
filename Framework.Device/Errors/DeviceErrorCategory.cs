@@ -5,6 +5,7 @@ namespace Framework.Device
     /// </summary>
     public enum DeviceErrorCategory
     {
+        /// <summary>无错误。</summary>
         None = 0,
 
         /// <summary>找不到设备。</summary>

@@ -6,6 +6,7 @@ namespace Framework.Device
     /// </summary>
     public interface IDeviceConfigurationReader
     {
+        /// <summary>读取全部设备配置；返回顺序即初始化顺序。</summary>
         IReadOnlyList<DeviceConfiguration> Read();
     }
 }

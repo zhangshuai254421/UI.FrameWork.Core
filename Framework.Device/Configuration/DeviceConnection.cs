@@ -12,14 +12,17 @@ namespace Framework.Device
     /// </summary>
     public sealed class TcpConnection : DeviceConnection
     {
+        /// <summary>创建 TCP 连接。</summary>
         public TcpConnection(string ipAddress, int port)
         {
             IpAddress = ipAddress;
             Port = port;
         }
 
+        /// <summary>设备 IP 地址。</summary>
         public string IpAddress { get; }
 
+        /// <summary>端口号。</summary>
         public int Port { get; }
     }
 
@@ -28,11 +31,13 @@ namespace Framework.Device
     /// </summary>
     public sealed class ComConnection : DeviceConnection
     {
+        /// <summary>创建 COM 连接。</summary>
         public ComConnection(string portName)
         {
             PortName = portName;
         }
 
+        /// <summary>串口号（如 COM3）。</summary>
         public string PortName { get; }
     }
 }

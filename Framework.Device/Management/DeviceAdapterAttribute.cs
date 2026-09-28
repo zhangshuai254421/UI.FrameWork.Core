@@ -7,6 +7,7 @@ namespace Framework.Device
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public sealed class DeviceAdapterAttribute : Attribute
     {
+        /// <summary>标记适配器驱动的设备类型与厂商。</summary>
         public DeviceAdapterAttribute(DeviceKind kind, string vendor)
         {
             Kind = kind;
