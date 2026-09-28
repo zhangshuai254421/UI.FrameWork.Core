@@ -1,4 +1,10 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<!--
+    通用图标几何数据表（键名规范：*Geometry，Path 数据均为矢量路径，经 o:Freeze 冻结）。
+    按用途分段：通用操作（关闭/方向/旋转/缩放/保存…）、窗口控制（最小化/还原/最大化）、
+    键盘按键图标（keyBoard*/keyUpper…）、消息框图标（MessageBox*）、轴控制与状态图标。
+    XAML 用法：<Path Data="{DynamicResource CloseGeometry}" .../>；IconElement.Geometry 亦可直接引用。
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:o="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
 

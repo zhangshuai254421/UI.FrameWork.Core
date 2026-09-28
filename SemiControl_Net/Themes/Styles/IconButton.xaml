@@ -90,6 +90,7 @@
 		</Setter>
 	</Style>
 
+    <!--底部工具栏大按钮（宽幅图标风格）-->
     <Style x:Key="BottomButtonStyle" TargetType="controls:IconButton" BasedOn="{StaticResource IconButtonBaseStyle}">
         <Setter Property="Focusable" Value="True"/>
         <Setter Property="Width" Value="140"/>
@@ -99,6 +100,7 @@
         <Setter Property="IconHeight" Value="25"/>
     </Style>
 
+    <!--底部工具栏小按钮（窄幅图标风格）-->
     <Style x:Key="BottomButtonSmallStyle" TargetType="controls:IconButton" BasedOn="{StaticResource IconButtonBaseStyle}">
         <Setter Property="Width" Value="80"/>
         <Setter Property="Height" Value="75"/>

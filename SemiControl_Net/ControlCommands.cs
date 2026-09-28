@@ -168,6 +168,9 @@ namespace SemiControl
         /// </summary>
         public static RoutedCommand More { get; } = new(nameof(More), typeof(ControlCommands));
 
+        /// <summary>
+        ///     切换（开/关）
+        /// </summary>
         public static RoutedCommand Toggle { get; } = new(nameof(Toggle), typeof(ControlCommands));
     }
 }

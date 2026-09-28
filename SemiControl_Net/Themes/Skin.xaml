@@ -1,4 +1,14 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<!--
+    控件库主题总入口：宿主程序合并本字典即可获得全部控件样式与主题资源。
+    注意合并顺序（WPF 对 MergedDictionaries 从后向前查找，同键冲突时后合并的优先生效；
+    画笔经 DynamicResource 引用颜色键，顺序调换不影响运行时取值）：
+      1. BaseStyle        —— 控件基础样式（文字颜色/字号/焦点框）
+      2. 控件样式          —— Button / IconButton / ToggleButton / BigNumericKeypad / DataGrid
+      3. 图标几何数据      —— IconGeometry（业务页面图标）、Geometries（通用图标）
+      4. 颜色与画笔        —— ButtonBrushes → Colors → Brushes（画笔引用 Colors 中的颜色键）
+      5. 字号与尺寸        —— Fonts → Size
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.MergedDictionaries>
 
@@ -11,14 +21,25 @@
         <ResourceDictionary Source="../Themes/Styles/BigNumericKeypad.xaml"/>
         <ResourceDictionary Source="../Themes/Styles/DataGrid.xaml"/>
 
+        <!--业务页面图标（各视图 F1~F15 功能键图标）-->
         <ResourceDictionary Source="../Themes/IconGeometry.xaml"/>
-     
 
+        <!--通用图标几何数据-->
         <ResourceDictionary Source="../Themes/Basic/Geometries.xaml"/>
+
+        <!--按钮状态画笔（默认/悬停/选中/禁用）-->
         <ResourceDictionary Source="../Themes/Basic/Brushes/ButtonBrushes.xaml"/>
+
+        <!--主题颜色（画笔的取色源头）-->
         <ResourceDictionary Source="../Themes/Basic/Colors.xaml"/>
+
+        <!--主题画笔（纯色 + 渐变，引用 Colors 中的颜色键）-->
         <ResourceDictionary Source="../Themes/Basic/Brushes.xaml"/>
+
+        <!--字号-->
         <ResourceDictionary Source="../Themes/Basic/Fonts.xaml"/>
+
+        <!--控件标准尺寸-->
         <ResourceDictionary Source="../Themes/Basic/Size.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

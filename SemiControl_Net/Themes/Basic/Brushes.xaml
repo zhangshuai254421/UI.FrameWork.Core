@@ -1,5 +1,10 @@
-﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+﻿<!--
+    主题画笔（键名规范：纯色 *Brush 对应 Colors.xaml 的 *Color；渐变 *GradientBrush）。
+    颜色一律经 DynamicResource 引用 Colors.xaml 的颜色键，换主题时自动联动。
+    所有画笔已冻结（o:Freeze）以提升渲染性能与线程安全性。
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:o="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
 
@@ -178,14 +183,10 @@
         <GradientStop o:Freeze="True" Color="{DynamicResource SecondaryLightColor}" Offset="1"/>
     </LinearGradientBrush>
     <LinearGradientBrush o:Freeze="true" x:Key="ToggleButtonCircleBrush" EndPoint="0,1" StartPoint="0,0">
-        <!--<GradientStop o:Freeze="True" Color="{DynamicResource PrimaryBorderColor}" Offset="0"/>
-        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="1"/>-->
         <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="1"/>
         <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="0"/>
     </LinearGradientBrush>
     <LinearGradientBrush o:Freeze="true" x:Key="ButtonGradientBrush" EndPoint="0,1" StartPoint="0,0">
-        <!--<GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyLightColor}" Offset="0"/>
-        <GradientStop o:Freeze="True" Color="{DynamicResource ThirdlyLightToolColor}" Offset="1"/>-->
         <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryDefaultColor}" Offset="0"/>
         <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="1"/>
     </LinearGradientBrush>
@@ -233,8 +234,6 @@
     </LinearGradientBrush>
 
     <LinearGradientBrush o:Freeze="true" x:Key="SliderSelectionBackgroundBrush" EndPoint="0,1" StartPoint="0,0">
-        <!--<GradientStop o:Freeze="True" Color="{DynamicResource SecondaryDeepColor}" Offset="0"/>
-        <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryBorderColor}" Offset="1"/>-->
         <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryColor}" Offset="0"/>
         <GradientStop o:Freeze="True" Color="{DynamicResource PrimaryControlToolColor}" Offset="1"/>
     </LinearGradientBrush>

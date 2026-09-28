@@ -123,6 +123,9 @@ namespace SemiControl.Controls
             set { SetValue(ImageUrlProperty, value); }
         }
 
+        /// <summary>
+        /// 图片路径
+        /// </summary>
         public static readonly DependencyProperty ImageUrlProperty = DependencyProperty.Register("ImageUrl", typeof(ImageSource), typeof(IconButton), new PropertyMetadata(null));
 
 
@@ -136,6 +139,9 @@ namespace SemiControl.Controls
             set { SetValue(IsNeedRedMarkProperty, value); }
         }
 
+        /// <summary>
+        /// 是否需要标红显示
+        /// </summary>
         public static readonly DependencyProperty IsNeedRedMarkProperty = DependencyProperty.Register("IsNeedRedMark", typeof(bool), typeof(IconButton), new PropertyMetadata(false));
 
 

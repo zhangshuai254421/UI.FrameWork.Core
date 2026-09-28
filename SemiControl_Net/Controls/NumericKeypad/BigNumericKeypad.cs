@@ -11,10 +11,12 @@ using System.Windows.Controls.Primitives;
 namespace SemiControl.Controls
 {
     /// <summary>
-    /// 大型数字键盘
+    /// 大型数字键盘：模板内置数字/方向/退格等按键，点击后经 Win32 <see cref="keybd_event"/>
+    /// 注入系统级键盘事件（等效真实按键），大小写随 Shift/大写锁定切换；按 Enter 时引发 <see cref="EnterKeyPressed"/>。
     /// </summary>
     public class BigNumericKeypad : Control
     {
+        /// <summary>键名 → Win32 虚拟键码映射（Tag 值即此处的键名）。</summary>
         private static Dictionary<string, byte> keycode = new Dictionary<string, byte>()
         {
             {"BackSpace", 8 },
@@ -81,27 +83,30 @@ namespace SemiControl.Controls
         };
 
 
+        /// <summary>EnterKeyPressed 路由事件（冒泡）。</summary>
         public static readonly RoutedEvent EnterKeyPressedEvent = EventManager.RegisterRoutedEvent("EnterKeyPressed", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(BigNumericKeypad));
 
-        // 提供公共事件访问器
+        /// <summary>按下 Enter 键时引发。</summary>
         public event RoutedEventHandler EnterKeyPressed
         {
             add { AddHandler(EnterKeyPressedEvent, value); }
             remove { RemoveHandler(EnterKeyPressedEvent, value); }
         }
+
         /// <summary>
-        /// 键盘输入
+        /// Win32 keybd_event：向系统注入一次键盘事件（0=按下，2=抬起），实现等效真实按键输入。
         /// </summary>
-        /// <param name="bVK"></param>
-        /// <param name="bScan"></param>
-        /// <param name="dwFlags"></param>
-        /// <param name="dwExtraInfo"></param>
+        /// <param name="bVK">虚拟键码，见 <see cref="keycode"/>。</param>
+        /// <param name="bScan">硬件扫描码（此处固定传 0）。</param>
+        /// <param name="dwFlags">标志位：0 按下 / KEYEVENTF_KEYUP(2) 抬起。</param>
+        /// <param name="dwExtraInfo">附加信息（此处固定传 0）。</param>
         [DllImport("User32.dll")]
         public static extern void keybd_event(byte bVK, byte bScan, Int32 dwFlags, int dwExtraInfo);
 
         private Grid _grid;
         private ToggleButton _shift;
 
+        /// <summary>文本内容（预留属性：当前版本按键经 Win32 直接注入系统键盘流，不经过此属性）。</summary>
         public string TextContent { get; set; }
 
         public override void OnApplyTemplate()
@@ -117,16 +122,9 @@ namespace SemiControl.Controls
 
         private void NumericKeypadLoad(object sender, RoutedEventArgs e)
         {
-            if (Console.CapsLock)
-            {
-                _shift.IsChecked = true;
-                PlusShift(_shift, _grid);
-            }
-            else
-            {
-                _shift.IsChecked = false;
-                PlusShift(_shift, _grid);
-            }
+            // 按系统大写锁定状态初始化 Shift 键与按键大小写显示。
+            _shift.IsChecked = Console.CapsLock;
+            PlusShift(_shift, _grid);
         }
 
         private void GetGridChild(Panel panel)
@@ -156,10 +154,6 @@ namespace SemiControl.Controls
         {
             if (sender is Button btn)
             {
-                if (btn == null)
-                {
-                    return;
-                }
                 string content = btn.Tag?.ToString();
                 if (string.IsNullOrEmpty(content))
                 {
@@ -190,10 +184,6 @@ namespace SemiControl.Controls
         {
             if (sender is ToggleButton btn)
             {
-                if (btn == null)
-                {
-                    return;
-                }
                 string content = btn.Tag?.ToString();
                 if (string.IsNullOrEmpty(content))
                 {
@@ -212,6 +202,7 @@ namespace SemiControl.Controls
             }
         }
 
+        /// <summary>按 Shift 键状态把面板上所有按键内容整体切换大小写（"+/-" 键同时切换 Tag 正负）。</summary>
         private void PlusShift(ToggleButton btn, Panel panel)
         {
             foreach (var children in panel.Children)

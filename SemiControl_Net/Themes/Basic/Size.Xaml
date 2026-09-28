@@ -1,4 +1,11 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<!--
+    控件标准尺寸表（键名规范：*Width / *Height；前缀 = 控件名，如 Button_/ComboBox_/DataGrid…；
+    Framework_* 为框架布局区尺寸：头部/状态栏/侧边栏/底部）。
+    样式与模板经 DynamicResource 引用，改这里即可全局调整尺寸。
+    注意：文件扩展名是 ".Xaml"（大写 X，历史原因），Skin.xaml 中按 Size.xaml 引用——
+    Windows 文件系统不区分大小写所以有效，重命名需同步改引用。
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
 

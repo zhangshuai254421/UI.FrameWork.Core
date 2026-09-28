@@ -85,7 +85,7 @@ namespace SemiControl.Controls
         public static readonly DependencyProperty StatusBrushProperty = DependencyProperty.Register("StatusBrush", typeof(Brush), typeof(ToggleIconButton), new PropertyMetadata(Brushes.White));
 
         /// <summary>
-        /// 
+        /// 是否显示状态 小矩形框
         /// </summary>
         public bool IsShowStatus
         {
@@ -93,6 +93,9 @@ namespace SemiControl.Controls
             set { SetValue(IsShowStatusProperty, value); }
         }
 
+        /// <summary>
+        /// 是否显示状态
+        /// </summary>
         public static readonly DependencyProperty IsShowStatusProperty = DependencyProperty.Register("IsShowStatus", typeof(bool), typeof(ToggleIconButton), new PropertyMetadata(false));
     }
 }

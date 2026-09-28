@@ -6,6 +6,7 @@
         <ResourceDictionary Source="Base/BaseStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    <!--切换图标按钮：布局与 IconButtonBaseStyle 一致，额外在 IsChecked=true 时套用选中态画笔-->
     <Style x:Key="ToggleIconButtonBaseStyle" BasedOn="{StaticResource BaseStyle}" TargetType="controls:ToggleIconButton">
         <Setter Property="Width" Value="{DynamicResource Button_IconButtonWidth}"/>
         <Setter Property="Height" Value="{DynamicResource Button_IconButtonHeight}"/>

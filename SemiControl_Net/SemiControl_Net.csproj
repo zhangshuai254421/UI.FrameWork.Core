@@ -1,34 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <TargetFrameworks>net8.0-windows</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <UseWPF>true</UseWPF>
-	  <RootNamespace> SemiControl</RootNamespace>
-	  <AssemblyName>SemiControl</AssemblyName>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>SemiControl</RootNamespace>
+    <AssemblyName>SemiControl</AssemblyName>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Controls\Input\CalendarWithClock.cs" />
-    <Compile Remove="Controls\Input\Clock.cs" />
-    <Compile Remove="Controls\Input\ClockBase.cs" />
-    <Compile Remove="Controls\Input\ClockRadioButton.cs" />
-    <Compile Remove="Controls\Input\DateTimePicker.cs" />
-    <Compile Remove="Controls\Input\ListClock.cs" />
-    <Compile Remove="Controls\Input\WatermarkTextBox.cs" />
-    <Compile Remove="Controls\TimeBlock.xaml.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Remove="Themes\Styles\DateTimePicker.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controls\Input\" />
-  </ItemGroup>
-
-  <!--<Import Project="..\SemiControl_Shard\SemiControl_Shard.projitems" Label="Shared" />-->
-	
 
 </Project>

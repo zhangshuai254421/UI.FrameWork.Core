@@ -7,7 +7,7 @@
         <ResourceDictionary Source="Base/BaseStyle.xaml"/>
         <ResourceDictionary Source="Button.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <!--按钮样式-->
+    <!--数字/功能键样式（基于普通按钮，固定 120×53）-->
     <Style x:Key="BigNumericKeypadButtonStyle" BasedOn="{StaticResource ButtonBaseStyle}" TargetType="Button">
         <Setter Property="Width" Value="120"/>
         <Setter Property="Height" Value="53"/>
@@ -31,7 +31,7 @@
         </Style.Triggers>
     </Style>
 
-    <!--按钮样式-->
+    <!--Shift 切换键样式（选中态即 IsChecked）-->
     <Style x:Key="BigNumericKeypadToggleStyle" TargetType="ToggleButton">
         <Setter Property="Width" Value="120"/>
         <Setter Property="Height" Value="53"/>
@@ -66,6 +66,7 @@
         </Setter>
     </Style>
 
+    <!--键盘按键行容器（横向排列）-->
     <Style x:Key="keyrow" TargetType="{x:Type StackPanel}">
         <Setter Property="Margin" Value="2.5"/>
         <Setter Property="Orientation" Value="Horizontal"></Setter>
@@ -73,6 +74,8 @@
         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
     </Style>
 
+    <!--BigNumericKeypad 默认模板：数字区（7-9/4-6/1-0）+ Enter/BackTab/方向键/Shift/Del，
+        按键 Tag 值对应 BigNumericKeypad.keycode 中的键名，代码后置遍历 G_Grid 挂接点击事件-->
     <Style TargetType="controls:BigNumericKeypad">
         <Setter Property="Width" Value="Auto"/>
         <Setter Property="Height" Value="Auto"/>

@@ -1,4 +1,9 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<!--
+    业务页面图标几何数据表（键名规范：页面名 + F 键号，如 AutoCutStartUpViewF1Geometry = 全自动切割页 F1 按钮图标）。
+    每组为宿主程序某业务界面的 F1~F15 功能键图标，与 UI.FrameWork.Core 各 View 一一对应；
+    文件体积大（数百个矢量路径），仅在整体换肤/新增页面图标时维护，勿随意改动已有键名。
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:o="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
 
