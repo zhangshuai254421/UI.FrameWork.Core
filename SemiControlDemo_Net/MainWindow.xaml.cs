@@ -81,6 +81,11 @@ namespace SemiControlDemo_Net
             btnToggleReadOnly.Content = dataGrid.IsReadOnly ? "取消只读" : "切换只读";
         }
 
+        private void BtnImageViewerDemo_Click(object sender, RoutedEventArgs e)
+        {
+            new ImageViewerDemoWindow { Owner = this }.Show();
+        }
+
         private void UpdateRowCount()
         {
             // 通过反射获取内部视图项数量

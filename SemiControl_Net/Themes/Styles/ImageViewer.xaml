@@ -1,0 +1,70 @@
+<!--
+    图像查看控件（ImageViewer）样式。
+    结构：上部为绘制表面 PART_Presenter（帧 + 矢量层），底部为自带信息条
+    （鼠标坐标 / 像素值 / 缩放百分比，经 PART_Info* 部件由控件代码更新）。
+    标注、检测结果与中心十字线的颜色经 DynamicResource 引用主题画笔，换主题自动联动。
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:SemiControl.Controls">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Base/BaseStyle.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="ImageViewerBaseStyle" BasedOn="{StaticResource BaseStyle}" TargetType="controls:ImageViewer">
+        <Setter Property="Background" Value="{DynamicResource BackgroundDeepBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="AnnotationBrush" Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="ResultBrush" Value="{DynamicResource WarningBrush}"/>
+        <Setter Property="CenterCrosshairBrush" Value="{DynamicResource NormalBrush}"/>
+        <Setter Property="Focusable" Value="True"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:ImageViewer">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            ClipToBounds="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!--帧 + 矢量层绘制表面；鼠标键盘事件冒泡到控件本体处理-->
+                            <controls:ImageViewerPresenter x:Name="PART_Presenter" Focusable="False"/>
+
+                            <!--底部信息条：坐标 / 像素值 / 缩放百分比-->
+                            <Border x:Name="PART_InfoBar"
+                                    Grid.Row="1"
+                                    Background="{DynamicResource BackgroundBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="0 1 0 0"
+                                    Padding="10 4">
+                                <DockPanel>
+                                    <TextBlock x:Name="PART_InfoZoom"
+                                               DockPanel.Dock="Right"
+                                               Foreground="{TemplateBinding Foreground}"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="PART_InfoPosition"
+                                               Foreground="{TemplateBinding Foreground}"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="PART_InfoPixel"
+                                               Margin="18 0 0 0"
+                                               Foreground="{TemplateBinding Foreground}"
+                                               VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--隐式样式：宿主合并 Skin.xaml 后 ImageViewer 自动应用默认外观-->
+    <Style BasedOn="{StaticResource ImageViewerBaseStyle}" TargetType="controls:ImageViewer"/>
+</ResourceDictionary>

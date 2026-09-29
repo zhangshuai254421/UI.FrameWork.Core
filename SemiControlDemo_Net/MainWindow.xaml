@@ -60,6 +60,9 @@
             <Button x:Name="btnToggleReadOnly" Content="切换只读"
                     Margin="16,0,0,0" Padding="8,4"
                     Click="BtnToggleReadOnly_Click"/>
+            <Button Content="🖼 图像控件演示"
+                    Margin="16,0,0,0" Padding="8,4"
+                    Click="BtnImageViewerDemo_Click"/>
         </StackPanel>
 
         <!-- DataGrid -->

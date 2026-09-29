@@ -3,7 +3,7 @@
     注意合并顺序（WPF 对 MergedDictionaries 从后向前查找，同键冲突时后合并的优先生效；
     画笔经 DynamicResource 引用颜色键，顺序调换不影响运行时取值）：
       1. BaseStyle        —— 控件基础样式（文字颜色/字号/焦点框）
-      2. 控件样式          —— Button / IconButton / ToggleButton / BigNumericKeypad / DataGrid
+      2. 控件样式          —— Button / IconButton / ToggleButton / BigNumericKeypad / DataGrid / ImageViewer
       3. 图标几何数据      —— IconGeometry（业务页面图标）、Geometries（通用图标）
       4. 颜色与画笔        —— ButtonBrushes → Colors → Brushes（画笔引用 Colors 中的颜色键）
       5. 字号与尺寸        —— Fonts → Size
@@ -20,6 +20,7 @@
         <ResourceDictionary Source="../Themes/Styles/ToggleButton.xaml"/>
         <ResourceDictionary Source="../Themes/Styles/BigNumericKeypad.xaml"/>
         <ResourceDictionary Source="../Themes/Styles/DataGrid.xaml"/>
+        <ResourceDictionary Source="../Themes/Styles/ImageViewer.xaml"/>
 
         <!--业务页面图标（各视图 F1~F15 功能键图标）-->
         <ResourceDictionary Source="../Themes/IconGeometry.xaml"/>
