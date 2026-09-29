@@ -24,6 +24,9 @@ namespace Framework.Device
 
         /// <summary>端口号。</summary>
         public int Port { get; }
+
+        /// <summary>渲染为 "TCP {IP}:{端口}"，供日志与诊断展示。</summary>
+        public override string ToString() => $"TCP {IpAddress}:{Port}";
     }
 
     /// <summary>
@@ -39,5 +42,8 @@ namespace Framework.Device
 
         /// <summary>串口号（如 COM3）。</summary>
         public string PortName { get; }
+
+        /// <summary>渲染为串口号本身（如 "COM3"），供日志与诊断展示。</summary>
+        public override string ToString() => PortName;
     }
 }

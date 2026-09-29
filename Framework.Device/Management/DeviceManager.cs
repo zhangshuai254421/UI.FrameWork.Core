@@ -77,16 +77,16 @@ namespace Framework.Device
                 else
                 {
                     _logger.LogError(
-                        "设备 {Id}（{Kind}/{Vendor}）打开失败，已降级跳过",
-                        config.Id, config.Kind, config.Vendor);
+                        "设备 {Id}（{Kind}/{Vendor}，{Connection}）打开失败，已降级跳过",
+                        config.Id, config.Kind, config.Vendor, config.Connection);
                     device.Close();
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(
-                    ex, "设备 {Id}（{Kind}/{Vendor}）初始化失败，已降级跳过",
-                    config.Id, config.Kind, config.Vendor);
+                    ex, "设备 {Id}（{Kind}/{Vendor}，{Connection}）初始化失败，已降级跳过",
+                    config.Id, config.Kind, config.Vendor, config.Connection);
             }
         }
     }
