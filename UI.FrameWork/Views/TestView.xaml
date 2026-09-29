@@ -45,7 +45,7 @@
                             <ColumnDefinition Width="0"/>
                         </Grid.ColumnDefinitions>
 
-                        <controls:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F1" Content="测试1" IconGeometry="{StaticResource HomePageF2Geometry}" Command="{Binding Test1Command}"/>
+                        <controls:IconButton Grid.Row="1" Grid.Column="1" Style="{StaticResource MainButtonStyle}" TopLeftContent="F1" Content="相机测试" IconGeometry="{StaticResource HomePageF2Geometry}" Command="{Binding Test1Command}"/>
                         <!--<controls:IconButton Grid.Row="1" Grid.Column="3" Style="{StaticResource MainButtonStyle}" TopLeftContent="F2" Content="手动操作"   IconGeometry="{StaticResource HomePageF2Geometry}" Command="{Binding ShowManualOperation}"/>
                         <controls:IconButton Grid.Row="1" Grid.Column="5" Style="{StaticResource MainButtonStyle}" TopLeftContent="F3" Content="切割参数"   IconGeometry="{StaticResource HomePageF3Geometry}" Command="{Binding ShowRecipe}"  />
                         <controls:IconButton Grid.Row="1" Grid.Column="7" Style="{StaticResource MainButtonStyle}" TopLeftContent="F4" Content="刀片维护"   IconGeometry="{StaticResource HomePageF4Geometry}" Command="{Binding ShowBladeMaintenance}" />
