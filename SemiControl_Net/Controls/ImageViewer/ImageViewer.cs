@@ -37,7 +37,7 @@ namespace SemiControl.Controls
 
         public static readonly DependencyProperty IsCenterCrosshairProperty = DependencyProperty.Register(
             "IsCenterCrosshair", typeof(bool), typeof(ImageViewer),
-            new PropertyMetadata(false));
+            new PropertyMetadata(false, OnVisualPropertyChanged));
 
         public static readonly DependencyProperty MinZoomProperty = DependencyProperty.Register(
             "MinZoom", typeof(double), typeof(ImageViewer),
@@ -61,19 +61,19 @@ namespace SemiControl.Controls
 
         public static readonly DependencyProperty AnnotationBrushProperty = DependencyProperty.Register(
             "AnnotationBrush", typeof(Brush), typeof(ImageViewer),
-            new PropertyMetadata(CreateFrozenBrush(0x2F, 0x88, 0xFF)));
+            new PropertyMetadata(CreateFrozenBrush(0x2F, 0x88, 0xFF), OnVisualPropertyChanged));
 
         public static readonly DependencyProperty ResultBrushProperty = DependencyProperty.Register(
             "ResultBrush", typeof(Brush), typeof(ImageViewer),
-            new PropertyMetadata(CreateFrozenBrush(0xFF, 0x8C, 0x00)));
+            new PropertyMetadata(CreateFrozenBrush(0xFF, 0x8C, 0x00), OnVisualPropertyChanged));
 
         public static readonly DependencyProperty RoiBrushProperty = DependencyProperty.Register(
             "RoiBrush", typeof(Brush), typeof(ImageViewer),
-            new PropertyMetadata(CreateFrozenBrush(0xFF, 0xD7, 0x00)));
+            new PropertyMetadata(CreateFrozenBrush(0xFF, 0xD7, 0x00), OnVisualPropertyChanged));
 
         public static readonly DependencyProperty CenterCrosshairBrushProperty = DependencyProperty.Register(
             "CenterCrosshairBrush", typeof(Brush), typeof(ImageViewer),
-            new PropertyMetadata(CreateFrozenBrush(0x12, 0x8A, 0x3B)));
+            new PropertyMetadata(CreateFrozenBrush(0x12, 0x8A, 0x3B), OnVisualPropertyChanged));
 
         // 只读输出：当前缩放百分比（100 = 1:1）
         private static readonly DependencyPropertyKey CurrentZoomPropertyKey = DependencyProperty.RegisterReadOnly(
@@ -312,6 +312,13 @@ namespace SemiControl.Controls
             var control = (ImageViewer)d;
             // SetScaleRange 防御式校正非法区间，不抛异常。
             control._viewport.SetScaleRange(control.MinZoom, control.MaxZoom);
+        }
+
+        // 纯视觉属性（十字线开关、各画刷）变化只需让呈现器重绘，无状态要更新；
+        // 缺了这一步，运行时改值要等下一次缩放/平移/换帧才可见。
+        private static void OnVisualPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ImageViewer)d).InvalidatePresenter();
         }
 
         private static void OnRoiRectChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
