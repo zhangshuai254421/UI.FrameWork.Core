@@ -2,6 +2,7 @@ namespace Framework.Device
 {
     /// <summary>
     /// 品牌无关的像素格式（相机图像的规范像素表示）。
+    /// 拜耳值仅作规范表示存在：适配器须先去马赛克为 RGB 再产出相机帧，不得以拜耳格式出帧（Docs/adr/0006）。
     /// </summary>
     public enum PixelFormat
     {
