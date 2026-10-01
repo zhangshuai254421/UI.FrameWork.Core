@@ -1,4 +1,4 @@
-using Framework.Device;
+using Framework.Device.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

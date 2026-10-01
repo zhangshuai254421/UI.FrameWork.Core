@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 设备类型：设备所属的类别，决定它具备哪套能力。

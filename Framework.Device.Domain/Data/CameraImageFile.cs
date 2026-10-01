@@ -1,6 +1,6 @@
 using System.Buffers.Binary;
 
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 把 <see cref="CameraData"/>（品牌无关的规范像素表示）编码为图片文件并落盘。

@@ -1,4 +1,4 @@
-using Framework.Device;
+using Framework.Device.Domain;
 using Framework.Device.HikVision;
 
 namespace Framework.Device.HikVision.Tests

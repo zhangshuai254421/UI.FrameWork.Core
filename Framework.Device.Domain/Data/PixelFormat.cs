@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 品牌无关的像素格式（相机图像的规范像素表示）。

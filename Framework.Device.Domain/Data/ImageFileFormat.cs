@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 图片文件保存格式。

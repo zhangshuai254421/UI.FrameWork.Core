@@ -1,4 +1,4 @@
-using Framework.Device;
+using Framework.Device.Domain;
 using Framework.Device.Infrastructure;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;

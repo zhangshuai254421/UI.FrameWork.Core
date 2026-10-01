@@ -1,4 +1,4 @@
-using Framework.Device;
+using Framework.Device.Domain;
 using Framework.Device.Infrastructure.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 相机适配器基类：持有实时图像通道，并给出取流模式与图片保存的公共实现。

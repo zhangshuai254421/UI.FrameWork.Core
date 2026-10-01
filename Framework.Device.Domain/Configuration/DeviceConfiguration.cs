@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 设备级配置：一台设备如何被抵达与驱动，字段为设备标识、设备类型、厂商、连接方式。

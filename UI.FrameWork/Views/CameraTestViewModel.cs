@@ -1,4 +1,4 @@
-using Framework.Device;
+using Framework.Device.Domain;
 using Microsoft.Extensions.Logging;
 using Prism.Commands;
 using Prism.Navigation.Regions;

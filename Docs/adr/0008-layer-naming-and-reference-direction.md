@@ -9,7 +9,7 @@ Status: accepted
 1. **角色后缀白名单**：
    - **`<域词>.Domain`**：实体 + 实体服务接口。**只准引用共享内核 `EFCore.Repository` 与 `Framework.Core` 两个工程**（前者给实体基类与服务接口约定，后者给 `DefaultDbContext` 归属特性）；铁律——Domain 里出现 `Microsoft.EntityFrameworkCore`（using 或 csproj 任一处）即违约，引用任何家族内工程即违约。
    - **`<域词>.Infrastructure`**：`DbContext`、`IEntityTypeConfiguration`、`Migrations`。引用本家族 Domain + `EFCore.Infrastructure` + 直接使用的 `Framework.Core`；家族内唯一知道数据库的地方。
-   - **厂商适配器**（`Framework.Device.<厂商>`）：引用抽象 `Framework.Device`（ADR-0001 已定）。
+   - **厂商适配器**（`Framework.Device.<厂商>`）：引用抽象 `Framework.Device.Domain`（ADR-0001 已定）。
    - **能力库无后缀**（`Framework.Imaging` / `Framework.Detection`）：零 Prism / WPF。
 2. **家族三名一致**：目录名 = 工程名 = 命名空间根。反例即债务：原 `Log.Domain` 目录装着 `Serilog.Domain.csproj`（命名空间又是第三个名字），本次已统一为 `Log.*`。
 3. **归属特性跟实体走**：`AssemblyAttributeDbContextResolver`（Framework.Core）在仓储构造时按**实体所在程序集**反查 `[assembly: DefaultDbContext]`，所以特性必须与实体同程序集，两种形态：
@@ -22,7 +22,7 @@ Status: accepted
 
 - **保持 Device 家族原状**（无后缀中心 + `.Domain` 做持久化）：弃用——`.Domain` 一词两义，Recipe 的 Domain 是模型、Device 的 Domain 是存储，规则无法陈述。
 - **全库向 Recipe 原状看齐**（`.Domain` 含 EF 配置）：弃用——Domain 拖着 EF 包，能力库、适配器、测试引 Domain 时被迫传递引用持久化依赖，"模型"名存实亡。
-- **最小重命名 + 拆纯（选定）**：Device 只改后缀（`Framework.Device.Domain` → `Framework.Device.Infrastructure`，实体语义本来就是持久化）；Recipe/Log 把 EF 配置与 DbContext 搬进既有 `.Infrastructure` 工程；三家族从此一套话术。
+- **最小重命名 + 拆纯（选定，后追加全对齐）**：Device 只改后缀（`Framework.Device.Domain` → `Framework.Device.Infrastructure`，实体语义本来就是持久化）；Recipe/Log 把 EF 配置与 DbContext 搬进既有 `.Infrastructure` 工程。追加一步：`Framework.Device`（端口/接口中心）也改名 `Framework.Device.Domain`——它有持久化有适配器，是家族不是能力库，三家族形状从此完全一致；Device 的 Domain 是端口中心（无 EF 实体），适配器实现端口，六边形正统。
 
 ## Consequences
 

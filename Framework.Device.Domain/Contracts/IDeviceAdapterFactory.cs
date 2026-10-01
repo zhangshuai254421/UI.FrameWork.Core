@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 适配器工厂：给定 (设备类型, 厂商) 产出对应的适配器实例。

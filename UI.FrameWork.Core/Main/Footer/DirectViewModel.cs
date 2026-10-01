@@ -1,5 +1,5 @@
 ﻿using Framework.Core.Common;
-using Framework.Device;
+using Framework.Device.Domain;
 using Prism.Events;
 using PrismUI.Core;
 using UI.FrameWork.Core.Common;

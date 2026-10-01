@@ -8,7 +8,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EFCore.Infrastructure\EFCore.Infrastructure.csproj" />
-    <ProjectReference Include="..\Framework.Device\Framework.Device.csproj" />
+    <ProjectReference Include="..\EFCore.Repository\EFCore.Repository.csproj" />
+    <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
+    <ProjectReference Include="..\Framework.Device.Domain\Framework.Device.Domain.csproj" />
   </ItemGroup>
 
 </Project>

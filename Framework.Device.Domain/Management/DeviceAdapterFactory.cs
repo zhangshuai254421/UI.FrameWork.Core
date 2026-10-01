@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 适配器工厂的生产实现：发现带 <see cref="DeviceAdapterAttribute"/> 的适配器类，

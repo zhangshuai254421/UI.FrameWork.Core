@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 设备适配器基类：打开 / 关闭的公共骨架，相机、运动控制卡等基类从这里派生。

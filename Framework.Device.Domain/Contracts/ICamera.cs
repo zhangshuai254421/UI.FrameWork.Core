@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 相机契约：强类型的最小相机能力，屏蔽厂商差异。

@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 一帧相机图像，以托管字节数组 + 宽高 + 像素格式为规范表示，不泄漏裸指针。

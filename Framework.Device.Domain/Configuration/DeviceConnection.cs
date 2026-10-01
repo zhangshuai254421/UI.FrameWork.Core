@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 连接方式：程序抵达设备的方式，TCP（IP + 端口）或 COM（串口号）。

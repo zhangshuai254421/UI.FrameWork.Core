@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 运动控制卡契约（预留）。具体控制契约不在当前规格范围。

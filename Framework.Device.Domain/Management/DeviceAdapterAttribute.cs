@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 标记一个厂商适配器类，声明它驱动哪类设备的哪个厂商。

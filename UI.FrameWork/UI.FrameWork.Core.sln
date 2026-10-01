@@ -57,7 +57,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Device.HikVision"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Device.HikVision.Tests", "..\Framework.Device.HikVision.Tests\Framework.Device.HikVision.Tests.csproj", "{4B096CB0-FD8A-9C78-16C7-0F1AF4B6673B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Device", "..\Framework.Device\Framework.Device.csproj", "{8840C074-94A4-4A26-BD55-FACE46380FB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Device.Domain", "..\Framework.Device.Domain\Framework.Device.Domain.csproj", "{8840C074-94A4-4A26-BD55-FACE46380FB8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeviceInfrastructure", "DeviceInfrastructure", "{69390568-F91C-4D5F-AB66-C0D187E782AC}"
 EndProject

@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 设备配置读取器：提供设备管理器启动时所需的配置来源。

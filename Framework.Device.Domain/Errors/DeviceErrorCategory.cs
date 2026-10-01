@@ -1,4 +1,4 @@
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 统一设备错误类别：适配器把厂商错误码翻译成这些类别，供上层判读与降级。

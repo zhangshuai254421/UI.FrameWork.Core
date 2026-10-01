@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Framework.Device
+namespace Framework.Device.Domain
 {
     /// <summary>
     /// 设备管理器：读配置 → 用 (设备类型, 厂商) 解析适配器 → 实例化 → 按连接方式打开 → 统一维护生命周期。

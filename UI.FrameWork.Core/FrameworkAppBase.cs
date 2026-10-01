@@ -4,7 +4,7 @@ using EFCore.Infrastructure;
 using EFCore.Repository;
 using Example;
 using Framework.Core.Common;
-using Framework.Device;
+using Framework.Device.Domain;
 using Framework.Device.Infrastructure;
 using Log.Domain;
 using Microsoft.EntityFrameworkCore;
