@@ -1,4 +1,5 @@
 using Framework.Device;
+using Framework.Imaging;
 using Microsoft.Extensions.Logging;
 using SemiControl.Controls;
 using System;

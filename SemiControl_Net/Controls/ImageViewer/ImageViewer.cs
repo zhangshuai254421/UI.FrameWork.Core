@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Threading;
+using Framework.Imaging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

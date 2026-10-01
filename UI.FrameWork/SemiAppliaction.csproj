@@ -17,9 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Framework.Detection\Framework.Detection.csproj" />
     <ProjectReference Include="..\Log.UI\Log.UI.csproj" />
     <ProjectReference Include="..\PrismUI.Core\PrismUI.Core.csproj" />
     <ProjectReference Include="..\Recipe.UI\Recipe.UI.csproj" />
+    <ProjectReference Include="..\SemiControl_Net\SemiControl_Net.csproj" />
     <ProjectReference Include="..\UI.FrameWork.Core\UI.FrameWork.Core.csproj" />
   </ItemGroup>
 

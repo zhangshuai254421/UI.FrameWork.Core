@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Threading;
+using Framework.Imaging;
 using SemiControl.Controls;
 
 namespace SemiControlDemo_Net

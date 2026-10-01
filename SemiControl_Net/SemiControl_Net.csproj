@@ -9,4 +9,8 @@
     <AssemblyName>SemiControl</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Framework.Imaging\Framework.Imaging.csproj" />
+  </ItemGroup>
+
 </Project>

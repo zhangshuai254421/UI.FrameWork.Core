@@ -1,0 +1,54 @@
+<UserControl x:Class="SemiAppliaction.Views.DetectionTestView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:SemiAppliaction.Views"
+             xmlns:controls="https://github.io/semicontrol"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="1200">
+
+    <!-- 检测测试页：选一张图片跑 YOLO 推理，结果框叠加到 ImageViewer，验证检测能力库 -->
+    <controls:LayoutPageControl IsRightPanelVisible="False">
+
+        <!-- ═══ 主区域 ═══ -->
+        <controls:LayoutPageControl.MainContent>
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- 操作条 -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,4">
+                    <Button Content="选择图片" Padding="16,4" Margin="0,0,8,0" Command="{Binding PickImageCommand}"/>
+                    <Button Content="运行推理" Padding="16,4" Margin="0,0,8,0" Command="{Binding RunCommand}"/>
+                    <Button Content="运行姿态" Padding="16,4" Margin="0,0,8,0" Command="{Binding RunPoseCommand}"/>
+                    <Button Content="运行分割" Padding="16,4" Margin="0,0,8,0" Command="{Binding RunSegmentCommand}"/>
+                    <Button Content="运行分类" Padding="16,4" Margin="0,0,8,0" Command="{Binding RunClassifyCommand}"/>
+                    <Button Content="运行旋转框" Padding="16,4" Margin="0,0,8,0" Command="{Binding RunObbCommand}"/>
+                    <Button Content="清除结果" Padding="16,4" Margin="0,0,16,0" Command="{Binding ClearResultsCommand}"/>
+                </StackPanel>
+
+                <!-- 图像查看控件：检测结果框在图像像素坐标系下叠加 -->
+                <controls:ImageViewer Grid.Row="1"
+                                      Frame="{Binding Frame}"
+                                      Results="{Binding Results}"/>
+
+                <!-- 状态条 -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,4,0,0">
+                    <TextBlock Text="状态："/>
+                    <TextBlock Text="{Binding StatusText}" Margin="4,0,16,0"/>
+                </StackPanel>
+            </Grid>
+        </controls:LayoutPageControl.MainContent>
+
+        <!-- ═══ 底部工具栏 ═══ -->
+        <controls:LayoutPageControl.ToolBoxContent>
+            <Grid/>
+        </controls:LayoutPageControl.ToolBoxContent>
+
+    </controls:LayoutPageControl>
+
+</UserControl>

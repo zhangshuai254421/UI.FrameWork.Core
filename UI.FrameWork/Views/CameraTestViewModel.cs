@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Framework.Imaging;
 using UI.FrameWork.Core.Imaging;
 
 namespace SemiAppliaction.Views

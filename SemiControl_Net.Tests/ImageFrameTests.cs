@@ -1,4 +1,5 @@
 // ImageFrameTests.cs
+using Framework.Imaging;
 using SemiControl.Controls;
 using Xunit;
 

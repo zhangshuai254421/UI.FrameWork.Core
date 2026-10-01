@@ -1,10 +1,9 @@
-// Controls/ImageViewer/ImagePixelFormat.cs
-namespace SemiControl.Controls
+namespace Framework.Imaging
 {
     /// <summary>
-    /// 图像查看控件支持的像素格式。与 Framework.Device 的 PixelFormat 保持映射关系而非共享类型
-    /// （控件库零设备依赖，见 Docs/adr/0004）；设备侧的 Mono10/12 打包格式与 Bayer 阵列
-    /// 由消费侧转换后再进入控件，本枚举不定义。
+    /// 系统支持的图像像素格式。与 Framework.Device 的 PixelFormat 保持映射关系而非共享类型
+    /// （设备侧与显示/检测侧互不依赖，见 Docs/adr/0004）；设备侧的 Mono10/12 打包格式与 Bayer 阵列
+    /// 由消费侧转换后再进入本枚举，此处不定义。
     /// </summary>
     public enum ImagePixelFormat
     {

@@ -73,6 +73,101 @@ namespace Framework.Core.Common
         }
 
         public static string MachineName = "ZS1A";
+
+        private static string YoloModelFilePathNoDebug
+        {
+            get
+            {
+                return "Models\\Yolo\\yolo26n.onnx";
+            }
+        }
+
+        /// <summary>
+        /// YOLO 目标检测模型（ONNX）路径。
+        /// </summary>
+        public static string YoloModelFilePath
+        {
+            get
+            {
+                return Path.Combine(AppDebug, YoloModelFilePathNoDebug);
+            }
+        }
+
+        private static string YoloPoseModelFilePathNoDebug
+        {
+            get
+            {
+                return "Models\\Yolo\\yolo26n-pose.onnx";
+            }
+        }
+
+        /// <summary>
+        /// YOLO 姿态估计模型（ONNX）路径。
+        /// </summary>
+        public static string YoloPoseModelFilePath
+        {
+            get
+            {
+                return Path.Combine(AppDebug, YoloPoseModelFilePathNoDebug);
+            }
+        }
+
+        private static string YoloSegmentModelFilePathNoDebug
+        {
+            get
+            {
+                return "Models\\Yolo\\yolo26n-seg.onnx";
+            }
+        }
+
+        /// <summary>
+        /// YOLO 实例分割模型（ONNX）路径。
+        /// </summary>
+        public static string YoloSegmentModelFilePath
+        {
+            get
+            {
+                return Path.Combine(AppDebug, YoloSegmentModelFilePathNoDebug);
+            }
+        }
+
+        private static string YoloClassifyModelFilePathNoDebug
+        {
+            get
+            {
+                return "Models\\Yolo\\yolo26n-cls.onnx";
+            }
+        }
+
+        /// <summary>
+        /// YOLO 图像分类模型（ONNX）路径。
+        /// </summary>
+        public static string YoloClassifyModelFilePath
+        {
+            get
+            {
+                return Path.Combine(AppDebug, YoloClassifyModelFilePathNoDebug);
+            }
+        }
+
+        private static string YoloObbModelFilePathNoDebug
+        {
+            get
+            {
+                return "Models\\Yolo\\yolo26n-obb.onnx";
+            }
+        }
+
+        /// <summary>
+        /// YOLO 旋转框检测模型（ONNX）路径。
+        /// </summary>
+        public static string YoloObbModelFilePath
+        {
+            get
+            {
+                return Path.Combine(AppDebug, YoloObbModelFilePathNoDebug);
+            }
+        }
     }
 
 }

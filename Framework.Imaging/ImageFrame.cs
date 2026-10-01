@@ -1,11 +1,9 @@
-// Controls/ImageViewer/ImageFrame.cs
-using System;
-
-namespace SemiControl.Controls
+namespace Framework.Imaging
 {
     /// <summary>
-    /// 图像帧：图像查看控件消费的一帧数据快照（像素数据 + 宽高 + 像素格式），与具体设备无关。
-    /// 实例创建后不可变。所有权契约：控件把像素转换进内部缓冲后即不再引用 <see cref="Data"/>，
+    /// 图像帧：一帧图像数据的快照（像素数据 + 宽高 + 像素格式），由相机帧映射而来，与具体设备无关。
+    /// 系统级图像原语：图像查看控件与检测能力都以它为输入。
+    /// 实例创建后不可变。所有权契约：消费方把像素转换进自己的缓冲后即不再引用 <see cref="Data"/>，
     /// 泵方可以每帧新建数组，也可以转换完成后复用/归还池化数组。
     /// </summary>
     public sealed class ImageFrame

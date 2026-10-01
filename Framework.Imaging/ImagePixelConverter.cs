@@ -1,7 +1,7 @@
-// Controls/ImageViewer/ImagePixelConverter.cs
+// 图像像素格式转换器（自 SemiControl 迁入：纯像素算术属于图像原语库）
 using System;
 
-namespace SemiControl.Controls
+namespace Framework.Imaging
 {
     /// <summary>
     /// 像素格式转换：把 <see cref="ImageFrame"/> 支持的各格式翻译为控件渲染用的 Bgra32。

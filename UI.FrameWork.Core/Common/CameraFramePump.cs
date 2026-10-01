@@ -4,7 +4,9 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Framework.Device;
+using Framework.Imaging;
 using SemiControl.Controls;
+using UI.FrameWork.Core.Imaging;
 
 namespace UI.FrameWork.Core.Common
 {
@@ -72,7 +74,7 @@ namespace UI.FrameWork.Core.Common
                 while (!_stopped)
                 {
                     CameraData cameraData = await _camera.ChannelCameraData.Reader.ReadAsync(_cancellation.Token);
-                    ImageFrame? frame = ToImageFrame(cameraData);
+                    ImageFrame? frame = cameraData.ToImageFrame();
                     if (frame is not null)
                     {
                         _viewer.Show(frame);
@@ -86,39 +88,6 @@ namespace UI.FrameWork.Core.Common
             catch (ChannelClosedException)
             {
                 // 相机侧关闭通道（设备释放）同样视为正常退出。
-            }
-        }
-
-        /// <summary>
-        /// 相机帧 → 图像帧的格式映射：Mono8/16 与 RGB/BGR 直通；
-        /// Mono10/12（16 位小端容器、数据左对齐）借用 Mono16 路径取高 8 位显示；
-        /// Bayer 阵列与 Undefined 字节布局未知，v1 不支持显示，丢帧处理（落盘不受影响）。
-        /// </summary>
-        private static ImageFrame? ToImageFrame(CameraData cameraData)
-        {
-            ImagePixelFormat? format = cameraData.PixelFormat switch
-            {
-                PixelFormat.Mono8 => ImagePixelFormat.Mono8,
-                PixelFormat.Mono16 => ImagePixelFormat.Mono16,
-                PixelFormat.Mono10 or PixelFormat.Mono12 => ImagePixelFormat.Mono16,
-                PixelFormat.RGB8 => ImagePixelFormat.RGB8,
-                PixelFormat.BGR8 => ImagePixelFormat.BGR8,
-                _ => null,
-            };
-
-            if (format is null || cameraData.Width <= 0 || cameraData.Height <= 0)
-            {
-                return null;
-            }
-
-            try
-            {
-                return new ImageFrame(cameraData.Width, cameraData.Height, format.Value, cameraData.ImageData);
-            }
-            catch (ArgumentException)
-            {
-                // 数据长度与格式不符：坏帧直接丢弃，不中断泵。
-                return null;
             }
         }
 
