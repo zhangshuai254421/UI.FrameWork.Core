@@ -17,6 +17,11 @@ Status: accepted
    - **字符串形态**：实体程序集禁止引用 DbContext 程序集时（Domain → Infrastructure 会成环），写 `[assembly: DefaultDbContext("Recipe.Infrastructure.DataContext, Recipe.Infrastructure")]`，运行时按名解析。
    - `.Infrastructure` 自己不放这个特性——实体不在那儿，正向扫描也会跳过本程序集，放了纯噪音。
 4. **撞名自保两条**：域词与类型同名时（`Recipe` 既是命名空间根又是实体类），`.Infrastructure` 内引用该实体一律 `global::Recipe.Domain.Recipe` 全名；程序集级特性位于 namespace 声明之前看不见命名空间内类型，`typeof()` 必须写全名。
+5. **实体落位判据——实体要不要出现在公开契约里**（接口签名、跨层返回值）：
+   - **要** → 实体放 `.Domain`，它就是契约的一部分（Recipe/Log：服务接口直接返回实体）；
+   - **不要**（纯存储记录）→ 可住 `.Infrastructure`，但过界必须用端口自有模型、层内翻译（Device：`IDeviceConfigurationReader.Read()` 返回 `DeviceConfiguration` 模型，实现里 `x.ToDeviceConfiguration()` 转换，端口中心零实体引用）；
+   - **插件实体** → 放扩展程序集自己，归属特性跟实体走（规则 3）。
+   - 判据反推即红线：Domain 公开方法需要某实体 → 该实体没有资格住在 Infrastructure。
 
 ## Considered Options
 
