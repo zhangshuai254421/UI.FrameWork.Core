@@ -10,8 +10,10 @@ namespace EFCore.Repository
     /// <typeparam name="TModel">数据项类型</typeparam>
     public class PagedResult<TModel>
     {
+        /// <summary>符合条件的总记录数，用于计算总页数。</summary>
         public int Total { get; set; }
 
+        /// <summary>当前页数据；无数据时为空序列而非 null。</summary>
         public IEnumerable<TModel> Data { get; set; } = Enumerable.Empty<TModel>();
     }
 }

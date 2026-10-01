@@ -11,8 +11,10 @@ namespace UI.FrameWork.Core.Common
     /// </summary>
     public class PrismRegionNavigator
     {
+        /// <summary>Prism 区域管理器，实际的导航请求由它发起。</summary>
         private readonly IRegionManager _regionManager;
      
+        /// <summary>创建导航帮助类；区域管理器不可为空。</summary>
         public PrismRegionNavigator(IRegionManager regionManager)
         {
             _regionManager = regionManager ?? throw new ArgumentNullException(nameof(regionManager));

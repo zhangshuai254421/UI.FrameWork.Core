@@ -31,6 +31,7 @@ namespace UI.FrameWork.Core.Main
     {
         #region 字段
 
+        /// <summary>日志富文本框的自定义浅色主题：按日志级别与语法元素分别配色。</summary>
         public static RichTextBoxConsoleTheme ColoredCustom { get; } = new RichTextBoxConsoleTheme(new Dictionary<RichTextBoxThemeStyle, RichTextBoxConsoleThemeStyle>
         {
             // 普通文本 - 深灰，保证可读性
@@ -146,13 +147,16 @@ namespace UI.FrameWork.Core.Main
         /// </summary>
         private const double ScrollTolerance = 20.0;
 
+        /// <summary>是否自动滚动到底部；用户滚动离开底部超过容差时暂停。</summary>
         private bool _isAutoScroll = true;
+        /// <summary>工具箱区域的可见性，随工具箱显隐事件更新。</summary>
         private Visibility _isToolBoxVisible = Visibility.Collapsed;
 
         #endregion
 
         #region 构造函数
 
+        /// <summary>初始化无边框窗口外观，挂接日志自动滚动与行数限制事件，并配置 Serilog 多路输出。</summary>
         public ShellWindow()
         {
             InitializeComponent();
@@ -198,6 +202,7 @@ namespace UI.FrameWork.Core.Main
 
         #region 属性
 
+        /// <summary>工具箱区域可见性，绑定主窗口工具箱容器，控制其显示与折叠。</summary>
         public Visibility IsToolBoxVisible
         {
             get => _isToolBoxVisible;
@@ -215,6 +220,7 @@ namespace UI.FrameWork.Core.Main
 
         #region 方法
 
+        /// <summary>滚动变化处理：仅当内容高度未变化（用户手动滚动）时判断是否离开底部，超过容差即暂停自动滚动。</summary>
         private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             // 用户手动滚动：如果距离底部超过容差，暂停自动滚动
@@ -224,6 +230,7 @@ namespace UI.FrameWork.Core.Main
             }
         }
 
+        /// <summary>文本变化处理：按需滚动到底部，并裁剪超出上限的旧日志段落，防止内存无限增长。</summary>
         private void OnLogTextChanged(object sender, TextChangedEventArgs e)
         {
             var richTextBox = (RichTextBox)sender;
@@ -249,21 +256,25 @@ namespace UI.FrameWork.Core.Main
             }
         }
 
+        /// <summary>引发属性变更通知。</summary>
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>后退按钮点击：调用导航服务返回上一视图。</summary>
         private void BtnNavigateBackCommand(object sender, RoutedEventArgs e)
         {
             IoC.Get<INavigationService>().GoBack();
         }
 
+        /// <summary>前进按钮点击：调用导航服务前往下一视图。</summary>
         private void BtnNavigateForwarddCommand(object sender, RoutedEventArgs e)
         {
             IoC.Get<INavigationService>().GoForward();
         }
 
+        /// <summary>窗口加载完成：订阅工具箱显隐事件，把布尔值转换为工具箱区域可见性。</summary>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //// 订听工具箱显隐事件
@@ -274,6 +285,7 @@ namespace UI.FrameWork.Core.Main
 
         }
 
+        /// <summary>日志按钮点击：切换日志面板显隐并记录切换结果。</summary>
         private void BtnLogShowCommand(object sender, RoutedEventArgs e)
         {
             var Logger = IoC.Get<ILoggerFactory>().CreateLogger<ShellWindow>();
@@ -293,6 +305,7 @@ namespace UI.FrameWork.Core.Main
 
         #region INotifyPropertyChanged
 
+        /// <summary>属性变更事件，供绑定刷新界面。</summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion

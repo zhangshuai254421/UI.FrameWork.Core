@@ -12,6 +12,7 @@ namespace Framework.Detection
     /// </summary>
     internal static class SkBitmapConverter
     {
+        /// <summary>把图像帧转换为推理引擎所需的 SKBitmap：按源像素格式选择 SkiaSharp 色彩类型并拷入原生缓冲；不支持的格式抛异常。</summary>
         public static SKBitmap Convert(ImageFrame frame)
         {
             int pixelCount = frame.Width * frame.Height;
@@ -34,6 +35,7 @@ namespace Framework.Detection
             return bitmap;
         }
 
+        /// <summary>把库内像素格式映射为 SkiaSharp 对应的色彩类型；未知格式抛 NotSupportedException。</summary>
         private static SKColorType ToColorType(ImagePixelFormat format)
         {
             return format switch
@@ -46,6 +48,7 @@ namespace Framework.Detection
             };
         }
 
+        /// <summary>从 16 位小端灰度数据取每像素高字节，缩为 8 位灰度数组；返回长度为 pixelCount 的新数组。</summary>
         private static byte[] TakeHighBytes(byte[] source, int pixelCount)
         {
             var target = new byte[pixelCount];
@@ -57,6 +60,7 @@ namespace Framework.Detection
             return target;
         }
 
+        /// <summary>把每像素 3 字节的彩色数据扩为每像素 4 字节：rgbFirst 为真按 R-G-B 取序，否则按 B-G-R；每像素第 4 字节写入 alpha。</summary>
         private static byte[] ExpandTo32(byte[] source, int pixelCount, bool rgbFirst, byte alpha)
         {
             var target = new byte[pixelCount * 4];

@@ -18,6 +18,7 @@ namespace SemiControl_Net.Tests
     /// </summary>
     public class ImageViewerTemplateSmokeTests
     {
+        /// <summary>在真 STA 线程实例化 ImageViewer 并合并主题字典，预期模板生效、PART_ 部件就位；从非 UI 线程送一帧后，预期管线跑通、缩放自动适应到 1600%，且渲染位图中心可见黑色像素。</summary>
         [Fact]
         public void Template_Applies_And_FramePipeline_Runs()
         {

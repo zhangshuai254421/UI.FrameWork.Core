@@ -50,6 +50,7 @@ namespace UI.FrameWork.Core.Imaging
             }
         }
 
+        /// <summary>对不支持的像素格式记录告警；同一格式在应用域内只告警一次，避免高帧率刷日志。</summary>
         private static void WarnUnsupported(PixelFormat format, ILogger? logger)
         {
             if (logger is null || !_warnedFormats.TryAdd(format, 0))

@@ -7,6 +7,7 @@ namespace SemiControl_Net.Tests
     /// <summary>视口数学契约：锚点缩放不动、适应居中、夹取与坐标互转。</summary>
     public class ImageViewerViewportTests
     {
+        /// <summary>新建视口，预期缩放为 1、偏移为原点（恒等状态）。</summary>
         [Fact]
         public void InitialState_IsIdentity()
         {
@@ -17,6 +18,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal(0.0, viewport.OffsetY);
         }
 
+        /// <summary>以某屏幕点为锚放大 2 倍，预期该锚点对应的图像坐标在缩放前后保持不变。</summary>
         [Fact]
         public void ZoomAt_KeepsAnchorImagePointFixed()
         {
@@ -34,6 +36,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal(before.Y, after.Y, 9);
         }
 
+        /// <summary>连续放大 20 次，预期缩放被夹在上限 16 倍。</summary>
         [Fact]
         public void ZoomAt_ClampsToMaxScale()
         {
@@ -46,6 +49,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal(16.0, viewport.Scale);
         }
 
+        /// <summary>连续缩小 20 次，预期缩放被夹在下限 0.1 倍。</summary>
         [Fact]
         public void ZoomAt_ClampsToMinScale()
         {
@@ -58,6 +62,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal(0.1, viewport.Scale);
         }
 
+        /// <summary>缩放并平移后做屏幕坐标与图像坐标互转，预期两者互为逆运算，坐标往返一致。</summary>
         [Fact]
         public void ScreenToImage_And_ImageToScreen_AreInverse()
         {
@@ -72,6 +77,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal(77.25, sy, 9);
         }
 
+        /// <summary>将 1000×500 图像适应进 500×500 视口，预期取较小比率 0.5、宽度方向铺满、高度方向居中，整幅图像四角可见。</summary>
         [Fact]
         public void FitTo_UsesSmallerRatio_AndCenters()
         {
@@ -90,6 +96,7 @@ namespace SemiControl_Net.Tests
             Assert.InRange(bottomRight.Y, 0, 500);
         }
 
+        /// <summary>小图放大适应进大视口时天然比率超上限，预期缩放被夹到自定义上限 4 倍。</summary>
         [Fact]
         public void FitTo_ClampsToScaleRange()
         {
@@ -100,6 +107,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal(4.0, viewport.Scale);
         }
 
+        /// <summary>先放大再调实际尺寸，预期缩放重置为 1 倍且图像在视口中居中。</summary>
         [Fact]
         public void ActualSize_ResetsScaleToOne_AndCenters()
         {
@@ -112,6 +120,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal((1000 - 400) / 2.0, viewport.OffsetY, 9);
         }
 
+        /// <summary>按屏幕位移平移，预期偏移量按相反方向移动相应距离。</summary>
         [Fact]
         public void Pan_MovesOffsetByScreenDelta()
         {
@@ -122,6 +131,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal(20, viewport.OffsetY);
         }
 
+        /// <summary>传入写反的缩放范围，预期自动纠正为最小不大于最大，且当前缩放被夹到新上限。</summary>
         [Fact]
         public void SetScaleRange_CorrectsInvertedBounds_AndClampsCurrentScale()
         {
@@ -134,6 +144,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal(viewport.MaxScale, viewport.Scale); // 16 被夹到新的上限
         }
 
+        /// <summary>图像或视口尺寸为零或负数时调用适应，预期为空操作，视口保持初始状态。</summary>
         [Fact]
         public void FitTo_WithNonPositiveSizes_IsNoOp()
         {

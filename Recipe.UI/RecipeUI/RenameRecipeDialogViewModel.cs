@@ -2,25 +2,33 @@ using System;
 
 namespace Recipe.UI.RecipeUI
 {
+    /// <summary>
+    /// 重命名配方对话框的视图模型：输入新配方名，实时校验后携带结果关闭对话框。
+    /// </summary>
     public class RenameRecipeDialogViewModel : BindableBase, IDialogAware
     {
+        /// <summary>Prism 注入的对话框关闭监听器，用于携带结果关闭对话框。</summary>
         public DialogCloseListener RequestClose { get; }
 
+        /// <summary>构造函数：注入对话框关闭监听器。</summary>
         public RenameRecipeDialogViewModel(DialogCloseListener requestClose)
         {
             RequestClose = requestClose;
         }
 
+        /// <summary>是否允许关闭对话框；本对话框始终允许。</summary>
         public bool CanCloseDialog()
         {
             return true;
         }
 
+        /// <summary>对话框关闭后的回调；本对话框无需要清理的资源。</summary>
         public void OnDialogClosed()
         {
             // 弹框关闭时的清理逻辑（如需要）
         }
 
+        /// <summary>对话框打开时读取原配方名，并把新配方名预填为原名方便用户微调。</summary>
         public void OnDialogOpened(IDialogParameters parameters)
         {
             // 从参数中获取原始配方名
@@ -34,6 +42,7 @@ namespace Recipe.UI.RecipeUI
 
         // ==================== 属性 ====================
 
+        /// <summary>原配方名的后备字段。</summary>
         private string _originalRecipeName = string.Empty;
         /// <summary>
         /// 原配方名（只读显示）
@@ -44,6 +53,7 @@ namespace Recipe.UI.RecipeUI
             set => SetProperty(ref _originalRecipeName, value);
         }
 
+        /// <summary>新配方名（用户输入）的后备字段。</summary>
         private string _newRecipeName = string.Empty;
         /// <summary>
         /// 新配方名（用户输入）
@@ -61,6 +71,7 @@ namespace Recipe.UI.RecipeUI
             }
         }
 
+        /// <summary>校验错误提示文本的后备字段。</summary>
         private string _errorMessage = string.Empty;
         /// <summary>
         /// 校验错误提示
@@ -71,6 +82,7 @@ namespace Recipe.UI.RecipeUI
             set => SetProperty(ref _errorMessage, value);
         }
 
+        /// <summary>是否存在校验错误的后备字段。</summary>
         private bool _hasError;
         /// <summary>
         /// 是否有校验错误
@@ -83,6 +95,7 @@ namespace Recipe.UI.RecipeUI
 
         // ==================== 命令 ====================
 
+        /// <summary>保存命令：最终校验通过后携带新配方名，以 OK 结果关闭对话框；有校验错误或输入为空时禁用。</summary>
         public DelegateCommand SaveCommand => new DelegateCommand(() =>
         {
             // 最终校验
@@ -106,6 +119,7 @@ namespace Recipe.UI.RecipeUI
         .ObservesProperty(() => HasError)
         .ObservesProperty(() => NewRecipeName);
 
+        /// <summary>取消命令：以 Cancel 结果关闭对话框，不保存更改。</summary>
         public DelegateCommand CancelCommand => new DelegateCommand(() =>
         {
             RequestClose.Invoke(new DialogResult(ButtonResult.Cancel));

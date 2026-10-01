@@ -9,6 +9,7 @@ namespace Framework.Device.HikVision.Tests
     /// </summary>
     public class DeviceConfigurationMappingTests
     {
+        /// <summary>TCP 类型的实体映射为配置对象，预期标识、类型、厂商字段保留且连接对象还原为携带 IP 与端口的 TcpConnection。</summary>
         [Fact]
         public void TCP实体映射为TcpConnection()
         {
@@ -33,6 +34,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(8000, tcp.Port);
         }
 
+        /// <summary>COM 类型的实体映射为配置对象，预期连接对象还原为携带串口号的 ComConnection。</summary>
         [Fact]
         public void COM实体映射为ComConnection()
         {

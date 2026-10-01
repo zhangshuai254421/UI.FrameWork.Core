@@ -27,10 +27,12 @@ public class LayoutPageControl : Control
     private ContentPresenter? _rightArea;
 
     // ============ 主区域内容 ============
+    /// <summary>主区域内容的依赖属性标识。</summary>
     public static readonly DependencyProperty MainContentProperty =
         DependencyProperty.Register("MainContent", typeof(object), typeof(LayoutPageControl),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
+    /// <summary>主区域内容（页面主体）。</summary>
     public object MainContent
     {
         get => GetValue(MainContentProperty);
@@ -38,10 +40,12 @@ public class LayoutPageControl : Control
     }
 
     // ============ 右侧区域内容 ============
+    /// <summary>右侧区域内容的依赖属性标识。</summary>
     public static readonly DependencyProperty RightContentProperty =
         DependencyProperty.Register("RightContent", typeof(object), typeof(LayoutPageControl),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure, OnRightContentChanged));
 
+    /// <summary>右侧面板内容；为空时使用默认的 Enter/Exit 按钮组。</summary>
     public object RightContent
     {
         get => GetValue(RightContentProperty);
@@ -49,10 +53,12 @@ public class LayoutPageControl : Control
     }
 
     // ============ 工具栏内容（底部左侧） ============
+    /// <summary>工具栏内容（底部左侧）的依赖属性标识。</summary>
     public static readonly DependencyProperty ToolBoxContentProperty =
         DependencyProperty.Register("ToolBoxContent", typeof(object), typeof(LayoutPageControl),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
+    /// <summary>底部工具栏内容。</summary>
     public object ToolBoxContent
     {
         get => GetValue(ToolBoxContentProperty);
@@ -66,6 +72,7 @@ public class LayoutPageControl : Control
         DependencyProperty.Register("IsRightPanelVisible", typeof(bool), typeof(LayoutPageControl),
             new FrameworkPropertyMetadata(true, IsRightPanelVisibleChanged));
 
+    /// <summary>右侧面板是否可见；true 时主区域占 1 列，false 时隐藏右侧面板且主区域跨 2 列。</summary>
     public bool IsRightPanelVisible
     {
         get => (bool)GetValue(IsRightPanelVisibleProperty);
@@ -79,6 +86,7 @@ public class LayoutPageControl : Control
         set => IsRightPanelVisible = (value == 1);
     }
 
+    /// <summary>模板应用回调：取模板部件，RightContent 为空时填入默认 Enter/Exit 按钮组，并应用右侧面板可见性。</summary>
     public override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
@@ -98,6 +106,7 @@ public class LayoutPageControl : Control
         ApplyRightPanelVisibility();
     }
 
+    /// <summary>IsRightPanelVisible 属性变更回调：重新应用右侧面板可见性。</summary>
     private static void IsRightPanelVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is LayoutPageControl control)
@@ -106,6 +115,7 @@ public class LayoutPageControl : Control
         }
     }
 
+    /// <summary>应用右侧面板可见性：切换边框显隐、右列宽度与主区域跨列数。</summary>
     private void ApplyRightPanelVisibility()
     {
         bool visible = IsRightPanelVisible;
@@ -127,6 +137,7 @@ public class LayoutPageControl : Control
         }
     }
 
+    /// <summary>RightContent 属性变更回调：新值非空则直接显示，置空则回退到默认按钮组。</summary>
     private static void OnRightContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var control = (LayoutPageControl)d;
@@ -142,6 +153,7 @@ public class LayoutPageControl : Control
         }
     }
 
+    /// <summary>构建右侧面板的默认内容：竖排的 Enter（保存统一入口）与 Exit 按钮。</summary>
     private FrameworkElement CreateDefaultRightContent()
     {
         var grid = new Grid();

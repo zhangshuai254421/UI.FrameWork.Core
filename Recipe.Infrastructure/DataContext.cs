@@ -15,10 +15,14 @@ using System.Threading.Tasks;
 
 namespace Recipe.Infrastructure
 {
+    /// <summary>
+    /// 设计时 DbContext 工厂：供 dotnet-ef 等设计时工具创建 DataContext。
+    /// </summary>
     public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
     {
         #region IDesignTimeDbContextFactory
 
+        /// <summary>创建设计时 DataContext：固定使用 SQLite 与全局配方库连接字符串。</summary>
         public DataContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
@@ -33,10 +37,14 @@ namespace Recipe.Infrastructure
         #endregion
     }
 
+    /// <summary>
+    /// 配方系统数据库上下文：聚合配方、配方管理器、相机配置等实体，支持插件实体扩展与默认数据播种。
+    /// </summary>
     public partial class DataContext : DbContext
     {
         #region 构造函数
 
+        /// <summary>构造函数：传入 DbContext 选项（生产为 SQLite 文件库，测试可为内存库）。</summary>
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
@@ -45,6 +53,7 @@ namespace Recipe.Infrastructure
 
         #region 方法
 
+        /// <summary>配置数据库选项：调试时输出 SQL 与敏感数据日志；未显式配置（如测试传内存库）时回退到全局 SQLite 配方库。</summary>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 #if DEBUG
@@ -62,6 +71,7 @@ namespace Recipe.Infrastructure
             base.OnConfiguring(optionsBuilder);
         }
 
+        /// <summary>构建模型：应用本程序集与插件程序集的实体配置，兜底注册派生实体，并播种默认配方、管理器与相机配置。</summary>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // 1. 扫描当前程序集里声明归属本 DataContext 的插件

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Framework.Core.Common
 {
+    /// <summary>
+    /// 应用全局路径常量：集中存放日志库、配方库、设备库与 YOLO 各模型文件的路径，均基于应用基目录拼接。
+    /// </summary>
     public static class AppGlobals
     {
         /// <summary>
@@ -20,6 +23,7 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>日志数据库相对应用基目录的文件路径。</summary>
         public static string LogDbFilePathNoDebug
         {
             get
@@ -28,6 +32,7 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>配方数据库相对应用基目录的文件路径。</summary>
         private static string RecipeDbFilePathNoDebug
         {
             get
@@ -47,6 +52,7 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>配方数据库连接字符串（Data Source 形式）。</summary>
         public static string RecipeDbFliePath { 
             get
             {
@@ -54,8 +60,10 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>应用基目录，默认为当前应用域基目录；可重定向便于调试。</summary>
         public static string AppDebug { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
+        /// <summary>设备数据库相对应用基目录的文件路径。</summary>
         private static string DeviceDbFilePathNoDebug
         {
             get
@@ -64,6 +72,7 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>设备数据库连接字符串（Data Source 形式）。</summary>
         public static string DeviceDbFliePath
         {
             get
@@ -72,8 +81,10 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>机台名称，默认 ZS1A。</summary>
         public static string MachineName = "ZS1A";
 
+        /// <summary>目标检测模型相对应用基目录的文件路径。</summary>
         private static string YoloModelFilePathNoDebug
         {
             get
@@ -93,6 +104,7 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>姿态估计模型相对应用基目录的文件路径。</summary>
         private static string YoloPoseModelFilePathNoDebug
         {
             get
@@ -112,6 +124,7 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>实例分割模型相对应用基目录的文件路径。</summary>
         private static string YoloSegmentModelFilePathNoDebug
         {
             get
@@ -131,6 +144,7 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>图像分类模型相对应用基目录的文件路径。</summary>
         private static string YoloClassifyModelFilePathNoDebug
         {
             get
@@ -150,6 +164,7 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>旋转框检测模型相对应用基目录的文件路径。</summary>
         private static string YoloObbModelFilePathNoDebug
         {
             get

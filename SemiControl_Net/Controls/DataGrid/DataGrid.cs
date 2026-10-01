@@ -26,6 +26,7 @@ public class DataGrid : System.Windows.Controls.DataGrid
         get => (bool)GetValue(ShowFilterRowProperty);
         set => SetValue(ShowFilterRowProperty, value);
     }
+    /// <summary>ShowFilterRow 的依赖属性标识字段。</summary>
     public static readonly DependencyProperty ShowFilterRowProperty =
         DependencyProperty.Register(nameof(ShowFilterRow), typeof(bool),
             typeof(DataGrid), new PropertyMetadata(false));
@@ -36,6 +37,7 @@ public class DataGrid : System.Windows.Controls.DataGrid
         get => (string?)GetValue(SearchTextProperty);
         set => SetValue(SearchTextProperty, value);
     }
+    /// <summary>SearchText 的依赖属性标识字段。</summary>
     public static readonly DependencyProperty SearchTextProperty =
         DependencyProperty.Register(nameof(SearchText), typeof(string),
             typeof(DataGrid), new PropertyMetadata(null, OnSearchTextChanged));
@@ -58,6 +60,7 @@ public class DataGrid : System.Windows.Controls.DataGrid
         EventManager.RegisterRoutedEvent(nameof(SelectedItemChanged), RoutingStrategy.Bubble,
             typeof(RoutedPropertyChangedEventHandler<object?>), typeof(DataGrid));
 
+    /// <summary>选中项变更时触发，参数携带变更前后的选中项。</summary>
     public event RoutedPropertyChangedEventHandler<object?> SelectedItemChanged
     {
         add => AddHandler(SelectedItemChangedEvent, value);
@@ -69,6 +72,7 @@ public class DataGrid : System.Windows.Controls.DataGrid
         EventManager.RegisterRoutedEvent(nameof(SortChanged), RoutingStrategy.Bubble,
             typeof(RoutedEventHandler), typeof(DataGrid));
 
+    /// <summary>列排序发生变化时触发。</summary>
     public event RoutedEventHandler SortChanged
     {
         add => AddHandler(SortChangedEvent, value);
@@ -79,6 +83,7 @@ public class DataGrid : System.Windows.Controls.DataGrid
 
     #region 构造
 
+    /// <summary>构造函数：设置默认外观与交互行为，并把基类的选中、排序事件桥接为自定义路由事件。</summary>
     public DataGrid()
     {
         // 默认样式设置（可在 XAML Style 中覆盖）
@@ -114,6 +119,7 @@ public class DataGrid : System.Windows.Controls.DataGrid
 
     #region 全局搜索逻辑
 
+    /// <summary>SearchText 属性变更回调：立即重新应用全局搜索过滤。</summary>
     private static void OnSearchTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var grid = (DataGrid)d;

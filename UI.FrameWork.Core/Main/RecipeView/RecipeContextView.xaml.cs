@@ -20,6 +20,7 @@ namespace UI.FrameWork.Core.Main.RecipeView
     /// </summary>
     public partial class RecipeContextView : UserControl
     {
+        /// <summary>空构造：初始化 XAML 组件。</summary>
         public RecipeContextView()
         {
             InitializeComponent();

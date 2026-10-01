@@ -127,6 +127,7 @@ namespace Framework.Device.Domain
             }
         }
 
+        /// <summary>8 位灰度编码：像素值直接写入位图数据（带 256 项灰度调色板）。</summary>
         private static byte[] EncodeGray8(ReadOnlySpan<byte> pixels, int width, int height)
         {
             var bmp = CreateBmpHeader(width, height, bitsPerPixel: 8, paletteColors: 256, out int offset, out int stride);
@@ -140,6 +141,7 @@ namespace Framework.Device.Domain
             return bmp;
         }
 
+        /// <summary>16 位灰度编码：16 位小端容器统一取高 8 位作为灰度值（带 256 项灰度调色板）。</summary>
         private static byte[] EncodeGray16(ReadOnlySpan<byte> pixels, int width, int height)
         {
             var bmp = CreateBmpHeader(width, height, bitsPerPixel: 8, paletteColors: 256, out int offset, out int stride);
@@ -158,6 +160,7 @@ namespace Framework.Device.Domain
             return bmp;
         }
 
+        /// <summary>24 位真彩编码：BMP 像素为 BGR 序，RGB8 输入需交换红蓝，BGR8 输入直接写入。</summary>
         private static byte[] EncodeRgb24(ReadOnlySpan<byte> pixels, int width, int height, bool swapRAndB)
         {
             var bmp = CreateBmpHeader(width, height, bitsPerPixel: 24, paletteColors: 0, out int offset, out int stride);

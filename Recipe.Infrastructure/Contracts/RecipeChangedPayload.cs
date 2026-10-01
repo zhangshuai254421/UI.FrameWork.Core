@@ -5,8 +5,11 @@ namespace Recipe.Infrastructure.Contracts
     /// </summary>
     public enum RecipeChangeKind
     {
+        /// <summary>新增。</summary>
         Added,
+        /// <summary>更新。</summary>
         Updated,
+        /// <summary>删除。</summary>
         Removed,
     }
 
@@ -16,12 +19,16 @@ namespace Recipe.Infrastructure.Contracts
     /// </summary>
     public class RecipeChangedPayload
     {
+        /// <summary>变更类型：新增、更新或删除。</summary>
         public RecipeChangeKind Kind { get; set; }
 
+        /// <summary>变更涉及的配方 Id。</summary>
         public int RecipeId { get; set; }
 
+        /// <summary>配方所在文件夹（分组）名。</summary>
         public string GroupName { get; set; } = string.Empty;
 
+        /// <summary>配方名。</summary>
         public string RecipeName { get; set; } = string.Empty;
     }
 }

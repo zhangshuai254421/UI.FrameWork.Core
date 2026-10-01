@@ -18,6 +18,7 @@ namespace Framework.Core.CustomAttribute
         /// </summary>
         public string DbContextTypeName { get; }
 
+        /// <summary>以 typeof 形态构造；传入类型不是 DbContext 子类时抛出参数异常。</summary>
         public DefaultDbContextAttribute(Type dbContextType)
         {
             if (!dbContextType.IsSubclassOf(typeof(DbContext)))
@@ -26,6 +27,7 @@ namespace Framework.Core.CustomAttribute
             DbContextType = dbContextType;
         }
 
+        /// <summary>以字符串形态构造，传入"命名空间.类型名, 程序集名"形式的类型全名。</summary>
         public DefaultDbContextAttribute(string dbContextTypeName)
         {
             DbContextTypeName = dbContextTypeName;

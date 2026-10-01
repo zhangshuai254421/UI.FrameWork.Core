@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Framework.Device.Domain.EntityTypeConfiguration
 {
+    /// <summary>设备配置实体的数据库映射：表名、主键、字段长度与内置种子数据。</summary>
     public class DeviceConfigurationEntityTypeConfiguration : IEntityTypeConfiguration<DeviceConfigurationEntity>
     {
+        /// <summary>配置表名 DeviceConfiguration、主键 Id 与字段长度，并内置两台种子设备（一台 TCP 相机、一台 COM 运动卡）。</summary>
         public void Configure(EntityTypeBuilder<DeviceConfigurationEntity> builder)
         {
             builder.ToTable("DeviceConfiguration");

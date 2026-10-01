@@ -20,10 +20,15 @@ namespace UI.FrameWork.Core.Common
     /// </summary>
     public sealed class CameraFramePump : IDisposable
     {
+        /// <summary>帧来源相机。</summary>
         private readonly CameraBase _camera;
+        /// <summary>目标显示控件。</summary>
         private readonly ImageViewer _viewer;
+        /// <summary>停止泵帧用的取消源。</summary>
         private readonly CancellationTokenSource _cancellation = new();
+        /// <summary>后台泵帧任务；为空表示尚未启动。</summary>
         private Task? _pumpTask;
+        /// <summary>停止标志，配合取消令牌让泵循环尽快退出。</summary>
         private volatile bool _stopped;
 
         /// <summary>创建泵。<paramref name="viewer"/> 必须已创建（可在任意页面），帧经控件内部 marshal 上 UI 线程。</summary>
@@ -67,6 +72,7 @@ namespace UI.FrameWork.Core.Common
             _pumpTask = null;
         }
 
+        /// <summary>泵循环：持续读取相机帧并转换为图像帧送显；取消或通道关闭即正常退出，不抛异常。</summary>
         private async Task PumpLoop()
         {
             try
@@ -91,6 +97,7 @@ namespace UI.FrameWork.Core.Common
             }
         }
 
+        /// <summary>停止泵帧并释放取消源；重复释放无副作用。</summary>
         public void Dispose()
         {
             Stop();

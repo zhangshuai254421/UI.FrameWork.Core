@@ -8,14 +8,18 @@ namespace Framework.Core.CustomAttribute
     // 基于程序集特性的解析器实现
     public class AssemblyAttributeDbContextResolver : IDbContextResolver
     {
+        /// <summary>用于从 DI 容器取出 DbContext 实例。</summary>
         private readonly IServiceProvider _serviceProvider;
+        /// <summary>实体类型到 DbContext 类型的缓存，避免重复反射。</summary>
         private readonly ConcurrentDictionary<Type, Type> _entityContextCache = new();
 
+        /// <summary>保存服务提供程序供后续解析使用。</summary>
         public AssemblyAttributeDbContextResolver(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
+        /// <summary>读取实体所在程序集的 DefaultDbContext 特性并从容器解析对应上下文；未声明特性或类型无法解析时抛出异常。</summary>
         public DbContext Resolve<TEntity>() where TEntity : class
         {
             var entityType = typeof(TEntity);

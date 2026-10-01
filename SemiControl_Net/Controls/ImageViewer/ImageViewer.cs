@@ -32,46 +32,57 @@ namespace SemiControl.Controls
     {
         // ============ 依赖属性 ============
 
+        /// <summary>当前显示图像帧的依赖属性标识。</summary>
         public static readonly DependencyProperty FrameProperty = DependencyProperty.Register(
             "Frame", typeof(ImageFrame), typeof(ImageViewer),
             new PropertyMetadata(null, OnFrameChanged));
 
+        /// <summary>中心十字线显隐开关的依赖属性标识。</summary>
         public static readonly DependencyProperty IsCenterCrosshairProperty = DependencyProperty.Register(
             "IsCenterCrosshair", typeof(bool), typeof(ImageViewer),
             new PropertyMetadata(false, OnVisualPropertyChanged));
 
+        /// <summary>最小缩放倍率的依赖属性标识。</summary>
         public static readonly DependencyProperty MinZoomProperty = DependencyProperty.Register(
             "MinZoom", typeof(double), typeof(ImageViewer),
             new PropertyMetadata(0.1, OnZoomRangeChanged));
 
+        /// <summary>最大缩放倍率的依赖属性标识。</summary>
         public static readonly DependencyProperty MaxZoomProperty = DependencyProperty.Register(
             "MaxZoom", typeof(double), typeof(ImageViewer),
             new PropertyMetadata(16.0, OnZoomRangeChanged));
 
+        /// <summary>ROI 工作矩形的依赖属性标识。</summary>
         public static readonly DependencyProperty RoiRectProperty = DependencyProperty.Register(
             "RoiRect", typeof(Int32Rect), typeof(ImageViewer),
             new PropertyMetadata(Int32Rect.Empty, OnRoiRectChanged));
 
+        /// <summary>用户标注集合的依赖属性标识。</summary>
         public static readonly DependencyProperty AnnotationsProperty = DependencyProperty.Register(
             "Annotations", typeof(ObservableCollection<ViewerShape>), typeof(ImageViewer),
             new PropertyMetadata(null, OnShapeCollectionChanged));
 
+        /// <summary>检测结果叠加集合的依赖属性标识。</summary>
         public static readonly DependencyProperty ResultsProperty = DependencyProperty.Register(
             "Results", typeof(ObservableCollection<ViewerShape>), typeof(ImageViewer),
             new PropertyMetadata(null, OnShapeCollectionChanged));
 
+        /// <summary>标注轮廓画笔的依赖属性标识。</summary>
         public static readonly DependencyProperty AnnotationBrushProperty = DependencyProperty.Register(
             "AnnotationBrush", typeof(Brush), typeof(ImageViewer),
             new PropertyMetadata(CreateFrozenBrush(0x2F, 0x88, 0xFF), OnVisualPropertyChanged));
 
+        /// <summary>检测结果画笔的依赖属性标识。</summary>
         public static readonly DependencyProperty ResultBrushProperty = DependencyProperty.Register(
             "ResultBrush", typeof(Brush), typeof(ImageViewer),
             new PropertyMetadata(CreateFrozenBrush(0xFF, 0x8C, 0x00), OnVisualPropertyChanged));
 
+        /// <summary>ROI 矩形画笔的依赖属性标识。</summary>
         public static readonly DependencyProperty RoiBrushProperty = DependencyProperty.Register(
             "RoiBrush", typeof(Brush), typeof(ImageViewer),
             new PropertyMetadata(CreateFrozenBrush(0xFF, 0xD7, 0x00), OnVisualPropertyChanged));
 
+        /// <summary>中心十字线画笔的依赖属性标识。</summary>
         public static readonly DependencyProperty CenterCrosshairBrushProperty = DependencyProperty.Register(
             "CenterCrosshairBrush", typeof(Brush), typeof(ImageViewer),
             new PropertyMetadata(CreateFrozenBrush(0x12, 0x8A, 0x3B), OnVisualPropertyChanged));
@@ -80,51 +91,75 @@ namespace SemiControl.Controls
         private static readonly DependencyPropertyKey CurrentZoomPropertyKey = DependencyProperty.RegisterReadOnly(
             "CurrentZoom", typeof(double), typeof(ImageViewer), new PropertyMetadata(100.0));
 
+        /// <summary>当前缩放百分比的只读依赖属性标识。</summary>
         public static readonly DependencyProperty CurrentZoomProperty = CurrentZoomPropertyKey.DependencyProperty;
 
         // 只读输出：鼠标处的图像像素坐标
         private static readonly DependencyPropertyKey MouseImagePositionPropertyKey = DependencyProperty.RegisterReadOnly(
             "MouseImagePosition", typeof(Point), typeof(ImageViewer), new PropertyMetadata(new Point(-1, -1)));
 
+        /// <summary>鼠标处图像像素坐标的只读依赖属性标识。</summary>
         public static readonly DependencyProperty MouseImagePositionProperty = MouseImagePositionPropertyKey.DependencyProperty;
 
         // 只读输出：鼠标处的像素值文本（灰度或 R/G/B）
         private static readonly DependencyPropertyKey PixelValueTextPropertyKey = DependencyProperty.RegisterReadOnly(
             "PixelValueText", typeof(string), typeof(ImageViewer), new PropertyMetadata(string.Empty));
 
+        /// <summary>鼠标处像素值文本的只读依赖属性标识。</summary>
         public static readonly DependencyProperty PixelValueTextProperty = PixelValueTextPropertyKey.DependencyProperty;
 
         /// <summary>ROI 工作矩形变化（拖拽过程实时触发，包含拖动/缩放/清除）。</summary>
         public event EventHandler<Int32Rect>? RoiChanged;
 
+        /// <summary>当前 UI 线程调度器，用于把跨线程调用编排回 UI 线程。</summary>
         private readonly Dispatcher _dispatcher;
+        /// <summary>视口状态：维护缩放倍率与平移偏移及坐标换算。</summary>
         private ImageViewerViewport _viewport = new();
+        /// <summary>模板中的渲染表面（取鼠标坐标与尺寸），模板应用前为空。</summary>
         private ImageViewerPresenter? _presenter;
+        /// <summary>信息条上的坐标文本块。</summary>
         private TextBlock? _infoPosition;
+        /// <summary>信息条上的像素值文本块。</summary>
         private TextBlock? _infoPixel;
+        /// <summary>信息条上的缩放百分比文本块。</summary>
         private TextBlock? _infoZoom;
 
         // ============ 帧渲染管线（合并为最新帧） ============
+        /// <summary>待渲染的最新帧（连发帧只保留这一帧）。</summary>
         private ImageFrame? _pendingFrame;
+        /// <summary>当前已渲染到位图的帧（像素读数与矢量层换算的依据）。</summary>
         private ImageFrame? _currentFrame;
+        /// <summary>承载 Bgra32 图像数据的可写位图。</summary>
         private WriteableBitmap? _bitmap;
+        /// <summary>像素格式转 Bgra32 的复用缓冲区（尺寸不足时扩容）。</summary>
         private byte[]? _convertBuffer;
+        /// <summary>渲染排程标志：1 表示已有一次渲染在队列中，用原子交换防重复排队。</summary>
         private int _renderQueued;
+        /// <summary>是否已完成首帧自动适应窗口。</summary>
         private bool _fittedOnce;
         private bool _autoFit = true; // 用户手动缩放/平移后置 false，窗口尺寸变化时不再自动重铺
 
         // ============ 鼠标交互状态机 ============
+        /// <summary>鼠标拖拽的交互状态（按下后处于平移、绘制、移动或缩放中的哪一种）。</summary>
         private enum DragMode
         {
+            /// <summary>空闲，无拖拽。</summary>
             None,
+            /// <summary>平移画面。</summary>
             Panning,
+            /// <summary>正在拖拽绘制 ROI 新框。</summary>
             DrawingRoi,
+            /// <summary>正在拖拽绘制标注形状（右键菜单选定后的下一笔标注）。</summary>
             DrawingShape, // 右键菜单选定形状后的下一笔标注
+            /// <summary>正在拖动整个 ROI。</summary>
             MovingRoi,
+            /// <summary>正在拖 ROI 角点缩放。</summary>
             ResizingRoi,
+            /// <summary>正在拖动选中的标注形状。</summary>
             MovingShape,
         }
 
+        /// <summary>当前拖拽模式。</summary>
         private DragMode _dragMode = DragMode.None;
         private Point _dragStartScreen;      // 拖拽起点（屏幕/控件坐标）
         private Point _dragStartImage;       // 拖拽起点（图像坐标）
@@ -136,6 +171,7 @@ namespace SemiControl.Controls
         private ViewerShape? _draftShape;    // 正在拖拽绘制中的形状
         private ViewerShape? _selectedShape; // 当前选中的标注
 
+        /// <summary>构造函数：初始化标注与结果集合及右键标注菜单。</summary>
         public ImageViewer()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -272,6 +308,7 @@ namespace SemiControl.Controls
 
         // ============ 模板与生命周期 ============
 
+        /// <summary>模板应用回调：取出各模板部件，绑定呈现器并补挂已有位图。</summary>
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -296,6 +333,7 @@ namespace SemiControl.Controls
             UpdateInfoBar();
         }
 
+        /// <summary>呈现器尺寸变化：未手动操作过视图时保持适应窗口。</summary>
         private void Presenter_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // 用户尚未手动操作视图时（含首帧自动适应），窗口尺寸变化保持"适应窗口"。
@@ -305,9 +343,11 @@ namespace SemiControl.Controls
             }
         }
 
+        /// <summary>Frame 属性变更回调：把新帧送入渲染管线。</summary>
         private static void OnFrameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
             => ((ImageViewer)d).EnqueueRender((ImageFrame?)e.NewValue);
 
+        /// <summary>缩放范围变更回调：把新的最小和最大倍率应用到视口。</summary>
         private static void OnZoomRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (ImageViewer)d;
@@ -322,6 +362,7 @@ namespace SemiControl.Controls
             ((ImageViewer)d).InvalidatePresenter();
         }
 
+        /// <summary>ROI 矩形变更回调：触发 RoiChanged 事件并重绘。</summary>
         private static void OnRoiRectChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (ImageViewer)d;
@@ -329,6 +370,7 @@ namespace SemiControl.Controls
             control.InvalidatePresenter();
         }
 
+        /// <summary>标注或结果集合被整体替换时回调：换订阅集合变更事件并重绘。</summary>
         private static void OnShapeCollectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (ImageViewer)d;
@@ -373,6 +415,7 @@ namespace SemiControl.Controls
             _dispatcher.BeginInvoke(RenderLatest, DispatcherPriority.Background);
         }
 
+        /// <summary>渲染最新帧：取待渲染帧写入位图，处理首帧自动适应并刷新信息条与像素读数。</summary>
         private void RenderLatest()
         {
             _renderQueued = 0;
@@ -408,6 +451,7 @@ namespace SemiControl.Controls
             InvalidatePresenter();
         }
 
+        /// <summary>取格式转换缓冲区：长度不足时重新分配，够用则复用。</summary>
         private byte[] GetConvertBuffer(ImageFrame frame)
         {
             int required = frame.Width * frame.Height * 4;
@@ -419,6 +463,7 @@ namespace SemiControl.Controls
             return _convertBuffer;
         }
 
+        /// <summary>确保位图存在且尺寸与帧一致；不一致时按帧尺寸重建并重新挂到呈现器。</summary>
         private void EnsureBitmap(ImageFrame frame)
         {
             if (_bitmap is null || _bitmap.PixelWidth != frame.Width || _bitmap.PixelHeight != frame.Height)
@@ -431,15 +476,21 @@ namespace SemiControl.Controls
             }
         }
 
+        /// <summary>请求呈现器重绘；呈现器尚未就绪时忽略。</summary>
         private void InvalidatePresenter() => _presenter?.InvalidateVisual();
 
         // ============ 视图操作 ============
 
+        /// <summary>当前帧宽（像素）；无帧时为 0。</summary>
         private double ImageWidth => _currentFrame?.Width ?? 0;
+        /// <summary>当前帧高（像素）；无帧时为 0。</summary>
         private double ImageHeight => _currentFrame?.Height ?? 0;
+        /// <summary>呈现器视口宽（设备无关像素）。</summary>
         private double ViewW => _presenter?.ActualWidth ?? 0;
+        /// <summary>呈现器视口高（设备无关像素）。</summary>
         private double ViewH => _presenter?.ActualHeight ?? 0;
 
+        /// <summary>执行视图操作；无图像或视口尺寸无效时忽略。</summary>
         private void ApplyView(Action<ImageViewerViewport> action)
         {
             if (ImageWidth <= 0 || ImageHeight <= 0 || ViewW <= 0 || ViewH <= 0)
@@ -451,6 +502,7 @@ namespace SemiControl.Controls
             OnViewChanged();
         }
 
+        /// <summary>视图变化后的统一收尾：校正缩放范围、更新缩放读数并重绘。</summary>
         private void OnViewChanged()
         {
             _viewport.SetScaleRange(MinZoom, MaxZoom);
@@ -458,6 +510,7 @@ namespace SemiControl.Controls
             InvalidatePresenter();
         }
 
+        /// <summary>双击在适应窗口与实际大小之间切换。</summary>
         private void ToggleFitOrActual()
         {
             // 双击切换：当前已是 1:1 → 适应窗口；否则 → 实际大小。
@@ -473,8 +526,10 @@ namespace SemiControl.Controls
 
         // ============ 鼠标交互 ============
 
+        /// <summary>把屏幕 6 像素的命中容差换算成图像坐标下的容差。</summary>
         private double ScreenToleranceToImage => 6.0 / Math.Max(_viewport.Scale, 0.0001);
 
+        /// <summary>滚轮缩放：以光标为锚缩放，并取消自动适应。</summary>
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
             // 滚轮缩放始终有效，以光标为锚。
@@ -486,6 +541,7 @@ namespace SemiControl.Controls
             base.OnMouseWheel(e);
         }
 
+        /// <summary>左键按下：按双击、待落笔、命中标注、命中 ROI、空白平移的优先级进入对应拖拽状态。</summary>
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             Focus();
@@ -576,6 +632,7 @@ namespace SemiControl.Controls
             base.OnMouseLeftButtonDown(e);
         }
 
+        /// <summary>鼠标移动：按当前拖拽模式更新平移、绘制、ROI 移动缩放或标注移动，并刷新信息条与光标。</summary>
         protected override void OnMouseMove(MouseEventArgs e)
         {
             if (_presenter is null)
@@ -653,6 +710,7 @@ namespace SemiControl.Controls
             base.OnMouseMove(e);
         }
 
+        /// <summary>左键抬起：落 ROI 或收下标注（太小则丢弃），结束拖拽并释放鼠标捕获。</summary>
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             switch (_dragMode)
@@ -689,6 +747,7 @@ namespace SemiControl.Controls
             base.OnMouseLeftButtonUp(e);
         }
 
+        /// <summary>鼠标离开画面：清空坐标与像素读数。</summary>
         protected override void OnMouseLeave(MouseEventArgs e)
         {
             _lastMouseScreen = null;
@@ -699,6 +758,7 @@ namespace SemiControl.Controls
             base.OnMouseLeave(e);
         }
 
+        /// <summary>键盘处理：Delete 删除选中标注，Esc 取消待落笔的标注或 ROI。</summary>
         protected override void OnKeyDown(KeyEventArgs e)
         {
             switch (e.Key)
@@ -723,6 +783,7 @@ namespace SemiControl.Controls
 
         // ============ 命中测试辅助 ============
 
+        /// <summary>命中测试标注：从最上层往下找第一个命中的形状，未命中返回空。</summary>
         private ViewerShape? HitAnnotation(double ix, double iy, double tolerance)
         {
             var annotations = Annotations;
@@ -742,6 +803,7 @@ namespace SemiControl.Controls
             return null;
         }
 
+        /// <summary>命中测试 ROI 角点：返回被命中的角序号（0 到 3），未命中返回 -1。</summary>
         private int HitRoiCorner(Point screenPoint, double imageTolerance)
         {
             if (!RoiRect.HasArea)
@@ -771,10 +833,12 @@ namespace SemiControl.Controls
             return -1;
         }
 
+        /// <summary>判断点（含容差）是否落在矩形内。</summary>
         private static bool PointInRect(Int32Rect rect, double x, double y, double tolerance)
             => x >= rect.X - tolerance && x <= rect.X + rect.Width + tolerance
             && y >= rect.Y - tolerance && y <= rect.Y + rect.Height + tolerance;
 
+        /// <summary>把任意两个对角点规整为左上角坐标加正的宽高（四舍五入取整）。</summary>
         private static Int32Rect NormalizeRect(double x1, double y1, double x2, double y2)
         {
             double x = Math.Min(x1, x2);
@@ -800,12 +864,14 @@ namespace SemiControl.Controls
             return NormalizeRect(fixedX, fixedY, x, y);
         }
 
+        /// <summary>判断形状是否达到可收录的最小尺寸（直线折算长度、矩形圆盘宽高均至少 2 图像像素）。</summary>
         private static bool IsShapeBigEnough(ViewerShape shape) => shape.Kind switch
         {
             ViewerShapeKind.Line => Math.Abs(shape.LineX2 - shape.X) + Math.Abs(shape.LineY2 - shape.Y) >= 2,
             _ => shape.Width >= 2 && shape.Height >= 2,
         };
 
+        /// <summary>按拖拽状态与待落笔标记更新鼠标光标形状。</summary>
         private void UpdateCursor()
         {
             if (_pendingAnnotationKind is not null || _pendingRoiDraw)
@@ -825,6 +891,7 @@ namespace SemiControl.Controls
 
         // ============ 信息条 ============
 
+        /// <summary>更新鼠标信息：写出图像坐标与该处像素值（灰度或 RGB），并同步到信息条。</summary>
         private void UpdateMouseInfo(Point screenPoint, int imageX, int imageY)
         {
             SetValue(MouseImagePositionPropertyKey, new Point(imageX, imageY));
@@ -846,12 +913,14 @@ namespace SemiControl.Controls
             SetInfoText(_infoPixel, pixelText);
         }
 
+        /// <summary>刷新信息条上的缩放百分比与只读缩放属性。</summary>
         private void UpdateInfoBar()
         {
             SetInfoText(_infoZoom, $"{Math.Round(_viewport.Scale * 100, 1):0.#}%");
             SetValue(CurrentZoomPropertyKey, Math.Round(_viewport.Scale * 100, 1));
         }
 
+        /// <summary>安全设置信息条文本；目标部件不存在时忽略。</summary>
         private static void SetInfoText(TextBlock? target, string text)
         {
             if (target is not null)
@@ -862,6 +931,7 @@ namespace SemiControl.Controls
 
         // ============ 矢量层渲染（由 ImageViewerPresenter.OnRender 委托调用） ============
 
+        /// <summary>矢量层总渲染：空态提示、中心十字线、ROI、结果与标注集合、绘制中的草稿形状。</summary>
         internal void RenderVectorLayer(DrawingContext dc, ImageViewerPresenter presenter)
         {
             double pixelsPerDip = VisualTreeHelper.GetDpi(presenter).PixelsPerDip;
@@ -893,6 +963,7 @@ namespace SemiControl.Controls
             }
         }
 
+        /// <summary>画钉在图像中心的十字线（屏幕上整幅横竖两条线）。</summary>
         private void DrawCenterCrosshair(DrawingContext dc, double pixelsPerDip)
         {
             var (cx, cy) = _viewport.ImageToScreen(ImageWidth / 2, ImageHeight / 2);
@@ -904,6 +975,7 @@ namespace SemiControl.Controls
             dc.DrawLine(pen, new Point(cx, 0), new Point(cx, h));
         }
 
+        /// <summary>画 ROI 工作矩形及四个角点手柄。</summary>
         private void DrawRoi(DrawingContext dc)
         {
             var rect = ShapeToScreenRect(RoiRect.X, RoiRect.Y, RoiRect.Width, RoiRect.Height);
@@ -925,6 +997,7 @@ namespace SemiControl.Controls
             }
         }
 
+        /// <summary>遍历画一组形状；结果集合可带文字标签，选中的形状额外以白色虚线高亮。</summary>
         private void DrawShapeCollection(
             DrawingContext dc,
             ObservableCollection<ViewerShape>? shapes,
@@ -953,6 +1026,7 @@ namespace SemiControl.Controls
             }
         }
 
+        /// <summary>画单个形状（矩形、椭圆或直线），dashed 为 true 时用白色虚线（草稿与选中态）。</summary>
         private void DrawShape(DrawingContext dc, ViewerShape shape, Brush brush, bool dashed)
         {
             var pen = dashed
@@ -983,6 +1057,7 @@ namespace SemiControl.Controls
             }
         }
 
+        /// <summary>在形状左上角画带底色块的可读文字标签。</summary>
         private void DrawLabel(DrawingContext dc, ViewerShape shape, string label, Brush brush, double pixelsPerDip)
         {
             // 标签贴形状左上角，带底色块保证任何画面下可读。
@@ -993,6 +1068,7 @@ namespace SemiControl.Controls
             dc.DrawText(text, new Point(x + 3, y - text.Height - 2));
         }
 
+        /// <summary>把图像像素矩形换算成屏幕矩形，最窄处不小于 1 像素。</summary>
         private Rect ShapeToScreenRect(double x, double y, double width, double height)
         {
             (double sx, double sy) = _viewport.ImageToScreen(x, y);
@@ -1001,6 +1077,7 @@ namespace SemiControl.Controls
 
         // ============ 右键标注菜单 ============
 
+        /// <summary>构建右键标注菜单：绘制 ROI 与三种标注、清除项及视图适应项。</summary>
         private ContextMenu BuildContextMenu()
         {
             var menu = new ContextMenu();
@@ -1061,6 +1138,7 @@ namespace SemiControl.Controls
 
         // ============ 杂项 ============
 
+        /// <summary>创建并冻结指定颜色的纯色画刷（可安全跨线程共享）。</summary>
         private static SolidColorBrush CreateFrozenBrush(byte r, byte g, byte b)
         {
             var brush = new SolidColorBrush(Color.FromRgb(r, g, b));
@@ -1068,6 +1146,7 @@ namespace SemiControl.Controls
             return brush;
         }
 
+        /// <summary>克隆画刷并设置透明度，避免改动共享的原始画刷。</summary>
         private static Brush CreateOpacityBrush(Brush source, double opacity)
         {
             var brush = source.Clone();
@@ -1075,6 +1154,7 @@ namespace SemiControl.Controls
             return brush;
         }
 
+        /// <summary>按控件字体创建指定字号与颜色的格式化文本。</summary>
         private FormattedText CreateFormattedText(string text, Brush brush, double size, double pixelsPerDip)
             => new(
                 text,

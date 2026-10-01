@@ -7,6 +7,7 @@ namespace Framework.Device.HikVision.Tests
     /// </summary>
     public class CameraContractTests
     {
+        /// <summary>用 TCP 连接参数打开假相机，预期打开成功且记录的连接对象与传入的是同一实例。</summary>
         [Fact]
         public void 打开时记录连接方式()
         {
@@ -18,6 +19,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.True(camera.IsOpen);
         }
 
+        /// <summary>设置曝光与增益后读回，预期读到的值与设置值完全一致。</summary>
         [Fact]
         public void 曝光与增益可强类型设置并读回()
         {
@@ -30,6 +32,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(3.2, camera.GetGain());
         }
 
+        /// <summary>预置一帧图像后取帧，预期返回托管字节数组且宽、高、像素格式与预置值一致。</summary>
         [Fact]
         public void 取一帧返回托管字节数组与宽高格式()
         {
@@ -53,6 +56,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(PixelFormat.Mono8, got.PixelFormat);
         }
 
+        /// <summary>向实时图像通道写入一帧并异步读取，预期收到的就是刚写入的那一帧。</summary>
         [Fact]
         public async Task 实时图像通道能收到帧()
         {
@@ -65,6 +69,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Same(frame, read);
         }
 
+        /// <summary>连续触发两次软触发，预期触发计数递增到 2。</summary>
         [Fact]
         public void 软触发计数递增()
         {
@@ -76,6 +81,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(2, camera.TriggerCount);
         }
 
+        /// <summary>先开始再停止采集，预期取流状态标志相应地在真与假之间切换。</summary>
         [Fact]
         public void 开始与停止采集切换状态()
         {

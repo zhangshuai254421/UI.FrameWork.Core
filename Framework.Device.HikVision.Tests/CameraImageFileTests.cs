@@ -7,6 +7,7 @@ namespace Framework.Device.HikVision.Tests
     /// </summary>
     public class CameraImageFileTests
     {
+        /// <summary>保存 Mono8 两行图像为 BMP，预期生成 8 位调色板 BMP，文件头、调色板及自下而上的行序均正确。</summary>
         [Fact]
         public void Mono8_保存为8位调色板BMP_行序自下而上()
         {
@@ -38,6 +39,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(20, bmp[1083]);
         }
 
+        /// <summary>保存 Mono16 单像素图像，预期按 16 位容器的高 8 位写入灰度值。</summary>
         [Fact]
         public void Mono16_取16位容器高8位()
         {
@@ -57,6 +59,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(0x12, bmp[1078]);
         }
 
+        /// <summary>保存 RGB8 单像素图像，预期通道序翻转为 BMP 所需的 BGR 序。</summary>
         [Fact]
         public void RGB8_转为BGR序写入()
         {
@@ -78,6 +81,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(200, bmp[56]);
         }
 
+        /// <summary>保存 BGR8 单像素图像，预期通道序不做转换直接写入 BMP。</summary>
         [Fact]
         public void BGR8_通道序直写()
         {
@@ -98,6 +102,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(200, bmp[56]);
         }
 
+        /// <summary>保存 BayerRG8 的 3×3 图像，预期中心像素经双线性插值还原出 B、G、R 三个分量且数值正确。</summary>
         [Fact]
         public void BayerRG8_双线性还原中心像素()
         {
@@ -121,12 +126,14 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(115, bmp[center + 2]); // R = (100+110+120+130)/4
         }
 
+        /// <summary>用空帧调用保存，预期保存失败并返回 false。</summary>
         [Fact]
         public void 空帧_保存失败()
         {
             Assert.False(CameraImageFile.Save(new CameraData(), TempPath(".bmp")));
         }
 
+        /// <summary>像素格式为未定义的帧调用保存，预期保存失败并返回 false。</summary>
         [Fact]
         public void 像素格式Undefined_保存失败()
         {
@@ -141,6 +148,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.False(CameraImageFile.Save(frame, TempPath(".bmp")));
         }
 
+        /// <summary>目标目录不存在时保存，预期自动逐级创建目录且文件成功落盘。</summary>
         [Fact]
         public void 目录不存在_自动创建()
         {
@@ -158,6 +166,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.True(File.Exists(path));
         }
 
+        /// <summary>保存路径不带扩展名时，预期自动追加 .bmp 后缀并成功落盘。</summary>
         [Fact]
         public void 无扩展名_自动补bmp()
         {
@@ -174,6 +183,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.True(File.Exists(path + ".bmp"));
         }
 
+        /// <summary>经 FakeCamera 调用 CameraBase.SaveImage，预期取到预置帧并按自下而上行序写入 BMP。</summary>
         [Fact]
         public void CameraBase_SaveImage_取一帧并落盘()
         {
@@ -195,12 +205,15 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(4, bmp[1079]);
         }
 
+        /// <summary>在临时目录下生成带指定扩展名的唯一文件路径。</summary>
         private static string TempPath(string extension) =>
             Path.Combine(Path.GetTempPath(), "framework-device-tests", Guid.NewGuid().ToString("N") + extension);
 
+        /// <summary>从字节数组指定偏移读取小端 32 位整数。</summary>
         private static int ReadInt32(byte[] b, int offset) =>
             b[offset] | b[offset + 1] << 8 | b[offset + 2] << 16 | b[offset + 3] << 24;
 
+        /// <summary>从字节数组指定偏移读取小端 16 位整数。</summary>
         private static int ReadUInt16(byte[] b, int offset) => b[offset] | b[offset + 1] << 8;
     }
 }

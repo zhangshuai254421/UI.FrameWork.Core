@@ -11,8 +11,11 @@ namespace EFCore.Repository
     /// </summary>
     public interface IUnitOfWork
     {
+        /// <summary>获取指定实体类型的仓储（同一作用域内复用同一实例）。</summary>
         IRepository<TEntity> GetRepository<TEntity>() where TEntity : class;
+        /// <summary>把各仓储累积的变更统一提交到数据库；返回受影响行数。</summary>
         Task<int> SaveChangeAsync(CancellationToken cancellationToken = default);
+        /// <summary>开启显式事务并返回事务句柄；用完须释放（Dispose）。</summary>
         Task<IUnitOfTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -18,11 +18,14 @@ namespace SemiControlDemo_Net
         private const int ImageHeight = 1024;
         private const double Fps = 30;
 
+        /// <summary>合成帧推送定时器，按 Fps 周期生成并推送一帧图像。</summary>
         private readonly DispatcherTimer _timer;
         private readonly byte[] _background = new byte[ImageWidth * ImageHeight]; // 静态底图（渐变+噪声），只算一次
+        /// <summary>当前帧缓冲区：每帧由底图拷贝后再叠加动态内容。</summary>
         private readonly byte[] _frameBuffer = new byte[ImageWidth * ImageHeight];
         private double _phase; // 移动光斑的相位
 
+        /// <summary>构造函数：预生成底图，配置定时器、ROI 回调与窗口生命周期事件。</summary>
         public ImageViewerDemoWindow()
         {
             InitializeComponent();
@@ -53,6 +56,7 @@ namespace SemiControlDemo_Net
             Closed += (_, _) => _timer.Stop();
         }
 
+        /// <summary>开始或停止模拟流按钮：切换定时器状态并同步按钮文案。</summary>
         private void BtnStream_Click(object sender, RoutedEventArgs e)
         {
             if (_timer.IsEnabled)
@@ -67,6 +71,7 @@ namespace SemiControlDemo_Net
             }
         }
 
+        /// <summary>注入检测结果按钮：构造划痕、缺角两个示例形状并整体替换控件的结果叠加层。</summary>
         private void BtnInjectResults_Click(object sender, RoutedEventArgs e)
         {
             // 模拟宿主随检测周期整体替换的检测结果：轮廓 + 文字标签（图像像素坐标）。
@@ -77,14 +82,19 @@ namespace SemiControlDemo_Net
             viewer.Results = new System.Collections.ObjectModel.ObservableCollection<ViewerShape> { scratch, chipOff };
         }
 
+        /// <summary>清除标注按钮：清空用户手绘的标注层。</summary>
         private void BtnClearAnnotations_Click(object sender, RoutedEventArgs e) => viewer.ClearAnnotations();
 
+        /// <summary>清除 ROI 按钮：清空当前选区。</summary>
         private void BtnClearRoi_Click(object sender, RoutedEventArgs e) => viewer.ClearRoi();
 
+        /// <summary>适应窗口按钮：缩放视图使整幅图像可见。</summary>
         private void BtnFit_Click(object sender, RoutedEventArgs e) => viewer.FitToWindow();
 
+        /// <summary>实际大小按钮：将视图缩放复位到 1 比 1 像素。</summary>
         private void BtnActualSize_Click(object sender, RoutedEventArgs e) => viewer.ActualSize();
 
+        /// <summary>中心十字复选框：同步控件的中心十字线开关。</summary>
         private void ChkCrosshair_Changed(object sender, RoutedEventArgs e)
         {
             if (viewer != null)
@@ -139,6 +149,7 @@ namespace SemiControlDemo_Net
             viewer.Show(new ImageFrame(ImageWidth, ImageHeight, ImagePixelFormat.Mono8, _frameBuffer));
         }
 
+        /// <summary>在 8 位灰度图上填充实心矩形，坐标越界部分自动裁剪。</summary>
         private void FillRect(byte[] target, int x, int y, int w, int h, byte value)
         {
             int x1 = Math.Min(ImageWidth, x + w);
@@ -153,6 +164,7 @@ namespace SemiControlDemo_Net
             }
         }
 
+        /// <summary>在 8 位灰度图上填充实心圆盘（中心与半径可为小数），越界部分自动裁剪。</summary>
         private void FillDisc(byte[] target, double centerX, double centerY, double radius, byte value)
         {
             for (int y = ClampY(centerY - radius), y1 = ClampY(centerY + radius); y <= y1; y++)
@@ -170,6 +182,7 @@ namespace SemiControlDemo_Net
             }
         }
 
+        /// <summary>在 8 位灰度图上填充圆环（外径与内径之间），越界部分自动裁剪。</summary>
         private void FillRing(byte[] target, double centerX, double centerY, double outerRadius, double innerRadius, byte value)
         {
             double inner2 = innerRadius * innerRadius;
@@ -189,6 +202,7 @@ namespace SemiControlDemo_Net
             }
         }
 
+        /// <summary>以给定点为中心画一个实心十字（横竖各 2 倍臂长）。</summary>
         private void DrawCross(byte[] target, int centerX, int centerY, int arm, byte value)
         {
             for (int i = -arm; i <= arm; i++)
@@ -198,8 +212,10 @@ namespace SemiControlDemo_Net
             }
         }
 
+        /// <summary>把任意横坐标裁剪到图像宽度范围内（四舍五入取整）。</summary>
         private int ClampX(double v) => Math.Clamp((int)Math.Round(v), 0, ImageWidth - 1);
 
+        /// <summary>把任意纵坐标裁剪到图像高度范围内（四舍五入取整）。</summary>
         private int ClampY(double v) => Math.Clamp((int)Math.Round(v), 0, ImageHeight - 1);
 
         /// <summary>移动亮斑用：边缘 6 像素线性羽化，避免硬边闪烁。</summary>

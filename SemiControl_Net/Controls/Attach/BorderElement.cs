@@ -33,6 +33,7 @@ namespace SemiControl.Controls
         public static readonly DependencyProperty CircularProperty = DependencyProperty.RegisterAttached(
             "Circular", typeof(bool), typeof(BorderElement), new PropertyMetadata(ValueBoxes.FalseBox, OnCircularChanged));
 
+        /// <summary>Circular 属性变更回调：置 true 时以宽高多绑定加转换器动态计算圆角，置 false 时清除该绑定。</summary>
         private static void OnCircularChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not Border border)

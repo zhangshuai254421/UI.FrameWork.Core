@@ -8,6 +8,7 @@ namespace UI.FrameWork.Core.Main
     /// </summary>
     public partial class LoginView : Window
     {
+        /// <summary>空构造：初始化 XAML 组件。</summary>
         public LoginView()
         {
             InitializeComponent();

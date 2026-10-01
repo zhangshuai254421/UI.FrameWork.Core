@@ -13,6 +13,7 @@ namespace Recipe.Domain
     where TEntity : class
     {
 
+       /// <summary>异步获取当前配方的全部参数；无当前配方时返回空集合。</summary>
        Task<IEnumerable<TEntity>> GetCurrentRecipeParameterAsync(CancellationToken cancellationToken = default);
 
         // 新增使用泛型的方法，比如根据 TKey 获取实体

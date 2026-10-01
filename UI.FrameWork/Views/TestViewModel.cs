@@ -13,6 +13,7 @@ namespace SemiAppliaction.Views
         //DetectionTestCommand：导航到检测测试页（选图跑 YOLO 推理）
         public DelegateCommand DetectionTestCommand { get; }
 
+        /// <summary>构造：初始化相机测试与检测测试两个导航命令。</summary>
         public TestViewModel()
         {
             Test1Command = new DelegateCommand(() =>

@@ -16,6 +16,7 @@ namespace Log.Infrastructure
     /// </summary>
     public class SerilogService : EntityServiceBase<SerilogHistory, Guid>, ISerilogService
     {
+        /// <summary>依赖工作单元构造；基类据此解析日志实体仓储。</summary>
         public SerilogService(IUnitOfWork unitofWork) : base(unitofWork)
         {
         }

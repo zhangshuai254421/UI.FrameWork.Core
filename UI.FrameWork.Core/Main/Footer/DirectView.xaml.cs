@@ -22,6 +22,7 @@ namespace UI.FrameWork.Core.Main
 
     public partial class DirectView : UserControl
     {
+        /// <summary>空构造：初始化 XAML 组件。</summary>
         public DirectView()
         {
             InitializeComponent();

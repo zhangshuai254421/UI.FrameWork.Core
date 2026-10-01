@@ -2,23 +2,34 @@ using System;
 
 namespace Recipe.UI.RecipeUI
 {
+    /// <summary>
+    /// 复制配方对话框的视图模型：输入新配方名与目标文件夹，实时校验后携带结果关闭对话框。
+    /// </summary>
     public class CopyRecipeDialogViewModel : BindableBase, IDialogAware
     {
         #region 字段
 
+        /// <summary>原始配方名。</summary>
         private string _originalRecipeName = string.Empty;
+        /// <summary>新配方名（用户输入）。</summary>
         private string _newRecipeName = string.Empty;
+        /// <summary>目标文件夹名（用户输入）。</summary>
         private string _targetGroupName = string.Empty;
+        /// <summary>可选文件夹列表（下拉提示）。</summary>
         private IEnumerable<string> _folderNames = Array.Empty<string>();
+        /// <summary>校验错误提示文本。</summary>
         private string _errorMessage = string.Empty;
+        /// <summary>是否存在校验错误。</summary>
         private bool _hasError;
 
         #endregion
 
         #region 构造函数
 
+        /// <summary>Prism 注入的对话框关闭监听器，用于携带结果关闭对话框。</summary>
         public DialogCloseListener RequestClose { get; }
 
+        /// <summary>构造函数：注入对话框关闭监听器。</summary>
         public CopyRecipeDialogViewModel(DialogCloseListener requestClose)
         {
             RequestClose = requestClose;
@@ -98,6 +109,7 @@ namespace Recipe.UI.RecipeUI
 
         #region 命令
 
+        /// <summary>保存命令：最终校验通过后携带新配方名与目标文件夹，以 OK 结果关闭对话框；有校验错误或输入为空时禁用。</summary>
         public DelegateCommand SaveCommand => new DelegateCommand(() =>
         {
             if (!ValidateForSave())
@@ -120,6 +132,7 @@ namespace Recipe.UI.RecipeUI
         .ObservesProperty(() => NewRecipeName)
         .ObservesProperty(() => TargetGroupName);
 
+        /// <summary>取消命令：以 Cancel 结果关闭对话框，不保存任何更改。</summary>
         public DelegateCommand CancelCommand => new DelegateCommand(() =>
         {
             RequestClose.Invoke(new DialogResult(ButtonResult.Cancel));
@@ -129,15 +142,18 @@ namespace Recipe.UI.RecipeUI
 
         #region IDialogAware
 
+        /// <summary>是否允许关闭对话框；本对话框始终允许。</summary>
         public bool CanCloseDialog()
         {
             return true;
         }
 
+        /// <summary>对话框关闭后的回调；本对话框无需要清理的资源。</summary>
         public void OnDialogClosed()
         {
         }
 
+        /// <summary>对话框打开时读取传入参数：原配方名、当前文件夹与可选文件夹列表，并以此初始化各输入项。</summary>
         public void OnDialogOpened(IDialogParameters parameters)
         {
             if (parameters.ContainsKey("RecipeName"))

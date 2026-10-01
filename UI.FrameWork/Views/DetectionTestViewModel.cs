@@ -26,11 +26,17 @@ namespace SemiAppliaction.Views
     //       层级：主页→测试→检测测试（第 3 级，ADR-0005）。
     public class DetectionTestViewModel : BaseViewModel, INavigationAware
     {
+        /// <summary>UI 线程调度器（预留）。</summary>
         private readonly Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
+        /// <summary>目标检测器（惰性创建，模型只加载一次）。</summary>
         private IDetector? _detector;
+        /// <summary>姿态估计器（惰性创建）。</summary>
         private IPoseEstimator? _poseEstimator;
+        /// <summary>实例分割器（惰性创建）。</summary>
         private ISegmenter? _segmenter;
+        /// <summary>图像分类器（惰性创建）。</summary>
         private IClassifier? _classifier;
+        /// <summary>旋转框检测器（惰性创建）。</summary>
         private IObbDetector? _obbDetector;
 
         /// <summary>推理取图的原始帧：分割会往显示帧里叠色，原始帧另存，清除结果时还原。</summary>
@@ -52,6 +58,7 @@ namespace SemiAppliaction.Views
             new byte[] { 255, 165, 0 },   // 橙
         };
 
+        /// <summary>构造：初始化各推理命令，并挂接结果集合变化以刷新清除命令可用态。</summary>
         public DetectionTestViewModel()
         {
             PickImageCommand = new DelegateCommand(PickImage, () => !IsInferring);
@@ -67,6 +74,7 @@ namespace SemiAppliaction.Views
 
         #region 绑定属性
 
+        /// <summary>当前显示帧的后端字段。</summary>
         private ImageFrame? _frame;
         /// <summary>当前显示帧。</summary>
         public ImageFrame? Frame
@@ -88,6 +96,7 @@ namespace SemiAppliaction.Views
         /// <summary>检测结果叠加（推理产出，图像像素坐标系）。</summary>
         public ObservableCollection<ViewerShape> Results { get; } = new();
 
+        /// <summary>推理状态的后端字段。</summary>
         private bool _isInferring;
         /// <summary>是否正在推理（防重入：推理期间禁用选图与再运行）。</summary>
         public bool IsInferring
@@ -107,7 +116,9 @@ namespace SemiAppliaction.Views
             }
         }
 
+        /// <summary>状态文本的后端字段。</summary>
         private string _statusText = "未加载图片";
+        /// <summary>状态提示文本，绑定检测测试页的状态栏。</summary>
         public string StatusText
         {
             get => _statusText;
@@ -118,14 +129,22 @@ namespace SemiAppliaction.Views
 
         #region 命令
 
+        /// <summary>选图命令：推理期间禁用。</summary>
         public DelegateCommand PickImageCommand { get; }
+        /// <summary>目标检测命令：仅有帧且未在推理时可用。</summary>
         public DelegateCommand RunCommand { get; }
+        /// <summary>姿态估计命令：仅有帧且未在推理时可用。</summary>
         public DelegateCommand RunPoseCommand { get; }
+        /// <summary>实例分割命令：仅有帧且未在推理时可用。</summary>
         public DelegateCommand RunSegmentCommand { get; }
+        /// <summary>图像分类命令：仅有帧且未在推理时可用。</summary>
         public DelegateCommand RunClassifyCommand { get; }
+        /// <summary>旋转框检测命令：仅有帧且未在推理时可用。</summary>
         public DelegateCommand RunObbCommand { get; }
+        /// <summary>清除结果命令：仅有叠加结果时可用。</summary>
         public DelegateCommand ClearResultsCommand { get; }
 
+        /// <summary>弹出文件对话框选图并解码为 BGR8 帧，同时清空旧结果；失败仅记录日志并更新状态文本。</summary>
         private void PickImage()
         {
             var dialog = new Microsoft.Win32.OpenFileDialog
@@ -152,6 +171,7 @@ namespace SemiAppliaction.Views
             }
         }
 
+        /// <summary>目标检测入口：校验模型文件存在后，在后台推理并把状态切为推理中。</summary>
         private void Run()
         {
             if (Frame is null || IsInferring)
@@ -172,6 +192,7 @@ namespace SemiAppliaction.Views
             _ = RunAsync(frame);
         }
 
+        /// <summary>后台执行目标检测并回显结果；失败仅记录日志与状态文本，结束后解除推理态。</summary>
         private async Task RunAsync(ImageFrame frame)
         {
             try
@@ -198,6 +219,7 @@ namespace SemiAppliaction.Views
             }
         }
 
+        /// <summary>检测结果可视化：逐框画矩形并附类别与置信度标签。</summary>
         private void ShowDetections(List<Detection> detections, long elapsedMs)
         {
             Results.Clear();
@@ -211,6 +233,7 @@ namespace SemiAppliaction.Views
             StatusText = $"推理完成：{detections.Count} 个目标，耗时 {elapsedMs} ms";
         }
 
+        /// <summary>姿态估计入口：校验模型文件存在后，在后台推理并把状态切为推理中。</summary>
         private void RunPose()
         {
             if (Frame is null || IsInferring)
@@ -231,6 +254,7 @@ namespace SemiAppliaction.Views
             _ = RunPoseAsync(frame);
         }
 
+        /// <summary>后台执行姿态估计并回显骨架；失败仅记录日志与状态文本，结束后解除推理态。</summary>
         private async Task RunPoseAsync(ImageFrame frame)
         {
             try
@@ -303,6 +327,7 @@ namespace SemiAppliaction.Views
             StatusText = $"姿态估计完成：{poses.Count} 人，耗时 {elapsedMs} ms";
         }
 
+        /// <summary>实例分割入口：校验模型文件存在后，在后台推理并把状态切为推理中。</summary>
         private void RunSegment()
         {
             if (Frame is null || IsInferring)
@@ -323,6 +348,7 @@ namespace SemiAppliaction.Views
             _ = RunSegmentAsync(frame);
         }
 
+        /// <summary>后台执行实例分割并回显叠色结果；失败仅记录日志与状态文本，结束后解除推理态。</summary>
         private async Task RunSegmentAsync(ImageFrame frame)
         {
             try
@@ -405,6 +431,7 @@ namespace SemiAppliaction.Views
             StatusText = $"实例分割完成：{segments.Count} 个实例，耗时 {elapsedMs} ms";
         }
 
+        /// <summary>图像分类入口：校验模型文件存在后，在后台推理并把状态切为推理中。</summary>
         private void RunClassify()
         {
             if (Frame is null || IsInferring)
@@ -425,6 +452,7 @@ namespace SemiAppliaction.Views
             _ = RunClassifyAsync(frame);
         }
 
+        /// <summary>后台执行图像分类并回显 Top-K 候选；失败仅记录日志与状态文本，结束后解除推理态。</summary>
         private async Task RunClassifyAsync(ImageFrame frame)
         {
             try
@@ -459,6 +487,7 @@ namespace SemiAppliaction.Views
             StatusText = $"分类完成（耗时 {elapsedMs} ms）：{topK}";
         }
 
+        /// <summary>旋转框检测入口：校验模型文件存在后，在后台推理并把状态切为推理中。</summary>
         private void RunObb()
         {
             if (Frame is null || IsInferring)
@@ -479,6 +508,7 @@ namespace SemiAppliaction.Views
             _ = RunObbAsync(frame);
         }
 
+        /// <summary>后台执行旋转框检测并回显结果；失败仅记录日志与状态文本，结束后解除推理态。</summary>
         private async Task RunObbAsync(ImageFrame frame)
         {
             try
@@ -607,15 +637,18 @@ namespace SemiAppliaction.Views
 
         #region INavigationAware
 
+        /// <summary>进入页面：无需初始化，空实现。</summary>
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
         }
 
+        /// <summary>始终复用当前实例作为导航目标，检测器随页面复用。</summary>
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
             return true;
         }
 
+        /// <summary>离开页面：无需清理，无取流与后台循环。</summary>
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
             // 无需清理：无取流、无后台循环，检测器随页面复用。

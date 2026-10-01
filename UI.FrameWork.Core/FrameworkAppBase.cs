@@ -36,21 +36,30 @@ using UI.FrameWork.Core.Main.Footer;
 namespace UI.FrameWork.Core
 {
 
+    /// <summary>
+    /// 框架应用基类：负责组装 IoC 容器与数据库、单实例检测、弹出登录窗并初始化设备管理器；
+    /// 子类只需补充具体的类型注册。
+    /// </summary>
     public abstract class FrameworkAppBase : PrismApplicationBase
     {
         #region 字段
 
+        /// <summary>应用级服务集合（预留）。</summary>
         private readonly ServiceCollection _services = new ServiceCollection();
+        /// <summary>单实例互斥体：已存在同名实例时把焦点交给旧实例并退出当前进程。</summary>
         private static Mutex AppMutex;
+        /// <summary>设备管理器；登录成功后初始化，应用退出时统一释放。</summary>
         private DeviceManager? _deviceManager;
 
         #endregion
 
         #region 方法
 
+        /// <summary>Win32 API：把指定句柄的窗口带到前台。</summary>
         [DllImport("USER32.DLL")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        /// <summary>创建 DryIoc 容器，并注册三个数据库上下文与日志、配方、设备等模块服务。</summary>
         protected override IContainerExtension CreateContainerExtension()
         {
             IServiceCollection services = new ServiceCollection();
@@ -73,6 +82,7 @@ namespace UI.FrameWork.Core
             return new DryIocContainerExtension(new DryIoc.Container(DryIocContainerExtension.DefaultRules) .WithDependencyInjectionAdapter(services));
         }
 
+        /// <summary>预加载插件程序集并确保各数据库已建表，随后从容器解析主窗口 Shell。</summary>
         protected override Window CreateShell()
         {
             AssemblyPreloader.PreloadPluginAssemblies(AppDomain.CurrentDomain.BaseDirectory);
@@ -143,6 +153,7 @@ namespace UI.FrameWork.Core
 
         }
 
+        /// <summary>注册登录窗、登录 ViewModel 与主窗口等全局类型；Serilog 相关注册暂以注释保留。</summary>
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             // 注册全局依赖，比如主题服务、消息总线等
@@ -190,6 +201,7 @@ namespace UI.FrameWork.Core
             base.OnStartup(e);
         }
 
+        /// <summary>应用退出时释放设备管理器以关闭所有设备；异常就地吞掉，保证退出流程继续。</summary>
         protected override void OnExit(ExitEventArgs e)
         {
             // 关闭所有设备

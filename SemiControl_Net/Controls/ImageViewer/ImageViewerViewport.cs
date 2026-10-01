@@ -33,7 +33,9 @@ namespace SemiControl.Controls
         /// <summary>允许的最大缩放倍率。</summary>
         public double MaxScale => _maxScale;
 
+        /// <summary>允许的最小缩放倍率的后备字段。</summary>
         private double _minScale;
+        /// <summary>允许的最大缩放倍率的后备字段。</summary>
         private double _maxScale;
 
         /// <summary>当前缩放倍率（1 = 图像像素与屏幕像素 1:1）。</summary>
@@ -125,6 +127,7 @@ namespace SemiControl.Controls
         public (double X, double Y) ImageToScreen(double imageX, double imageY)
             => (imageX * Scale - OffsetX, imageY * Scale - OffsetY);
 
+        /// <summary>按给定缩放倍率重设视图并把图像居中于视口。</summary>
         private void SetScaleCentered(double scale, double imageWidth, double imageHeight, double viewWidth, double viewHeight)
         {
             Scale = scale;

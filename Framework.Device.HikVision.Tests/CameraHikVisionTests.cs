@@ -8,6 +8,7 @@ namespace Framework.Device.HikVision.Tests
     /// </summary>
     public class CameraHikVisionTests
     {
+        /// <summary>覆盖典型海康 SDK 错误码，预期分别翻译为统一错误类别，未识别的错误码归入未知类别。</summary>
         [Theory]
         [InlineData(0, DeviceErrorCategory.None)]                              // MV_OK
         [InlineData(-2147483383, DeviceErrorCategory.ParameterNotSupported)]  // MV_E_GC_NODE_NOT_FOUND
@@ -22,6 +23,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(expected, CameraHikVision.TranslateError(sdkCode));
         }
 
+        /// <summary>覆盖常用海康 Gvsp 像素格式常量，预期翻译为品牌无关像素格式，未匹配值返回未定义。</summary>
         [Theory]
         [InlineData(17301505, PixelFormat.Mono8)]    // PixelType_Gvsp_Mono8
         [InlineData(17825795, PixelFormat.Mono10)]   // PixelType_Gvsp_Mono10

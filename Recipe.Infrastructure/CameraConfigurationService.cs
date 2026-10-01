@@ -6,8 +6,12 @@ using Recipe.Infrastructure.Contracts;
 
 namespace Recipe.Infrastructure
 {
+    /// <summary>
+    /// 相机配置服务：提供当前配方下相机名称的查询投影与批量保存。
+    /// </summary>
     public class CameraConfigurationService : RecipeParameterServiceBase<Recipe.Domain.CameraConfiguration, Guid>, ICameraConfigurationService
     {
+        /// <summary>构造函数：注入工作单元与配方管理器服务。</summary>
         public CameraConfigurationService(IUnitOfWork unitofWork, IRecipeManagerService recipeManagerService)
         : base(unitofWork, recipeManagerService)
         {

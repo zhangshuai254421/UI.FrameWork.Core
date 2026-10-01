@@ -7,8 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EFCore.Infrastructure
 {
+    /// <summary>
+    /// 数据访问层依赖注入扩展：注册仓储、工作单元与 DbContext 解析器，并自动发现注册 DbContext。
+    /// </summary>
     public static class DalExtensions
     {
+        /// <summary>注册泛型仓储、工作单元与 DbContext 解析器，并自动注册程序集中所有具体 DbContext。</summary>
         public static IServiceCollection AddRepository(this IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -20,6 +24,7 @@ namespace EFCore.Infrastructure
             AutoRegisterDbContexts(services);
             return services;
         }
+        /// <summary>扫描已加载的全部程序集，把其中所有具体 DbContext 类型以 Scoped 注册进容器。</summary>
         private static void AutoRegisterDbContexts(IServiceCollection services)
         {
             var dbContextTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -32,6 +37,7 @@ namespace EFCore.Infrastructure
             }
         }
 
+        /// <summary>确保指定 DbContext 的数据库与表已创建；数据库已存在时不执行任何操作，返回原服务提供程序。</summary>
         public static IServiceProvider UseDatabaseEnsureCreated<TDbContext>(this IServiceProvider provider)
             where TDbContext : DbContext
         {

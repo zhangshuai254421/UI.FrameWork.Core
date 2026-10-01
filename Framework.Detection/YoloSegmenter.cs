@@ -15,6 +15,7 @@ namespace Framework.Detection
     //       （行优先、LSB-first），此处裁剪平移到与结果框精确对齐，下游拿到即用。
     public sealed class YoloSegmenter : ISegmenter
     {
+        /// <summary>YoloDotNet 推理引擎实例，持有 ONNX 模型与 CPU 执行提供方，随 Dispose 释放。</summary>
         private readonly Yolo _yolo;
 
         /// <summary>加载 ONNX 模型创建分割器。模型文件不存在或非法时抛异常。</summary>
@@ -105,6 +106,7 @@ namespace Framework.Detection
             return cropped;
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _yolo.Dispose();

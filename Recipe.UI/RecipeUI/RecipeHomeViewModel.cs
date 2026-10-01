@@ -8,36 +8,58 @@ using System.Threading.Tasks;
 
 namespace Recipe.UI.RecipeUI
 {
+    /// <summary>
+    /// 配方管理主页视图模型：负责文件夹与配方列表的展示、增删改、复制、应用切换，
+    /// 写操作全部委托 RecipeService，本页只靠订阅配方变更事件整条刷新。
+    /// </summary>
     public class RecipeHomeViewModel : BaseViewModel, INavigationAware
     {
         #region 字段
 
+        /// <summary>配方服务，负责配方的增删改查与事件推送。</summary>
         private readonly RecipeService _recipeService;
+        /// <summary>Prism 弹框服务，用于重命名、复制、删除确认等对话框。</summary>
         private readonly IDialogService _dialogService;
+        /// <summary>Prism 导航服务，用于确认配方后跳转页面。</summary>
         private readonly INavigationService _navigationService;
 
+        /// <summary>重命名命令的后备字段（懒加载）。</summary>
         private DelegateCommand _renameCmd = null!;
+        /// <summary>复制命令的后备字段（懒加载）。</summary>
         private DelegateCommand _copyRecipeCmd = null!;
+        /// <summary>删除配方命令的后备字段（懒加载）。</summary>
         private DelegateCommand _deleteRecipeCmd = null!;
+        /// <summary>应用配方命令的后备字段（懒加载）。</summary>
         private DelegateCommand _applyRecipeCmd = null!;
+        /// <summary>新建文件夹命令的后备字段（懒加载）。</summary>
         private DelegateCommand _newGroupCmd = null!;
+        /// <summary>删除文件夹命令的后备字段（懒加载）。</summary>
         private DelegateCommand _deleteGroupCmd = null!;
 
+        /// <summary>配方列表属性的后备字段。</summary>
         private ObservableCollection<RecipeListItemDto> recipes = new ObservableCollection<RecipeListItemDto>();
+        /// <summary>文件夹名列表属性的后备字段。</summary>
         private ObservableCollection<string> _recipeWithGroupName = new ObservableCollection<string>();
+        /// <summary>当前分组下配方名列表属性的后备字段。</summary>
         private ObservableCollection<string> _recipeWithRecipeName = new ObservableCollection<string>();
 
+        /// <summary>当前选中分组名属性的后备字段。</summary>
         private string _selectGroupName = null!;
+        /// <summary>当前选中配方名属性的后备字段。</summary>
         private string _selectRecipeName = null!;
+        /// <summary>当前分组下配方数量属性的后备字段。</summary>
         private int _recipeShowCount;
+        /// <summary>全部配方数量属性的后备字段。</summary>
         private int _recipeCount;
 
+        /// <summary>按分组记忆的配方选中缓存：键为分组名，值为该分组最近一次选中的配方名。</summary>
         public Dictionary<string, string> RecipeSelectCache = new Dictionary<string, string>();
 
         #endregion
 
         #region 构造函数
 
+        /// <summary>构造函数：注入配方服务、弹框服务与导航服务。</summary>
         public RecipeHomeViewModel(RecipeService recipeService, IDialogService dialogService, INavigationService navigationService)
         {
             _recipeService = recipeService;
@@ -56,12 +78,14 @@ namespace Recipe.UI.RecipeUI
             set => SetProperty(ref recipes, value);
         }
 
+        /// <summary>文件夹名列表（左侧分组下拉数据源）。</summary>
         public ObservableCollection<string> RecipeWithGroupName
         {
             get => _recipeWithGroupName;
             set => SetProperty(ref _recipeWithGroupName, value);
         }
 
+        /// <summary>当前分组下的配方名列表（配方下拉数据源）。</summary>
         public ObservableCollection<string> RecipeWithRecipeName
         {
             get => _recipeWithRecipeName;
@@ -104,12 +128,14 @@ namespace Recipe.UI.RecipeUI
             }
         }
 
+        /// <summary>当前分组下的配方数量（界面显示用）。</summary>
         public int RecipeShowCount
         {
             get => _recipeShowCount;
             set => SetProperty(ref _recipeShowCount, value);
         }
 
+        /// <summary>全部配方总数（界面显示用）。</summary>
         public int RecipeCount
         {
             get => _recipeCount;
@@ -142,6 +168,7 @@ namespace Recipe.UI.RecipeUI
 
         #region 方法
 
+        /// <summary>回车确认命令：应用当前选中配方并跳转到配方上下文页。</summary>
         public override void EnterCommandExecute()
         {
             base.EnterCommandExecute();
@@ -149,6 +176,7 @@ namespace Recipe.UI.RecipeUI
             _navigationService.NavigateToAsync(ViewNames.RecipeContextView, RegionNames.MainRegion);
         }
 
+        /// <summary>重命名流程：未选中配方直接返回；弹框取消或新名无效时忽略，否则交 service 落库。</summary>
         private async Task RenameAsync()
         {
             if (string.IsNullOrWhiteSpace(SelectRecipeName))
@@ -174,6 +202,7 @@ namespace Recipe.UI.RecipeUI
             await _recipeService.RenameRecipeAsync(SelectGroupName, SelectRecipeName, newRecipeName);
         }
 
+        /// <summary>复制流程：弹框取新配方名与目标文件夹，确认后交 service 克隆配方（未选中或取消时忽略）。</summary>
         private async Task CopyAsync()
         {
             if (string.IsNullOrWhiteSpace(SelectRecipeName))
@@ -205,6 +234,7 @@ namespace Recipe.UI.RecipeUI
             await _recipeService.CopyRecipeAsync(SelectGroupName, SelectRecipeName, newRecipeName, AppGlobals.MachineName, newGroupName);
         }
 
+        /// <summary>删除流程：弹确认框，用户确认 Yes 后交 service 删除（未选中或取消时忽略）。</summary>
         private async Task DeleteAsync()
         {
             if (string.IsNullOrWhiteSpace(SelectRecipeName))
@@ -228,6 +258,7 @@ namespace Recipe.UI.RecipeUI
             await _recipeService.DeleteRecipeAsync(SelectGroupName, SelectRecipeName);
         }
 
+        /// <summary>应用流程：按当前分组与配方名查出配方，设为当前配方成功后广播配方切换事件。</summary>
         private async Task ApplyAsync()
         {
             Logger.LogInformation("ApplyRecipeCmd");
@@ -249,6 +280,7 @@ namespace Recipe.UI.RecipeUI
             }
         }
 
+        /// <summary>新建文件夹流程：弹框取文件夹名，交 service 创建占位配方，成功后选中新文件夹。</summary>
         private async Task CreateGroupAsync()
         {
             var dialogResult = await _dialogService.ShowDialogAsync(
@@ -272,6 +304,7 @@ namespace Recipe.UI.RecipeUI
             SelectGroupName = newGroupName;
         }
 
+        /// <summary>删除文件夹流程：弹确认框，确认 Yes 后交 service 连同其下配方一起删除（未选中或取消时忽略）。</summary>
         private async Task DeleteGroupAsync()
         {
             if (string.IsNullOrWhiteSpace(SelectGroupName))
@@ -336,6 +369,7 @@ namespace Recipe.UI.RecipeUI
 
         #region INavigationAware
 
+        /// <summary>导航进入时订阅配方变更事件并全量刷新列表；加载失败只记录日志，不抛出。</summary>
         public async void OnNavigatedTo(NavigationContext navigationContext)
         {
             EventAggregator.GetEvent<RecipeChangedEvent>().Subscribe(OnRecipeChanged);
@@ -349,11 +383,13 @@ namespace Recipe.UI.RecipeUI
             }
         }
 
+        /// <summary>导航目标判定：始终复用本实例。</summary>
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
             return true; // 复用同一个 View 实例，避免重复创建
         }
 
+        /// <summary>导航离开时取消订阅配方变更事件，避免泄漏。</summary>
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
             EventAggregator.GetEvent<RecipeChangedEvent>().Unsubscribe(OnRecipeChanged);

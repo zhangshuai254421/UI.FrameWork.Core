@@ -6,6 +6,7 @@ namespace Framework.Device.Domain
     /// </summary>
     public class DeviceConfiguration
     {
+        /// <summary>创建设备配置；四个字段均为必填，不可变。</summary>
         public DeviceConfiguration(string id, DeviceKind kind, string vendor, DeviceConnection connection)
         {
             Id = id;

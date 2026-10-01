@@ -9,8 +9,12 @@ using System.Threading.Tasks;
 
 namespace Log.Infrastructure
 {
+    /// <summary>
+    /// SerilogHistory 实体的数据库映射配置：约定主键为自增列。
+    /// </summary>
     public class SerilogHistoryTypeConfiguration : IEntityTypeConfiguration<SerilogHistory>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<SerilogHistory> builder)
         {
             builder

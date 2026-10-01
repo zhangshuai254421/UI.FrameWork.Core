@@ -16,6 +16,7 @@ namespace Framework.Detection
     //       回图像范围，角度原样透传；旋转后角点不裁剪（裁剪破坏四边形，见 ObbResult）。
     public sealed class YoloObbDetector : IObbDetector
     {
+        /// <summary>YoloDotNet 推理引擎实例，持有 ONNX 模型与 CPU 执行提供方，随 Dispose 释放。</summary>
         private readonly Yolo _yolo;
 
         /// <summary>加载 ONNX 模型创建旋转框检测器。模型文件不存在或非法时抛异常。</summary>
@@ -58,6 +59,7 @@ namespace Framework.Detection
             return detections;
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _yolo.Dispose();

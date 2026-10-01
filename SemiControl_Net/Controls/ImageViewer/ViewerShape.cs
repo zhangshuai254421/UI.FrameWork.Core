@@ -23,6 +23,7 @@ namespace SemiControl.Controls
     /// </summary>
     public sealed class ViewerShape
     {
+        /// <summary>私有构造：图形种类创建后不可变，只能经静态工厂方法创建。</summary>
         private ViewerShape(ViewerShapeKind kind)
         {
             Kind = kind;

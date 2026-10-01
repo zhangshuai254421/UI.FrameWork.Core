@@ -10,8 +10,10 @@ namespace EFCore.Repository
     /// </summary>
     public class PageParameter
     {
+        /// <summary>页码，从 1 开始。</summary>
         public int PageNum { get; set; } = 1;
 
+        /// <summary>每页条数，默认 15。</summary>
         public int PageSize { get; set; } = 15;
     }
 
@@ -22,6 +24,7 @@ namespace EFCore.Repository
     /// <typeparam name="TFilter">过滤条件对象类型</typeparam>
     public class PageParameter<TFilter> : PageParameter
     {
+        /// <summary>从基础分页参数拷贝页码与页大小，并附加过滤对象。</summary>
         public PageParameter(PageParameter page, TFilter filter)
         {
             PageNum = page.PageNum;
@@ -31,6 +34,7 @@ namespace EFCore.Repository
             Filter = filter;
         }
 
+        /// <summary>类型化的过滤条件对象。</summary>
         public TFilter Filter { get; }
     }
 }

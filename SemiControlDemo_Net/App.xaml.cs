@@ -9,6 +9,7 @@ namespace SemiControlDemo_Net
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>启动回调：按命令行参数选择演示窗口（无参数打开 DataGrid 主窗口）。</summary>
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);

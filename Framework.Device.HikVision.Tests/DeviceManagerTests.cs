@@ -8,6 +8,7 @@ namespace Framework.Device.HikVision.Tests
     /// </summary>
     public class DeviceManagerTests
     {
+        /// <summary>构造设备配置对象，预期标识、设备类型、厂商与连接方式四个字段被原样保存。</summary>
         [Fact]
         public void 配置实体携带设备标识类型厂商与连接方式()
         {
@@ -20,6 +21,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.IsType<TcpConnection>(config.Connection);
         }
 
+        /// <summary>用两条不同厂商的相机配置初始化管理器，预期工厂按 (设备类型, 厂商) 各解析一次，且两台设备以各自的连接方式打开。</summary>
         [Fact]
         public void 初始化按配置解析出正确适配器并以连接方式打开()
         {
@@ -46,6 +48,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal("COM3", Assert.IsType<ComConnection>(baslerCam.OpenedConnection).PortName);
         }
 
+        /// <summary>初始化一条运控卡配置，预期工厂收到运动控制卡类型与厂商的组合，且按标识取到对应设备。</summary>
         [Fact]
         public void 按设备类型与厂商共同解析适配器()
         {
@@ -63,6 +66,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Same(motion, manager.GetDevice("axis"));
         }
 
+        /// <summary>同一厂商配置两台相机，预期工厂创建两个独立实例，并分别绑定到各自标识。</summary>
         [Fact]
         public void 同一厂商多台设备各自独立配置与打开()
         {
@@ -87,6 +91,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Same(created[1], manager.GetDevice("cam2"));
         }
 
+        /// <summary>一台设备打开失败，预期该设备不入库（取用为 null），其余设备照常初始化并打开。</summary>
         [Fact]
         public void 单台打开失败时降级运行其余照常()
         {
@@ -107,6 +112,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.True(ok.IsOpen);
         }
 
+        /// <summary>设备打开失败，预期管理器随后调用 Close 释放其已占用的部分资源。</summary>
         [Fact]
         public void 打开失败的设备被关闭释放部分资源()
         {
@@ -123,6 +129,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.True(failing.WasClosed);
         }
 
+        /// <summary>工厂对未注册厂商抛异常，预期管理器降级跳过该设备，其余设备初始化不受影响。</summary>
         [Fact]
         public void 厂商未注册时降级运行不中断其余设备()
         {
@@ -142,6 +149,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.True(ok.IsOpen);
         }
 
+        /// <summary>初始化一台设备后按标识取用，预期取到同一实例；取不存在的标识返回 null。</summary>
         [Fact]
         public void 通过设备标识取得已初始化设备()
         {
@@ -158,6 +166,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Null(manager.GetDevice("nope"));
         }
 
+        /// <summary>两台设备初始化后调用 CloseAll，预期全部关闭且字典清空（取用返回 null）。</summary>
         [Fact]
         public void 退出时统一关闭所有已打开设备()
         {
@@ -184,6 +193,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Null(manager.GetDevice("b"));
         }
 
+        /// <summary>初始化后调用 Dispose，预期设备被关闭且不再可取用。</summary>
         [Fact]
         public void Dispose关闭所有设备()
         {
@@ -202,6 +212,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Null(manager.GetDevice("a"));
         }
 
+        /// <summary>同一设备标识初始化两次，预期旧实例被关闭以避免泄漏，新实例接管该标识。</summary>
         [Fact]
         public void 设备标识重复时关闭旧实例避免泄漏()
         {
@@ -228,6 +239,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.False(created[1].IsOpen);
         }
 
+        /// <summary>关闭全部设备后用同一配置再次初始化，预期创建新实例并成功重连。</summary>
         [Fact]
         public void 关闭后可重新初始化重连()
         {
@@ -256,12 +268,16 @@ namespace Framework.Device.HikVision.Tests
         /// <summary>假适配器工厂：记录每次 (设备类型, 厂商) 解析，按委托产出假设备，未注册则抛异常。</summary>
         private sealed class FakeDeviceAdapterFactory : IDeviceAdapterFactory
         {
+            /// <summary>构造时注入的创建委托；为 null 时视为未注册任何适配器。</summary>
             private readonly Func<DeviceKind, string, IDevice>? _creator;
 
+            /// <summary>用给定创建委托构造假工厂。</summary>
             public FakeDeviceAdapterFactory(Func<DeviceKind, string, IDevice>? creator = null) => _creator = creator;
 
+            /// <summary>每次 Create 调用收到的 (设备类型, 厂商) 记录，供测试断言。</summary>
             public List<(DeviceKind Kind, string Vendor)> CreateCalls { get; } = new();
 
+            /// <inheritdoc />
             public IDevice Create(DeviceKind kind, string vendor)
             {
                 CreateCalls.Add((kind, vendor));
@@ -273,18 +289,25 @@ namespace Framework.Device.HikVision.Tests
         /// <summary>假设备：记录被打开时的连接方式与开关状态，可配置打开结果。</summary>
         private sealed class RecordingDevice : IDevice
         {
+            /// <summary>用给定设备名构造假设备。</summary>
             public RecordingDevice(string name) => Name = name;
 
+            /// <inheritdoc />
             public string Name { get; }
 
+            /// <summary>最近一次 Open 收到的连接方式。</summary>
             public DeviceConnection? OpenedConnection { get; private set; }
 
+            /// <summary>设备当前是否处于打开状态。</summary>
             public bool IsOpen { get; private set; }
 
+            /// <summary>Open 的返回结果，默认 true，可置为 false 模拟打开失败。</summary>
             public bool OpenResult { get; set; } = true;
 
+            /// <summary>是否被调用过 Close。</summary>
             public bool WasClosed { get; private set; }
 
+            /// <inheritdoc />
             public bool Open(DeviceConnection connection)
             {
                 OpenedConnection = connection;
@@ -292,6 +315,7 @@ namespace Framework.Device.HikVision.Tests
                 return OpenResult;
             }
 
+            /// <inheritdoc />
             public void Close()
             {
                 IsOpen = false;

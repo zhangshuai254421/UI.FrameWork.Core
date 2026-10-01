@@ -26,6 +26,7 @@ namespace UI.FrameWork.Core.Main.Footer
 /// </summary>
 public partial class LogShowView : UserControl
     {
+        /// <summary>日志富文本框的自定义浅色主题：按日志级别与语法元素分别配色。</summary>
         public static RichTextBoxConsoleTheme ColoredCustom { get; } = new RichTextBoxConsoleTheme(new Dictionary<RichTextBoxThemeStyle, RichTextBoxConsoleThemeStyle>
         {
             // 普通文本 - 深灰，保证可读性
@@ -141,8 +142,10 @@ public partial class LogShowView : UserControl
         /// </summary>
         private const double ScrollTolerance = 20.0;
 
+        /// <summary>是否自动滚动到底部；用户滚动离开底部超过容差时暂停。</summary>
         private bool _isAutoScroll = true;
 
+        /// <summary>初始化组件，挂接自动滚动与行数限制事件，并配置 Serilog 同时输出到数据库、文件与本页富文本框。</summary>
         public LogShowView()
         {
             InitializeComponent();
@@ -172,6 +175,7 @@ public partial class LogShowView : UserControl
                         .CreateLogger();
         }
 
+        /// <summary>滚动变化处理：仅当内容高度未变化（即用户手动滚动）时判断是否离开底部，超过容差即暂停自动滚动。</summary>
         private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             // 用户手动滚动：如果距离底部超过容差，暂停自动滚动
@@ -181,6 +185,7 @@ public partial class LogShowView : UserControl
             }
         }
 
+        /// <summary>文本变化处理：按需滚动到底部，并裁剪超出上限的旧日志段落，防止内存无限增长。</summary>
         private void OnLogTextChanged(object sender, TextChangedEventArgs e)
         {
             var richTextBox = (RichTextBox)sender;

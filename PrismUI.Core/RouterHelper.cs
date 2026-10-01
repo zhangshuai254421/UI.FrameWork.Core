@@ -9,19 +9,32 @@ using Prism.Events;
 
 namespace PrismUI.Core
 {
+    /// <summary>
+    /// 导航服务抽象：封装 Prism 区域导航，支持异步导航与前进/后退。
+    /// </summary>
     public interface INavigationService
     {
+        /// <summary>异步导航到指定视图；regionName 为空时导航到主区域，失败时任务携带 false 或异常。</summary>
         Task NavigateToAsync(string viewName, string? regionName = null, NavigationParameters? parameters = null);
+        /// <summary>确认是否允许离开当前导航；当前实现始终返回 true。</summary>
         Task<bool> ConfirmNavigationAsync();
+        /// <summary>后退到上一视图；regionName 为空时作用于主区域，不可后退时静默忽略。</summary>
         void GoBack(string? regionName = null);
+        /// <summary>前进到下一视图；regionName 为空时作用于主区域，不可前进时静默忽略。</summary>
         void GoForward(string? regionName = null);
     }
 
+    /// <summary>
+    /// 基于 Prism 区域管理器的导航服务实现：主区域导航时同步清理工具箱区域。
+    /// </summary>
     public class NavigationService : INavigationService
     {
+        /// <summary>Prism 区域管理器，用于发起区域导航。</summary>
         private readonly IRegionManager _regionManager;
+        /// <summary>事件聚合器，用于发布工具箱显隐相关事件。</summary>
         private readonly  IEventAggregator _eventAggregator;
 
+        /// <summary>构造函数：注入区域管理器与事件聚合器。</summary>
         public NavigationService(IRegionManager regionManager,IEventAggregator eventAggregator)
         {
             _regionManager = regionManager;
@@ -60,6 +73,7 @@ namespace PrismUI.Core
             return tcs.Task;
         }
 
+        /// <summary>确认是否允许离开当前导航；当前始终返回 true。</summary>
         public async Task<bool> ConfirmNavigationAsync()
         {
             return true;
@@ -125,6 +139,7 @@ namespace PrismUI.Core
             //}
         }
 
+        /// <summary>清空工具箱区域：先取消页脚全屏勾选，再发布工具箱隐藏事件。</summary>
         private void ClearToolBoxRegion()
         {
             _eventAggregator.GetEvent<FooterBtnIsCheckedChangedEvent>().Publish(true);
@@ -134,6 +149,7 @@ namespace PrismUI.Core
             }
         }
 
+        /// <summary>获取指定区域的导航日志；区域不存在时返回 null，regionName 为空时取主区域。</summary>
         private IRegionNavigationJournal? GetJournal(string? regionName = null)
         {
             regionName ??= RegionNames.MainRegion;

@@ -20,6 +20,7 @@ namespace Recipe.UI.RecipeUI
     /// </summary>
     public partial class RecipeHomeView : UserControl
     {
+        /// <summary>构造函数：初始化 XAML 组件。</summary>
         public RecipeHomeView()
         {
             InitializeComponent();

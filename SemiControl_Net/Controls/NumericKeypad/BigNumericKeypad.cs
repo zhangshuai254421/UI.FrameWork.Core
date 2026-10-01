@@ -103,12 +103,15 @@ namespace SemiControl.Controls
         [DllImport("User32.dll")]
         public static extern void keybd_event(byte bVK, byte bScan, Int32 dwFlags, int dwExtraInfo);
 
+        /// <summary>模板中的按键容器网格。</summary>
         private Grid _grid;
+        /// <summary>模板中的 Shift 切换键。</summary>
         private ToggleButton _shift;
 
         /// <summary>文本内容（预留属性：当前版本按键经 Win32 直接注入系统键盘流，不经过此属性）。</summary>
         public string TextContent { get; set; }
 
+        /// <summary>模板应用回调：取模板部件，挂接网格加载事件并给所有按键订阅点击。</summary>
         public override void OnApplyTemplate()
         {
             _grid = (Grid)GetTemplateChild("G_Grid");
@@ -120,6 +123,7 @@ namespace SemiControl.Controls
             GetGridChild(_grid);
         }
 
+        /// <summary>按键容器加载完成：按大写锁定状态初始化 Shift 键与按键大小写显示。</summary>
         private void NumericKeypadLoad(object sender, RoutedEventArgs e)
         {
             // 按系统大写锁定状态初始化 Shift 键与按键大小写显示。
@@ -127,6 +131,7 @@ namespace SemiControl.Controls
             PlusShift(_shift, _grid);
         }
 
+        /// <summary>递归遍历面板子级，为普通按键与切换键分别订阅点击事件（先退订再订阅防重复）。</summary>
         private void GetGridChild(Panel panel)
         {
             if (panel == null)
@@ -150,6 +155,7 @@ namespace SemiControl.Controls
             }
         }
 
+        /// <summary>普通按键点击：按 Tag 键名查虚拟键码注入按下与抬起；BackTab 与加号需先按住 Shift 组合注入。</summary>
         private void Bt_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             if (sender is Button btn)
@@ -180,6 +186,7 @@ namespace SemiControl.Controls
             }
         }
 
+        /// <summary>切换键点击：Shift 键被点击时注入一次大写锁定按键并整体切换面板大小写。</summary>
         private void ToggleBt_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             if (sender is ToggleButton btn)

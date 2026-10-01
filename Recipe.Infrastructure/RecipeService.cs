@@ -15,9 +15,12 @@ namespace Recipe.Infrastructure
     /// </summary>
     public class RecipeService : EntityServiceBase<Recipe.Domain.Recipe, Guid>, IRecipeService
     {
+        /// <summary>配方管理器服务，用于读写当前配方 Id。</summary>
         private readonly IRecipeManagerService _recipeManagerService;
+        /// <summary>事件聚合器，用于发布配方数据变更事件。</summary>
         private readonly IEventAggregator _eventAggregator;
 
+        /// <summary>构造函数：注入工作单元、配方管理器服务与事件聚合器。</summary>
         public RecipeService(IUnitOfWork unitofWork, IRecipeManagerService recipeManagerService, IEventAggregator eventAggregator)
         : base(unitofWork)
         {
@@ -218,6 +221,7 @@ namespace Recipe.Infrastructure
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
+        /// <summary>发布配方数据变更事件，通知列表页按变更类型整条增删改或整批刷新。</summary>
         private void PublishChange(RecipeChangeKind kind, int recipeId, string groupName, string recipeName)
         {
             _eventAggregator.GetEvent<RecipeChangedEvent>().Publish(new RecipeChangedPayload

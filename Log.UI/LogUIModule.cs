@@ -8,13 +8,18 @@ namespace Log.UI
 {
 
 
+    /// <summary>
+    /// 日志 UI 模块：向 Prism 注册日志查看页的导航视图。
+    /// </summary>
     public class LogUIModule(IRegionManager regionManager) : IModule
     {
+        /// <inheritdoc/>
         public void OnInitialized(IContainerProvider containerProvider)
         {
 
         }
 
+        /// <inheritdoc/>
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<LogViewerView>();

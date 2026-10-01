@@ -13,6 +13,7 @@ namespace Framework.Detection
     //       YoloDotNet 的类型（SKBitmap、Classification）不越过这条边界。
     public sealed class YoloClassifier : IClassifier
     {
+        /// <summary>YoloDotNet 推理引擎实例，持有 ONNX 模型与 CPU 执行提供方，随 Dispose 释放。</summary>
         private readonly Yolo _yolo;
 
         /// <summary>加载 ONNX 模型创建分类器。模型文件不存在或非法时抛异常。</summary>
@@ -41,6 +42,7 @@ namespace Framework.Detection
             return classifications;
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _yolo.Dispose();

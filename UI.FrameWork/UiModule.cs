@@ -16,6 +16,7 @@ namespace SemiAppliaction
     // 描述：Prism 模块，用于向模块目录注册视图和区域（例如将 MainView 注册到 MainRegion）。
     public class UIModule(IRegionManager regionManager) : IModule
     {
+        /// <summary>模块初始化：把主视图注册到主区域，并立即导航到主视图。</summary>
         public void OnInitialized(IContainerProvider containerProvider)
         {
             regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
@@ -24,6 +25,7 @@ namespace SemiAppliaction
 
         }
 
+        /// <summary>模块类型注册：把主视图与各测试页连同其 ViewModel 注册为可导航视图。</summary>
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             //throw new NotImplementedException();

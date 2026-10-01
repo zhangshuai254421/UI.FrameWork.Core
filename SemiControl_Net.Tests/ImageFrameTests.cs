@@ -8,6 +8,7 @@ namespace SemiControl_Net.Tests
     /// <summary>ImageFrame 构造校验契约：非法参数必须被拒之门外，渲染层不做二次防御。</summary>
     public class ImageFrameTests
     {
+        /// <summary>用合法的 Mono8 参数构造 ImageFrame，预期宽、高、格式与数据长度原样保留。</summary>
         [Fact]
         public void Constructor_WithValidMono8Frame_Accepts()
         {
@@ -19,6 +20,7 @@ namespace SemiControl_Net.Tests
             Assert.Equal(4, frame.Data.Length);
         }
 
+        /// <summary>宽或高为零或负数时构造，预期抛出 ArgumentException。</summary>
         [Theory]
         [InlineData(0, 2)]
         [InlineData(-1, 2)]
@@ -30,6 +32,7 @@ namespace SemiControl_Net.Tests
                 () => new ImageFrame(width, height, ImagePixelFormat.Mono8, new byte[16]));
         }
 
+        /// <summary>像素数据为 null 时构造，预期抛出 ArgumentNullException。</summary>
         [Fact]
         public void Constructor_WithNullData_Throws()
         {
@@ -37,6 +40,7 @@ namespace SemiControl_Net.Tests
                 () => new ImageFrame(2, 2, ImagePixelFormat.Mono8, null!));
         }
 
+        /// <summary>数据长度比该格式一帧所需字节数少一时构造，预期抛出 ArgumentException；各格式所需字节数随用例给出。</summary>
         [Theory]
         [InlineData(ImagePixelFormat.Mono8, 4)]   // 2×2×1
         [InlineData(ImagePixelFormat.Mono16, 8)]  // 2×2×2
@@ -48,6 +52,7 @@ namespace SemiControl_Net.Tests
                 () => new ImageFrame(2, 2, format, new byte[required - 1]));
         }
 
+        /// <summary>数据长度超过一帧所需字节数时构造，预期接受且保留完整缓冲长度。</summary>
         [Fact]
         public void Constructor_WithExtraData_Accepts()
         {

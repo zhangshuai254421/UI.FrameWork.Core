@@ -26,6 +26,7 @@ namespace Framework.Detection
             new[] { 11, 13 }, new[] { 13, 15 }, new[] { 12, 14 }, new[] { 14, 16 },// 腿
         };
 
+        /// <summary>YoloDotNet 推理引擎实例，持有 ONNX 姿态模型与 CPU 执行提供方，随 Dispose 释放。</summary>
         private readonly Yolo _yolo;
 
         /// <summary>加载 ONNX 姿态模型创建估计器。模型文件不存在、非法或不是姿态任务导出时抛异常。</summary>
@@ -73,6 +74,7 @@ namespace Framework.Detection
             return poses;
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _yolo.Dispose();

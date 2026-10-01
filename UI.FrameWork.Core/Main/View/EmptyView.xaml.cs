@@ -20,6 +20,7 @@ namespace UI.FrameWork.Core.Main.View
     /// </summary>
     public partial class EmptyView : UserControl
     {
+        /// <summary>空构造：初始化 XAML 组件。</summary>
         public EmptyView()
         {
             InitializeComponent();

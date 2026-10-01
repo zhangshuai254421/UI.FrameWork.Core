@@ -20,6 +20,7 @@ namespace PrismUI.Core
     /// </summary>
     public partial class ConfirmationDialog : UserControl
     {
+        /// <summary>构造函数：初始化对话框界面组件。</summary>
         public ConfirmationDialog()
         {
             InitializeComponent();

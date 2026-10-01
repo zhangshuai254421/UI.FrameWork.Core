@@ -5,10 +5,13 @@ namespace Recipe.Infrastructure.Contracts
     /// </summary>
     public class RecipeListItemDto
     {
+        /// <summary>配方 Id（主键）。</summary>
         public int Id { get; set; }
 
+        /// <summary>文件夹（分组）名。</summary>
         public string GroupName { get; set; } = string.Empty;
 
+        /// <summary>配方名。</summary>
         public string RecipeName { get; set; } = string.Empty;
     }
 }

@@ -33,6 +33,7 @@ namespace SemiControl.Controls
                 ? default
                 : availableSize;
 
+        /// <summary>渲染回调：按视口变换绘制位图帧，再委托宿主控件绘制矢量层。</summary>
         protected override void OnRender(DrawingContext drawingContext)
         {
             var bitmap = Bitmap;

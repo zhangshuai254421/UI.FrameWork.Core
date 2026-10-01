@@ -10,6 +10,7 @@ namespace Framework.Device.Domain
     /// </summary>
     public class DeviceAdapterFactory : IDeviceAdapterFactory
     {
+        /// <summary>注册映射：(设备类型, 厂商) 元组 → 适配器类型；同键后注册覆盖先注册。</summary>
         private readonly Dictionary<(DeviceKind Kind, string Vendor), Type> _adapterTypes = new();
 
         /// <summary>从给定适配器类型建立注册映射（测试或显式注册用，不触发真实 DLL 加载）。</summary>
@@ -78,6 +79,7 @@ namespace Framework.Device.Domain
             _adapterTypes[(attribute.Kind, attribute.Vendor)] = type;
         }
 
+        /// <summary>枚举程序集中可获取的类型；部分类型依赖缺失时仅返回已加载成功的类型，不抛异常。</summary>
         private static IEnumerable<Type> DiscoverTypes(IEnumerable<Assembly> assemblies)
         {
             foreach (var assembly in assemblies)

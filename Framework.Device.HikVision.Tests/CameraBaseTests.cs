@@ -7,6 +7,7 @@ namespace Framework.Device.HikVision.Tests
     /// </summary>
     public class CameraBaseTests
     {
+        /// <summary>向容量为 3 的预览通道连写 5 帧，预期只保留最新 3 帧（第 3、4、5 帧），验证满时丢最旧帧策略。</summary>
         [Fact]
         public void 预览通道_容量3_满时丢最旧帧()
         {
@@ -26,6 +27,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(5, third.ImageData[0]);
         }
 
+        /// <summary>新建相机未做任何设置时，预期取流模式默认为主动拉帧（Pull）。</summary>
         [Fact]
         public void 取流模式_默认主动拉帧()
         {

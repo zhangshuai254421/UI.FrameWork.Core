@@ -4,10 +4,14 @@ using Recipe.Domain;
 
 namespace Recipe.Infrastructure
 {
+    /// <summary>
+    /// 配方实体的 EF 映射配置。
+    /// </summary>
     public class RecipeTypeConfiguration : IEntityTypeConfiguration<global::Recipe.Domain.Recipe>
     {
         #region IEntityTypeConfiguration
 
+        /// <summary>配置配方实体映射：参数集合一对多级联删除、导航自动加载，Id 由数据库生成。</summary>
         public void Configure(EntityTypeBuilder<global::Recipe.Domain.Recipe> builder)
         {
             builder

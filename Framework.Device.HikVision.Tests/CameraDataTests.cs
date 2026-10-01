@@ -7,6 +7,7 @@ namespace Framework.Device.HikVision.Tests
     /// </summary>
     public class CameraDataTests
     {
+        /// <summary>默认构造 CameraData，预期图像数据为非 null 空数组、宽高为零、像素格式为未定义。</summary>
         [Fact]
         public void 默认构造_图像数据为空数组_宽高为零()
         {
@@ -19,6 +20,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(PixelFormat.Undefined, data.PixelFormat);
         }
 
+        /// <summary>给 CameraData 赋一组图像与宽高格式，预期各属性保持原值且图像数据始终是托管字节数组。</summary>
         [Fact]
         public void 图像数据_为托管字节数组_不暴露裸指针()
         {
@@ -39,6 +41,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(PixelFormat.Mono8, data.PixelFormat);
         }
 
+        /// <summary>用 IP 与端口构造 TcpConnection，预期两者被原样保存。</summary>
         [Fact]
         public void TcpConnection_携带Ip与端口()
         {
@@ -48,6 +51,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal(8000, tcp.Port);
         }
 
+        /// <summary>用串口名构造 ComConnection，预期串口名被原样保存。</summary>
         [Fact]
         public void ComConnection_携带串口号()
         {
@@ -56,6 +60,7 @@ namespace Framework.Device.HikVision.Tests
             Assert.Equal("COM3", com.PortName);
         }
 
+        /// <summary>校验 DeviceErrorCategory 枚举：None 为 0，且各错误类别取值互不相同。</summary>
         [Fact]
         public void DeviceErrorCategory_含明确的错误类别()
         {

@@ -4,8 +4,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Framework.Device.Infrastructure
 {
+    /// <summary>设备模块的依赖注入注册入口。</summary>
     public static class ServiceExtensions
     {
+        /// <summary>注册设备服务：配置读取器（Scoped）、适配器工厂（单例）与设备管理器（单例）。</summary>
         public static IServiceCollection AddDeviceServices(this IServiceCollection services)
         {
             services.AddScoped<IDeviceConfigurationReader, DeviceConfigurationReader>();

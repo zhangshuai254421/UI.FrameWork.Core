@@ -16,9 +16,12 @@ namespace Framework.Device.HikVision
         /// <summary>单帧取流超时（毫秒）。</summary>
         private const uint GrabTimeoutMs = 1000;
 
+        /// <summary>SDK 初始化双检锁（进程内共享）。</summary>
         private static readonly object SdkInitLock = new();
+        /// <summary>SDK 是否已成功初始化；仅成功才置位，失败由下次打开时重试。</summary>
         private static bool _sdkInitialized;
 
+        /// <summary>日志记录器；未注入时为空实现，调用不产生副作用。</summary>
         private readonly ILogger<CameraHikVision> _logger;
 
         /// <summary>当前打开的 SDK 设备；未打开为 null。各方法先把它拷贝到局部变量再用，避免执行中途被 <see cref="Close"/> 置空。</summary>
@@ -29,6 +32,7 @@ namespace Framework.Device.HikVision
         {
         }
 
+        /// <summary>构造：注入可选日志；传 null 使用空日志实现。</summary>
         public CameraHikVision(ILogger<CameraHikVision>? logger)
         {
             _logger = logger ?? NullLogger<CameraHikVision>.Instance;

@@ -7,8 +7,10 @@ namespace Recipe.Infrastructure.Contracts
     /// </summary>
     public class CameraConfigurationEditInput
     {
+        /// <summary>对应相机配置实体的 Id。</summary>
         public int Id { get; set; }
 
+        /// <summary>编辑中的相机名称。</summary>
         public string CameraName { get; set; } = string.Empty;
     }
 }

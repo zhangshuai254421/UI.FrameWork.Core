@@ -9,8 +9,10 @@ namespace Recipe.UI.RecipeUI
     {
         #region 构造函数
 
+        /// <summary>Prism 注入的对话框关闭监听器，用于携带结果关闭对话框。</summary>
         public DialogCloseListener RequestClose { get; }
 
+        /// <summary>构造函数：注入对话框关闭监听器。</summary>
         public NewGroupDialogViewModel(DialogCloseListener requestClose)
         {
             RequestClose = requestClose;
@@ -20,6 +22,7 @@ namespace Recipe.UI.RecipeUI
 
         #region 属性
 
+        /// <summary>新文件夹名（用户输入）的后备字段。</summary>
         private string _newGroupName = string.Empty;
         /// <summary>
         /// 新文件夹名（用户输入）
@@ -37,6 +40,7 @@ namespace Recipe.UI.RecipeUI
             }
         }
 
+        /// <summary>校验错误提示文本的后备字段。</summary>
         private string _errorMessage = string.Empty;
         /// <summary>
         /// 校验错误提示
@@ -47,6 +51,7 @@ namespace Recipe.UI.RecipeUI
             set => SetProperty(ref _errorMessage, value);
         }
 
+        /// <summary>是否存在校验错误的后备字段。</summary>
         private bool _hasError;
         /// <summary>
         /// 是否有校验错误
@@ -61,6 +66,7 @@ namespace Recipe.UI.RecipeUI
 
         #region 命令
 
+        /// <summary>保存命令：以 OK 结果携带新文件夹名关闭对话框；有校验错误或输入为空时禁用。</summary>
         public DelegateCommand SaveCommand => new DelegateCommand(() =>
         {
             // 返回新的文件夹名
@@ -78,6 +84,7 @@ namespace Recipe.UI.RecipeUI
         .ObservesProperty(() => HasError)
         .ObservesProperty(() => NewGroupName);
 
+        /// <summary>取消命令：以 Cancel 结果关闭对话框，不创建文件夹。</summary>
         public DelegateCommand CancelCommand => new DelegateCommand(() =>
         {
             RequestClose.Invoke(new DialogResult(ButtonResult.Cancel));
@@ -87,16 +94,19 @@ namespace Recipe.UI.RecipeUI
 
         #region IDialogAware
 
+        /// <summary>是否允许关闭对话框；本对话框始终允许。</summary>
         public bool CanCloseDialog()
         {
             return true;
         }
 
+        /// <summary>对话框关闭后的回调；本对话框无需要清理的资源。</summary>
         public void OnDialogClosed()
         {
             // 弹框关闭时的清理逻辑（如需要）
         }
 
+        /// <summary>对话框打开时的初始化：清空新文件夹名输入。</summary>
         public void OnDialogOpened(IDialogParameters parameters)
         {
             NewGroupName = string.Empty; // 新建：不预填名称

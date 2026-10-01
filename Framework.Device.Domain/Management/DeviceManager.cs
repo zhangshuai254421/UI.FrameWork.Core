@@ -11,6 +11,7 @@ namespace Framework.Device.Domain
     {
         /// <summary>适配器工厂：按 (设备类型, 厂商) 实例化适配器。</summary>
         private readonly IDeviceAdapterFactory _factory;
+        /// <summary>日志记录器；未注入时为空实现，调用不产生副作用。</summary>
         private readonly ILogger<DeviceManager> _logger;
 
         /// <summary>已打开设备表：配置 Id → 实例。</summary>
@@ -59,6 +60,7 @@ namespace Framework.Device.Domain
         /// <summary>释放并关闭所有已打开设备。</summary>
         public void Dispose() => CloseAll();
 
+        /// <summary>打开单台设备并登记到设备表；打开失败或异常时记录日志并降级跳过，不抛异常，不拖垮其余设备。</summary>
         private void OpenDevice(DeviceConfiguration config)
         {
             try

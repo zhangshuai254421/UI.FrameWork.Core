@@ -22,6 +22,7 @@ namespace SemiAppliaction
     //[ToolBoxFor(typeof(MainView))]
     public partial class MainView : UserControl
     {
+        /// <summary>空构造：初始化 XAML 组件。</summary>
         public MainView()
         {
             InitializeComponent();

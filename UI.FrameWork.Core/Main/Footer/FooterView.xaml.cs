@@ -20,6 +20,7 @@ namespace UI.FrameWork.Core.Main
     /// </summary>
     public partial class FooterView : UserControl
     {
+        /// <summary>空构造：初始化 XAML 组件。</summary>
         public FooterView()
         {
             InitializeComponent();
