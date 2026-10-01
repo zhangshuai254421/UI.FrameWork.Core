@@ -1,11 +1,8 @@
 using Framework.Core.Common;
-using Framework.Core.CustomAttribute;
-using Framework.Device.Infrastructure.Entity;
+using Framework.Device.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Logging;
-
-[assembly: DefaultDbContext(typeof(Framework.Device.Infrastructure.DeviceDataContext))]
 
 namespace Framework.Device.Infrastructure
 {

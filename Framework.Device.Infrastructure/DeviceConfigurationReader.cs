@@ -1,5 +1,5 @@
 using Framework.Device.Domain;
-using Framework.Device.Infrastructure.Entity;
+using Framework.Device.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Framework.Device.Infrastructure

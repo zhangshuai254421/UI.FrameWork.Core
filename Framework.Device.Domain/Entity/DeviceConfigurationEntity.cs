@@ -1,6 +1,4 @@
-using Framework.Device.Domain;
-
-namespace Framework.Device.Infrastructure.Entity
+namespace Framework.Device.Domain.Entity
 {
     /// <summary>
     /// 设备配置持久化实体：一台物理设备如何被抵达与驱动。扁平标量字段便于入库。

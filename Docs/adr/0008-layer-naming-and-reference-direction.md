@@ -17,17 +17,13 @@ Status: accepted
    - **字符串形态**：实体程序集禁止引用 DbContext 程序集时（Domain → Infrastructure 会成环），写 `[assembly: DefaultDbContext("Recipe.Infrastructure.DataContext, Recipe.Infrastructure")]`，运行时按名解析。
    - `.Infrastructure` 自己不放这个特性——实体不在那儿，正向扫描也会跳过本程序集，放了纯噪音。
 4. **撞名自保两条**：域词与类型同名时（`Recipe` 既是命名空间根又是实体类），`.Infrastructure` 内引用该实体一律 `global::Recipe.Domain.Recipe` 全名；程序集级特性位于 namespace 声明之前看不见命名空间内类型，`typeof()` 必须写全名。
-5. **实体落位判据——实体要不要出现在公开契约里**（接口签名、跨层返回值）：
-   - **要** → 实体放 `.Domain`，它就是契约的一部分（Recipe/Log：服务接口直接返回实体）；
-   - **不要**（纯存储记录）→ 可住 `.Infrastructure`，但过界必须用端口自有模型、层内翻译（Device：`IDeviceConfigurationReader.Read()` 返回 `DeviceConfiguration` 模型，实现里 `x.ToDeviceConfiguration()` 转换，端口中心零实体引用）；
-   - **插件实体** → 放扩展程序集自己，归属特性跟实体走（规则 3）。
-   - 判据反推即红线：Domain 公开方法需要某实体 → 该实体没有资格住在 Infrastructure。
+5. **家族实体一律放家族 `.Domain`**，三家族相同——Device 的 `DeviceConfigurationEntity` 也住 `Framework.Device.Domain\Entity\`，Infrastructure 里不落任何实体。唯一例外是**插件实体**：放扩展程序集自己、归属特性跟实体走（规则 3）——那是所有权（插件代码不进家族库），不是判断题。
 
 ## Considered Options
 
 - **保持 Device 家族原状**（无后缀中心 + `.Domain` 做持久化）：弃用——`.Domain` 一词两义，Recipe 的 Domain 是模型、Device 的 Domain 是存储，规则无法陈述。
 - **全库向 Recipe 原状看齐**（`.Domain` 含 EF 配置）：弃用——Domain 拖着 EF 包，能力库、适配器、测试引 Domain 时被迫传递引用持久化依赖，"模型"名存实亡。
-- **最小重命名 + 拆纯（选定，后追加全对齐）**：Device 只改后缀（`Framework.Device.Domain` → `Framework.Device.Infrastructure`，实体语义本来就是持久化）；Recipe/Log 把 EF 配置与 DbContext 搬进既有 `.Infrastructure` 工程。追加一步：`Framework.Device`（端口/接口中心）也改名 `Framework.Device.Domain`——它有持久化有适配器，是家族不是能力库，三家族形状从此完全一致；Device 的 Domain 是端口中心（无 EF 实体），适配器实现端口，六边形正统。
+- **最小重命名 + 拆纯（选定，后追加全对齐）**：Device 只改后缀（`Framework.Device.Domain` → `Framework.Device.Infrastructure`，实体语义本来就是持久化）；Recipe/Log 把 EF 配置与 DbContext 搬进既有 `.Infrastructure` 工程。追加一步：`Framework.Device`（端口/接口中心）也改名 `Framework.Device.Domain`，实体也统一入 Domain——它有持久化有适配器，是家族不是能力库，三家族形状从此完全一致；适配器实现 Domain 里的端口，六边形正统。
 
 ## Consequences
 

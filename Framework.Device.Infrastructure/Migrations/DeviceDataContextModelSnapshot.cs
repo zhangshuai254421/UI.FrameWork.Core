@@ -17,7 +17,7 @@ namespace Framework.Device.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
-            modelBuilder.Entity("Framework.Device.Infrastructure.Entity.DeviceConfigurationEntity", b =>
+            modelBuilder.Entity("Framework.Device.Domain.Entity.DeviceConfigurationEntity", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(64)

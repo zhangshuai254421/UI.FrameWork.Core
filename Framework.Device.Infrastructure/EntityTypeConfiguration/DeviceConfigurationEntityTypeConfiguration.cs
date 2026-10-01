@@ -1,9 +1,9 @@
 using Framework.Device.Domain;
-using Framework.Device.Infrastructure.Entity;
+using Framework.Device.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Framework.Device.Infrastructure.EntityTypeConfiguration
+namespace Framework.Device.Domain.EntityTypeConfiguration
 {
     public class DeviceConfigurationEntityTypeConfiguration : IEntityTypeConfiguration<DeviceConfigurationEntity>
     {
