@@ -8,7 +8,7 @@ Status: accepted
 
 1. **角色后缀白名单**：
    - **`<域词>.Domain`**：实体 + 实体服务接口。**只准引用共享内核 `EFCore.Repository` 与 `Framework.Core` 两个工程**（前者给实体基类与服务接口约定，后者给 `DefaultDbContext` 归属特性）；铁律——Domain 里出现 `Microsoft.EntityFrameworkCore`（using 或 csproj 任一处）即违约，引用任何家族内工程即违约。
-   - **`<域词>.Infrastructure`**：`DbContext`、`IEntityTypeConfiguration`、`Migrations`、`[assembly: DefaultDbContext(typeof(...))]` 归属声明。引用本家族 Domain + `EFCore.Infrastructure` + 直接使用的 `Framework.Core`；家族内唯一知道数据库的地方。
+   - **`<域词>.Infrastructure`**：`DbContext`、`IEntityTypeConfiguration`、`Migrations`。引用本家族 Domain + `EFCore.Infrastructure` + 直接使用的 `Framework.Core`；家族内唯一知道数据库的地方。
    - **厂商适配器**（`Framework.Device.<厂商>`）：引用抽象 `Framework.Device`（ADR-0001 已定）。
    - **能力库无后缀**（`Framework.Imaging` / `Framework.Detection`）：零 Prism / WPF。
 2. **家族三名一致**：目录名 = 工程名 = 命名空间根。反例即债务：原 `Log.Domain` 目录装着 `Serilog.Domain.csproj`（命名空间又是第三个名字），本次已统一为 `Log.*`。
@@ -30,4 +30,4 @@ Status: accepted
 - **共享内核已知遗留**：`EFCore.Repository` 工程内含两个命名空间（`EFCore.Repository` 主体 + `EFCore.IRepository` 接口层）。命名空间统一会波及全库 using，留待独立小决策；目录名 = 工程名已对齐。
 - **DI 反查是编译门照不到的暗区**：`Repository<TEntity>` 构造时才按实体程序集反查 DbContext（本 ADR 规则 3），编译通过不代表启动能过——改归属机制后必须实机启动一次验证。
 - **类名保留 Serilog 词**（`SerilogService` / `ISerilogService` / `SerilogHistory`）：类名诚实描述实现（Serilog 后端），家族前缀（目录/工程/命名空间）统一为 `Log.*`——厂商名住实现类，不住家族名。
-- **插件实体归属仍由扫描发现**：`DataContext.OnModelCreating` 扫描扩展程序集收集 `[DefaultDbContext]` 归属声明与派生实体兜底，机制未变，只是声明位置随 `DbContext` 搬了家。
+- **插件实体归属仍由扫描发现**：`DataContext.OnModelCreating` 扫描扩展程序集收集 `[DefaultDbContext]` 归属声明与派生实体兜底，机制未变；变的是归属声明写在**实体所在程序集**（规则 3），不再随 `DbContext` 走。
