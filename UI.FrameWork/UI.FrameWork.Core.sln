@@ -19,15 +19,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemiControlDemo_Net", "..\S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dal", "Dal", "{FD1FC097-B569-44AD-9CE6-D1B33C70E36A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.IRepository", "..\EFCore.Repository\EFCore.IRepository.csproj", "{8A25CEEF-4C57-4ED2-BDE8-2CC2789FFABE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.Repository", "..\EFCore.Repository\EFCore.Repository.csproj", "{8A25CEEF-4C57-4ED2-BDE8-2CC2789FFABE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.Infrastructure", "..\EFCore.Infrastructure\EFCore.Infrastructure.csproj", "{F332D418-DE54-4BD5-A440-31A085615FAC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Log", "Log", "{8ED0B1F5-B076-4B0E-BB26-AE852FC96BF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Domain", "..\Log.Domain\Serilog.Domain.csproj", "{4FEC77E7-CFDB-4751-BAE5-97D08AB276E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log.Domain", "..\Log.Domain\Log.Domain.csproj", "{4FEC77E7-CFDB-4751-BAE5-97D08AB276E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Infrastructure", "..\Log.Infrastructure\Serilog.Infrastructure.csproj", "{3851372C-E386-499B-B797-BAF35FE435AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log.Infrastructure", "..\Log.Infrastructure\Log.Infrastructure.csproj", "{3851372C-E386-499B-B797-BAF35FE435AE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Core", "..\Framework.Core\Framework.Core.csproj", "{FC39FA08-3AF3-4C29-A3F1-A7862FD2D0D5}"
 EndProject
@@ -59,9 +59,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Device.HikVision.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Device", "..\Framework.Device\Framework.Device.csproj", "{8840C074-94A4-4A26-BD55-FACE46380FB8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeviceDomain", "DeviceDomain", "{69390568-F91C-4D5F-AB66-C0D187E782AC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeviceInfrastructure", "DeviceInfrastructure", "{69390568-F91C-4D5F-AB66-C0D187E782AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Device.Domain", "..\Framework.Device.Domain\Framework.Device.Domain.csproj", "{DA609F65-E742-4429-A340-E072ACF0FAEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Device.Infrastructure", "..\Framework.Device.Infrastructure\Framework.Device.Infrastructure.csproj", "{DA609F65-E742-4429-A340-E072ACF0FAEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Imaging", "..\Framework.Imaging\Framework.Imaging.csproj", "{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Detection", "..\Framework.Detection\Framework.Detection.csproj", "{1DEC47E0-AE59-48CC-B804-63CB1090E678}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -301,6 +305,30 @@ Global
 		{DA609F65-E742-4429-A340-E072ACF0FAEE}.Release|x64.Build.0 = Release|Any CPU
 		{DA609F65-E742-4429-A340-E072ACF0FAEE}.Release|x86.ActiveCfg = Release|Any CPU
 		{DA609F65-E742-4429-A340-E072ACF0FAEE}.Release|x86.Build.0 = Release|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Debug|x64.Build.0 = Debug|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Debug|x86.Build.0 = Debug|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Release|x64.ActiveCfg = Release|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Release|x64.Build.0 = Release|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Release|x86.ActiveCfg = Release|Any CPU
+		{E62E17C7-8EE7-4DFB-A6B8-20978FB3992D}.Release|x86.Build.0 = Release|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Debug|x64.Build.0 = Debug|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Debug|x86.Build.0 = Debug|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Release|x64.ActiveCfg = Release|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Release|x64.Build.0 = Release|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Release|x86.ActiveCfg = Release|Any CPU
+		{1DEC47E0-AE59-48CC-B804-63CB1090E678}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,7 +3,7 @@ using Framework.Core.Common;
 using Log.Infrastructure.Contracts;
 using Prism.Commands;
 using PrismUI.Core;
-using Serilog.Infrastructure;
+using Log.Infrastructure;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 

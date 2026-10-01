@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Serilog.Infrastructure
+namespace Log.Infrastructure
 {
     /// <summary>
     /// 日志服务（ADR 0002 迁移第④步）：对外提供 DTO 投影的分页查询，实体不出数据层。

@@ -5,7 +5,7 @@ using EFCore.Repository;
 using Example;
 using Framework.Core.Common;
 using Framework.Device;
-using Framework.Device.Domain;
+using Framework.Device.Infrastructure;
 using Log.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +15,7 @@ using PrismUI.Core;
 using Recipe.Domain;
 using Recipe.Infrastructure;
 using Serilog;
-using Serilog.Infrastructure;
+using Log.Infrastructure;
 using Serilog.Sinks.RichTextBox.Themes;
 using System;
 using System.Collections.Generic;
@@ -55,9 +55,9 @@ namespace UI.FrameWork.Core
         {
             IServiceCollection services = new ServiceCollection();
 
-            services.AddDbContext<Recipe.Domain.DataContext>();
-            services.AddDbContext<Log.Domain.DataContext>();
-            services.AddDbContext<Framework.Device.Domain.DeviceDataContext>();
+            services.AddDbContext<Recipe.Infrastructure.DataContext>();
+            services.AddDbContext<Log.Infrastructure.DataContext>();
+            services.AddDbContext<Framework.Device.Infrastructure.DeviceDataContext>();
             /// TODO 2. 注册数据访问层（DAL）和业务逻辑层（BLL）的服务
             services.AddRepository();
 
@@ -77,9 +77,9 @@ namespace UI.FrameWork.Core
         {
             AssemblyPreloader.PreloadPluginAssemblies(AppDomain.CurrentDomain.BaseDirectory);
 
-            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Recipe.Domain.DataContext>();
-            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Log.Domain.DataContext>();
-            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Framework.Device.Domain.DeviceDataContext>();
+            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Recipe.Infrastructure.DataContext>();
+            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Log.Infrastructure.DataContext>();
+            Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Framework.Device.Infrastructure.DeviceDataContext>();
 
           
             return Container.Resolve<ShellWindow>(); ;

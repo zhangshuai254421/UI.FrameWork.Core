@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 // PressurePlugin 项目 —— 只引用 Recipe.Domain、Recipe.Infrastructure、Framework.Core
-[assembly: DefaultDbContext(typeof(Recipe.Domain.DataContext))]   // 一行特性，别无他物
+[assembly: DefaultDbContext(typeof(Recipe.Infrastructure.DataContext))]   // 一行特性，别无他物
 namespace SemiAppliaction.Test
 {
 

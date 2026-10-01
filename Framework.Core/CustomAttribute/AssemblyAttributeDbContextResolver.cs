@@ -33,7 +33,22 @@ namespace Framework.Core.CustomAttribute
                         $"Please add [assembly: DefaultDbContext(typeof(YourDbContext))] to the assembly.");
                 }
 
-                return attribute.DbContextType;
+                // typeof 形态直接用；字符串形态（实体程序集禁止引用 DbContext 程序集时）按名解析
+                if (attribute.DbContextType != null)
+                {
+                    return attribute.DbContextType;
+                }
+
+                var resolved = Type.GetType(attribute.DbContextTypeName, throwOnError: false);
+
+                if (resolved == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot resolve DbContext '{attribute.DbContextTypeName}' declared by [DefaultDbContext] " +
+                        $"on assembly '{assembly.GetName().Name}'. 请确认目标程序集会被加载（被任一已加载工程引用）。");
+                }
+
+                return resolved;
             });
 
             // 从 DI 容器中获取实例

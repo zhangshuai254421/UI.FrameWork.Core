@@ -1,6 +1,6 @@
 using Framework.Device;
-using Framework.Device.Domain;
-using Framework.Device.Domain.Entity;
+using Framework.Device.Infrastructure;
+using Framework.Device.Infrastructure.Entity;
 
 namespace Framework.Device.HikVision.Tests
 {

@@ -1,6 +1,5 @@
 ﻿using EFCore.IRepository;
 using EFCore.Repository;
-using Framework.Core.Common;
 
 namespace Recipe.Domain
 {

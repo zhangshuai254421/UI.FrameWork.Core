@@ -2,13 +2,14 @@
 using Log.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Serilog.Infrastructure
+namespace Log.Infrastructure
 {
     public static class ServiceExtensions
     {

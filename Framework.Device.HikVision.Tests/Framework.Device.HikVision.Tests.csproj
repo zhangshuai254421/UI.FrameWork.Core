@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Framework.Device.HikVision\Framework.Device.HikVision.csproj" />
-    <ProjectReference Include="..\Framework.Device.Domain\Framework.Device.Domain.csproj" />
+    <ProjectReference Include="..\Framework.Device.Infrastructure\Framework.Device.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
