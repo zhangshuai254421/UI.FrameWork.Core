@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using System.Globalization;
 
 namespace Framework.Alarm
 {
@@ -178,7 +179,11 @@ namespace Framework.Alarm
                 new TimeSpan(reader.GetInt64(reader.GetOrdinal("OffDelay"))),
                 reader.GetString(reader.GetOrdinal("Group")),
                 reader.GetString(reader.GetOrdinal("RationalizedBy")),
-                DateTimeOffset.Parse(reader.GetString(reader.GetOrdinal("RationalizedOn"))),
+                // 写入是 invariant "O" 格式，读回必须配 invariant roundtrip 解析——文化敏感 Parse
+                // 在非公历默认历法的区域（如乌姆阿拉历）会 FormatException，引擎启动即挂
+                DateTimeOffset.Parse(
+                    reader.GetString(reader.GetOrdinal("RationalizedOn")),
+                    CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
                 reader.GetString(reader.GetOrdinal("PhilosophyVersion")));
         }
     }

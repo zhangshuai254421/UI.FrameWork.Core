@@ -47,6 +47,9 @@ namespace Framework.Alarm
         /// 当庭退回：档案入 MADB 前的法定校验（哲学 §6.1「填不出的候选当庭退回」），存储增/改前调用。
         /// 操作动作必填；触发延时必须小于 MTR（铁律一，哲学 §6.2——响应窗口从越限起算，
         /// 延时 ≥ MTR 等于把行动窗口吃尽，报警时已无从响应）。
+        /// 组态参数数学合法性：限值/死区必须是有限数（NaN/Infinity 让滤波器永不报警或乱报，
+        /// NaN 落 SQLite 还会变 NULL 读不回来）；死区非负（负死区把恢复点抬到限上，报警中途就清，
+        /// 永久颤抖——正是死区要治的病灶）；延时非负（负延时等于没有延时，触发延时整定失效）。
         /// 铁律二（死区 ≥ 噪声幅值）不在此校验：噪声幅值是信号属性，档案里没有，由合理化评审把关。
         /// </summary>
         public void EnsureValid()
@@ -61,6 +64,30 @@ namespace Framework.Alarm
                 throw new ArgumentException(
                     $"触发延时（{OnDelay}）必须小于 MTR（{MaxResponseTime}）：否则响应窗口被延时吞尽（铁律一，哲学 §6.2）",
                     nameof(OnDelay));
+            }
+
+            if (!double.IsFinite(Limit) || !double.IsFinite(Deadband))
+            {
+                throw new ArgumentException(
+                    $"限值（{Limit}）与死区（{Deadband}）必须是有限数：NaN/Infinity 会让滤波器永不报警或乱报",
+                    nameof(Limit));
+            }
+
+            if (Deadband < 0)
+            {
+                throw new ArgumentException(
+                    $"死区（{Deadband}）不能为负：恢复点 = 限值 − 死区，负死区把恢复点抬到限上，报警中途就清（哲学 §6.2）",
+                    nameof(Deadband));
+            }
+
+            if (OnDelay < TimeSpan.Zero)
+            {
+                throw new ArgumentException($"触发延时（{OnDelay}）不能为负：负延时等于没有延时（哲学 §6.2）", nameof(OnDelay));
+            }
+
+            if (OffDelay < TimeSpan.Zero)
+            {
+                throw new ArgumentException($"恢复延时（{OffDelay}）不能为负", nameof(OffDelay));
             }
         }
     }

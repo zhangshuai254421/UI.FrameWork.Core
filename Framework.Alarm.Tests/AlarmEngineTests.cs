@@ -22,9 +22,6 @@ namespace Framework.Alarm.Tests
             return store;
         }
 
-        /// <summary>测试时基：从 2026-01-01 起的秒表（与滤波器测试同一时基）。</summary>
-        internal static DateTimeOffset T(double seconds) => new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero).AddSeconds(seconds);
-
         /// <summary>
         /// 沉默决策一「无档案不报警」（哲学 §3.4【强制】，摘要 §11 警示 1）：采集层报来的位号
         /// 没有 MADB 档案，直接忽略——先立档案再报警，倒逼每条报警有出生证。
@@ -33,11 +30,11 @@ namespace Framework.Alarm.Tests
         public void 进事实_无档案_静默忽略()
         {
             var source = new FakeConditionSource();
-            var engine = new AlarmEngine(source, new InMemoryAlarmDefinitionStore(), new FakeClock(T(0)));
+            var engine = new AlarmEngine(source, new InMemoryAlarmDefinitionStore(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            source.Feed("NO_MADB_ENTRY", new ConditionSample(At: T(10), Value: 999)); // 越限再离谱也无档案
+            source.Feed("NO_MADB_ENTRY", new ConditionSample(At: HysteresisEvaluatorTests.T(10), Value: 999)); // 越限再离谱也无档案
 
             Assert.Empty(events);   // 不产事件
             Assert.Empty(engine.Active); // 列表也无
@@ -52,23 +49,23 @@ namespace Framework.Alarm.Tests
         public void 触发_满延时升级_产Raised进列表()
         {
             var source = new FakeConditionSource();
-            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(T(0)));
+            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            source.Feed(HEAT01, new ConditionSample(At: T(0), Value: 265)); // 拍 1：报值（越限段起点）
-            source.Feed(HEAT01, new ConditionSample(At: T(2), Value: 266)); // 拍 3：0→2s 满 2s 触发延时
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265)); // 拍 1：报值（越限段起点）
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266)); // 拍 3：0→2s 满 2s 触发延时
 
             var raised = Assert.IsType<AlarmRaised>(Assert.Single(events)); // 拍 4：Raised 事件落流
             Assert.Equal(HEAT01, raised.Tag);
             Assert.Equal(AlarmPriority.High, raised.Priority);              // 优先级来自档案，不凭嗓门
-            Assert.Equal(T(2), raised.At);                                  // 条件驱动的事件带事实时间戳
+            Assert.Equal(HysteresisEvaluatorTests.T(2), raised.At);                                  // 条件驱动的事件带事实时间戳
 
             var member = Assert.Single(engine.Active);                      // 进活跃列表
             Assert.Equal(HEAT01, member.Tag);
             Assert.Equal(AlarmState.Unacknowledged, member.State);          // 四拍①：闪红
             Assert.Equal(AlarmPriority.High, member.Priority);
-            Assert.Equal(T(2), member.Since);                               // 活跃起点 = 升级时刻
+            Assert.Equal(HysteresisEvaluatorTests.T(2), member.Since);                               // 活跃起点 = 升级时刻
         }
 
         /// <summary>
@@ -79,15 +76,15 @@ namespace Framework.Alarm.Tests
         public void 触发_报警中继续报值_不重播()
         {
             var source = new FakeConditionSource();
-            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(T(0)));
+            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            source.Feed(HEAT01, new ConditionSample(At: T(0), Value: 265));  // 越限段起点
-            source.Feed(HEAT01, new ConditionSample(At: T(2), Value: 266));  // 满延时，升级
-            source.Feed(HEAT01, new ConditionSample(At: T(3), Value: 267));  // 采集层每秒照报
-            source.Feed(HEAT01, new ConditionSample(At: T(4), Value: 268));
-            source.Feed(HEAT01, new ConditionSample(At: T(5), Value: 269));
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));  // 越限段起点
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266));  // 满延时，升级
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(3), Value: 267));  // 采集层每秒照报
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(4), Value: 268));
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(5), Value: 269));
 
             Assert.Single(events);                                          // 只有一条 Raised
             Assert.IsType<AlarmRaised>(events[0]);
@@ -102,12 +99,12 @@ namespace Framework.Alarm.Tests
         public void 触发_延时未满_全程寂静()
         {
             var source = new FakeConditionSource();
-            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(T(0)));
+            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            source.Feed(HEAT01, new ConditionSample(At: T(0), Value: 265)); // 越限段起点
-            source.Feed(HEAT01, new ConditionSample(At: T(1.9), Value: 266)); // 差 0.1 秒满延时
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265)); // 越限段起点
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(1.9), Value: 266)); // 差 0.1 秒满延时
 
             Assert.Empty(events);
             Assert.Empty(engine.Active);
@@ -122,13 +119,13 @@ namespace Framework.Alarm.Tests
         public void 确认_未确认进已确认_产Acknowledged()
         {
             var source = new FakeConditionSource();
-            var clock = new FakeClock(T(0));
+            var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
             var engine = new AlarmEngine(source, StoreWithSample(), clock);
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            source.Feed(HEAT01, new ConditionSample(At: T(0), Value: 265));
-            source.Feed(HEAT01, new ConditionSample(At: T(2), Value: 266)); // Raised
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266)); // Raised
             clock.Advance(TimeSpan.FromSeconds(3));                        // 三秒后操作员看见
 
             engine.Acknowledge(HEAT01, op: "李四");
@@ -136,7 +133,7 @@ namespace Framework.Alarm.Tests
             var acked = Assert.IsType<AlarmAcknowledged>(events[1]);
             Assert.Equal(HEAT01, acked.Tag);
             Assert.Equal("李四", acked.Operator);
-            Assert.Equal(T(3), acked.At);                                   // 操作员动作时刻 = 时钟当下
+            Assert.Equal(HysteresisEvaluatorTests.T(3), acked.At);                                   // 操作员动作时刻 = 时钟当下
 
             var member = Assert.Single(engine.Active);                      // 四拍②：仍 1 条
             Assert.Equal(AlarmState.Acknowledged, member.State);            // 闪红变稳红
@@ -151,17 +148,17 @@ namespace Framework.Alarm.Tests
         public void 恢复_未确认时恢复_产AutoReturned留列表RTN()
         {
             var source = new FakeConditionSource();
-            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(T(0)));
+            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            source.Feed(HEAT01, new ConditionSample(At: T(0), Value: 265));
-            source.Feed(HEAT01, new ConditionSample(At: T(2), Value: 266));  // Raised
-            source.Feed(HEAT01, new ConditionSample(At: T(2.5), Value: 245)); // 深回（恢复延时为 0，即时清）
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266));  // Raised
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2.5), Value: 245)); // 深回（恢复延时为 0，即时清）
 
             var autoReturned = Assert.IsType<AlarmAutoReturned>(events[1]);  // 第二拍：AutoReturned
             Assert.Equal(HEAT01, autoReturned.Tag);
-            Assert.Equal(T(2.5), autoReturned.At);
+            Assert.Equal(HysteresisEvaluatorTests.T(2.5), autoReturned.At);
 
             var member = Assert.Single(engine.Active);                       // 四拍④：仍 1 条
             Assert.Equal(AlarmState.ReturnToNormal, member.State);           // RTN：闪绿等确认
@@ -176,21 +173,21 @@ namespace Framework.Alarm.Tests
         public void 恢复_已确认后恢复_产Closed列表清空()
         {
             var source = new FakeConditionSource();
-            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(T(0)));
+            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            source.Feed(HEAT01, new ConditionSample(At: T(0), Value: 265));
-            source.Feed(HEAT01, new ConditionSample(At: T(2), Value: 266));   // Raised
-            engine.Acknowledge(HEAT01, op: "李四");                            // Acknowledged（时钟在 T(0)，动作时刻=时钟当下）
-            source.Feed(HEAT01, new ConditionSample(At: T(2.5), Value: 245)); // 深回：有主人直接闭环
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266));   // Raised
+            engine.Acknowledge(HEAT01, op: "李四");                            // Acknowledged（时钟在 HysteresisEvaluatorTests.T(0)，动作时刻=时钟当下）
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2.5), Value: 245)); // 深回：有主人直接闭环
 
             Assert.Equal(
                 new[] { nameof(AlarmRaised), nameof(AlarmAcknowledged), nameof(AlarmClosed) },
                 events.Select(e => e.GetType().Name));                        // 履历：绝无 AutoReturned
 
             var closed = Assert.IsType<AlarmClosed>(events[2]);
-            Assert.Equal(T(2.5), closed.At);                                  // 条件驱动的闭环带事实时间戳
+            Assert.Equal(HysteresisEvaluatorTests.T(2.5), closed.At);                                  // 条件驱动的闭环带事实时间戳
             Assert.Empty(engine.Active);                                      // 四拍③：列表 0 条
         }
 
@@ -202,14 +199,14 @@ namespace Framework.Alarm.Tests
         public void 确认恢复_RTN确认后Closed闭环()
         {
             var source = new FakeConditionSource();
-            var clock = new FakeClock(T(0));
+            var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
             var engine = new AlarmEngine(source, StoreWithSample(), clock);
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            source.Feed(HEAT01, new ConditionSample(At: T(0), Value: 265));
-            source.Feed(HEAT01, new ConditionSample(At: T(2), Value: 266));   // Raised
-            source.Feed(HEAT01, new ConditionSample(At: T(2.5), Value: 245)); // AutoReturned（进 RTN）
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266));   // Raised
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2.5), Value: 245)); // AutoReturned（进 RTN）
             clock.Advance(TimeSpan.FromSeconds(10));                          // 十分钟后夜班的人看见闪绿
 
             engine.Acknowledge(HEAT01, op: "王五");                            // 补一个「看见了」
@@ -219,8 +216,43 @@ namespace Framework.Alarm.Tests
                 events.Select(e => e.GetType().Name));                        // 履历：无人看见的恢复 + 真闭环，两种事件分立
 
             var closed = Assert.IsType<AlarmClosed>(events[2]);
-            Assert.Equal(T(10), closed.At);                                   // 操作员驱动的闭环取时钟当下
+            Assert.Equal(HysteresisEvaluatorTests.T(10), closed.At);                                   // 操作员驱动的闭环取时钟当下
             Assert.Empty(engine.Active);                                      // 闭环：移出列表
+        }
+
+        /// <summary>
+        /// RTN 再激活（状态机补充转换的引擎侧钉死）：恢复未确认的报警条件**又**越限满延时——
+        /// 产新一段 <see cref="AlarmRaised"/>（闪绿变回闪红，活跃起点刷新），列表仍是一行不是两行；
+        /// 之后再次深回，又一拍 AutoReturned。夜里的反复每一段都在履历里——「历史完整性」
+        /// （哲学 §3.5）：早班的「昨夜发生过什么」靠的就是这份完整。
+        /// </summary>
+        [Fact]
+        public void 恢复_RTN后再越限_再激活产新Raised()
+        {
+            var source = new FakeConditionSource();
+            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
+            var events = new List<AlarmEvent>();
+            engine.EventRaised += events.Add;
+
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266));    // Raised 一段
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2.5), Value: 245));  // 深回 → AutoReturned（RTN）
+
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(10), Value: 275));   // 又越限：延时从零累计
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(11), Value: 276));   // 未满 2s：静默
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(12), Value: 277));   // 满 2s → 再激活
+
+            var member = Assert.Single(engine.Active);                          // 仍是一行，不是两行
+            Assert.Equal(AlarmState.Unacknowledged, member.State);              // 闪绿变回闪红
+            Assert.Equal(HysteresisEvaluatorTests.T(12), member.Since);         // 活跃起点刷新为新一段
+
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(12.5), Value: 244)); // 再次深回
+
+            Assert.Equal(
+                new[] { nameof(AlarmRaised), nameof(AlarmAutoReturned),
+                        nameof(AlarmRaised), nameof(AlarmAutoReturned) },
+                events.Select(e => e.GetType().Name));                          // 两段反复，段段有据
+            Assert.Equal(AlarmState.ReturnToNormal, Assert.Single(engine.Active).State);
         }
 
         /// <summary>
@@ -233,25 +265,25 @@ namespace Framework.Alarm.Tests
         public void 集成_数据流走查六拍_两分支()
         {
             var source = new FakeConditionSource();
-            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(T(0)));
+            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var events = new List<AlarmEvent>();       // 替身历史库：append-only 收全量
             engine.EventRaised += events.Add;
 
             // 第一生：拍 1–5（确认分支）
-            source.Feed(HEAT01, new ConditionSample(At: T(0), Value: 265));    // 拍 1：通讯报值（越限）
-            source.Feed(HEAT01, new ConditionSample(At: T(2), Value: 266));    // 拍 2–3：查档案、满延时 → Raised
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));    // 拍 1：通讯报值（越限）
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266));    // 拍 2–3：查档案、满延时 → Raised
             Assert.Single(events);                                             // 拍 4：事件出流，订阅方收到
             Assert.IsType<AlarmRaised>(events[0]);
             Assert.Single(engine.Active);
 
             engine.Acknowledge(HEAT01, op: "李四");                            // 拍 5 前半：确认（稳红）
-            source.Feed(HEAT01, new ConditionSample(At: T(2.5), Value: 245));  // 拍 5 后半：降温过恢复点 → Closed
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2.5), Value: 245));  // 拍 5 后半：降温过恢复点 → Closed
             Assert.Empty(engine.Active);                                       // 全链路闭环，移出列表
 
             // 第二生：拍 6（恢复分支）——没人确认，温度自己掉回来了
-            source.Feed(HEAT01, new ConditionSample(At: T(10), Value: 270));   // 再越限：新一轮延时从零累计
-            source.Feed(HEAT01, new ConditionSample(At: T(12), Value: 271));   // 满 2s → 又 Raised
-            source.Feed(HEAT01, new ConditionSample(At: T(12.5), Value: 240)); // 无人确认就掉回 → AutoReturned
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(10), Value: 270));   // 再越限：新一轮延时从零累计
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(12), Value: 271));   // 满 2s → 又 Raised
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(12.5), Value: 240)); // 无人确认就掉回 → AutoReturned
 
             Assert.Equal(
                 new[] { nameof(AlarmRaised), nameof(AlarmAcknowledged), nameof(AlarmClosed),
@@ -268,15 +300,15 @@ namespace Framework.Alarm.Tests
         public void 确认_非法时序_静默忽略()
         {
             var source = new FakeConditionSource();
-            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(T(0)));
+            var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
             engine.Acknowledge("NO_MADB_ENTRY", op: "李四"); // 无档案：静默
             engine.Acknowledge(HEAT01, op: "李四");          // Normal 时确认：静默
 
-            source.Feed(HEAT01, new ConditionSample(At: T(0), Value: 265));
-            source.Feed(HEAT01, new ConditionSample(At: T(2), Value: 266)); // Raised
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));
+            source.Feed(HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266)); // Raised
             engine.Acknowledge(HEAT01, op: "李四");          // 第一次确认：真转换
             engine.Acknowledge(HEAT01, op: "王五");          // 重复确认：静默，不产第二条 Acknowledged
 

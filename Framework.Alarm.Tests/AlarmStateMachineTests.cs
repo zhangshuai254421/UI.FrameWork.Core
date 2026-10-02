@@ -78,7 +78,8 @@ namespace Framework.Alarm.Tests
 
         /// <summary>
         /// 沉默决策「报警中不重播」（哲学 §3.4【强制】）：采集层每秒报值，
-        /// 非 Normal 状态时触发无效——保证 Raised 只发一次。
+        /// 未确认/已确认时触发无效——条件持续越限期间 Raised 只发一次。
+        /// （RTN 不在此列：RTN 的含义是条件已回正常，再来触发就是新越限，见 RTN 再激活测试。）
         /// </summary>
         [Fact]
         public void 触发_报警中不重播_状态不变()
@@ -93,12 +94,25 @@ namespace Framework.Alarm.Tests
             acked.Acknowledge();
             acked.Trigger();
             Assert.Equal(AlarmState.Acknowledged, acked.CurrentState);
+        }
 
-            var rtn = new AlarmStateMachine();
-            rtn.Trigger();
-            rtn.Clear();
-            rtn.Trigger();
-            Assert.Equal(AlarmState.ReturnToNormal, rtn.CurrentState);
+        /// <summary>
+        /// RTN 再激活（引擎总装评审落定的补充转换，ISA-18.2 口径）：恢复未确认的报警条件**又**越限，
+        /// 回未确认闪红——报警还没人看见，条件就还不正常，它就是一条正在发生的报警。
+        /// 静默丢掉这段再越限会违反「历史完整性」（哲学 §3.5）：早班的「昨夜发生过什么」
+        /// 恰恰是这些夜里反复的段落。哲学 v1.0 的五转换表未覆盖此格，随本测试落定，待哲学改版补录。
+        /// </summary>
+        [Fact]
+        public void 触发_RTN再激活_回未确认()
+        {
+            var machine = new AlarmStateMachine();
+            machine.Trigger();
+            machine.Clear();
+            Assert.Equal(AlarmState.ReturnToNormal, machine.CurrentState); // 前置：确实在 RTN
+
+            machine.Trigger(); // 条件再越限（满触发延时的新事实，不是每秒重播）
+
+            Assert.Equal(AlarmState.Unacknowledged, machine.CurrentState); // 闪绿变回闪红
         }
 
         /// <summary>非法转换契约（ADR-0009 规则 9，落定：静默忽略）：非未确认状态时确认无效。</summary>

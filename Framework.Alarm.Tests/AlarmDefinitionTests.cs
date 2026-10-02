@@ -53,5 +53,40 @@ namespace Framework.Alarm.Tests
             Assert.Equal(new DateTimeOffset(2026, 9, 30, 0, 0, 0, TimeSpan.Zero), def.RationalizedOn); // ⑫ 评审日期
             Assert.Equal("1.0", def.PhilosophyVersion);                       // ⑫ 评审留痕：哲学版本
         }
+
+        /// <summary>当庭退回：负死区把恢复点抬到限上，报警中途就清、清完又升——永久颤抖，
+        /// 正是死区要治的病灶（哲学 §6.2），档案门就不该放进来。</summary>
+        [Fact]
+        public void 校验_负死区_当庭退回()
+        {
+            var def = (Sample() with { Deadband = -5 });
+
+            var ex = Assert.Throws<ArgumentException>(() => def.EnsureValid());
+            Assert.Contains("死区", ex.Message);
+        }
+
+        /// <summary>当庭退回：NaN/Infinity 限值让滤波器永不报警（NaN 与谁比较都是假），
+        /// 落 SQLite 还会变 NULL 读不回来——档案门退回有限数要求。</summary>
+        [Fact]
+        public void 校验_限值非有限数_当庭退回()
+        {
+            Assert.Throws<ArgumentException>(() => (Sample() with { Limit = double.NaN }).EnsureValid());
+            Assert.Throws<ArgumentException>(() => (Sample() with { Deadband = double.PositiveInfinity }).EnsureValid());
+        }
+
+        /// <summary>当庭退回：负延时等于没有延时——触发延时整定失效（毛刺照报）、恢复延时整定失效。</summary>
+        [Fact]
+        public void 校验_负延时_当庭退回()
+        {
+            Assert.Throws<ArgumentException>(() => (Sample() with { OnDelay = TimeSpan.FromSeconds(-1) }).EnsureValid());
+            Assert.Throws<ArgumentException>(() => (Sample() with { OffDelay = TimeSpan.FromSeconds(-1) }).EnsureValid());
+        }
+
+        /// <summary>合法组态照常通过：样例档案（死区 2、延时 2s/0、限值 250）过校验不抛。</summary>
+        [Fact]
+        public void 校验_合法组态_放行()
+        {
+            Sample().EnsureValid(); // 不抛即过
+        }
     }
 }
