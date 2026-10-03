@@ -19,13 +19,17 @@ namespace Log.Infrastructure
         {
         }
 
-        /// <summary>配置数据库连接：未显式传入选项时回退到默认 SQLite 日志库；调试模式额外输出 SQL 与敏感数据日志。</summary>
+        /// <summary>配置数据库连接：未显式传入选项时回退到默认 SQLite 日志库；
+        /// 调试模式按开关输出 SQL 与敏感数据日志（#30：EF_SQL_LOG=1 才开，四家族同款）。</summary>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 #if DEBUG
-            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors();
+            if (EfSqlLogging.Enabled)
+            {
+                optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors();
+            }
 #endif
          // 仅当未显式传入选项（如测试传入内存库）时才落到磁盘库。
             if (!optionsBuilder.IsConfigured)

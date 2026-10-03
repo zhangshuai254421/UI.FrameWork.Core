@@ -53,13 +53,17 @@ namespace Recipe.Infrastructure
 
         #region 方法
 
-        /// <summary>配置数据库选项：调试时输出 SQL 与敏感数据日志；未显式配置（如测试传内存库）时回退到全局 SQLite 配方库。</summary>
+        /// <summary>配置数据库选项：调试时按开关输出 SQL 与敏感数据日志（#30：EF_SQL_LOG=1 才开，四家族同款）；
+        /// 未显式配置（如测试传内存库）时回退到全局 SQLite 配方库。</summary>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 #if DEBUG
-            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors();
+            if (EfSqlLogging.Enabled)
+            {
+                optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors();
+            }
 #endif
 
             // 仅当未显式传入选项（如测试传入内存库）时才落到磁盘库。
