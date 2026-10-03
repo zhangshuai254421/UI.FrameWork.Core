@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Framework.Alarm\Framework.Alarm.csproj" />
     <ProjectReference Include="..\Framework.Alarm.Domain\Framework.Alarm.Domain.csproj" />
+    <ProjectReference Include="..\Framework.Alarm.Infrastructure\Framework.Alarm.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

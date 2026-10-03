@@ -81,6 +81,24 @@ namespace Framework.Core.Common
             }
         }
 
+        /// <summary>报警数据库相对应用基目录的文件路径。</summary>
+        private static string AlarmDbFilePathNoDebug
+        {
+            get
+            {
+                return "Alarm\\AlarmDomain.db";
+            }
+        }
+
+        /// <summary>报警数据库连接字符串（Data Source 形式）。</summary>
+        public static string AlarmDbFliePath
+        {
+            get
+            {
+                return $"Data Source={Path.Combine(AppDebug, AlarmDbFilePathNoDebug)}";
+            }
+        }
+
         /// <summary>机台名称，默认 ZS1A。</summary>
         public static string MachineName = "ZS1A";
 
