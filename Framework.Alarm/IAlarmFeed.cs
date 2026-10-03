@@ -4,10 +4,11 @@ namespace Framework.Alarm
     /// 报警馈送接缝（摘要 §8.4）：呈现层（与历史库）认接口不认引擎——ViewModel 对本接口写测试，
     /// fake 一个 feed 即可红绿灯，谁在生产事件、谁在消费事件互不相认。
     /// <see cref="AlarmEngine"/> 是 v1 唯一实现。
-    /// 形状即摘要 §8.4 的全量五员：事件流、活跃列表、确认、搁置、解除——操作成员随搁置工单（#14）
-    /// 落地，接缝不再收窄；呈现层的跨线程编队、按标过滤是订阅方自己的事（摘要 §9.2、§8.10）。
+    /// 形状即摘要 §8.4 的全量五员加 IDisposable：事件流、活跃列表、确认、搁置、解除——操作成员随搁置工单
+    /// （#14）落地，接缝不再收窄；呈现层的跨线程编队、按标过滤是订阅方自己的事（摘要 §9.2、§8.10）。
+    /// IDisposable 随接缝走：改档重建引擎时，宿主经本接缝处置旧引擎（退订采集层，不留双引擎重复播报）。
     /// </summary>
-    public interface IAlarmFeed
+    public interface IAlarmFeed : IDisposable
     {
         /// <summary>事件流：引擎产出的每一拍（append-only 落库、推 UI 的挂钩，摘要 §8.11）。</summary>
         event Action<AlarmEvent>? EventRaised;

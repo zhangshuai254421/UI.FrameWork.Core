@@ -50,9 +50,10 @@ namespace Framework.Alarm
             {
                 lock (_gate)
                 {
+                    var now = _clock.Now;                      // 一张快照对一次表：全体成员同一时刻的真相
                     return _active
-                        .OrderBy(a => a.Since)                     // 锁内快照：枚举期间列表不许被人改
-                        .Select(a => a with { ShelvedUntil = ShelvedUntilOf(a.Tag, _clock.Now) })
+                        .OrderBy(a => a.Since)                 // 锁内快照：枚举期间列表不许被人改
+                        .Select(a => a with { ShelvedUntil = ShelvedUntilOf(a.Tag, now) })
                         .ToList();
                 }
             }
@@ -184,18 +185,22 @@ namespace Framework.Alarm
         /// <summary>
         /// 操作员解除搁置入口（摘要 §8.4 <c>IAlarmFeed.Unshelve</c>）：撤标——下一拍快照起
         /// 报警回主列表正常播报；产 <see cref="AlarmUnshelved"/> 留痕（时刻取时钟接缝当下）。
-        /// 没搁置过的位号静默——没有动作就不留假痕。到期的标无需解除：读取时对表已自然失效（摘要 §8.10）。
+        /// 没搁置过的位号、已自然到期的订单（标的已失效，报警早回主列表）一律静默——
+        /// 没在搁置就无从解除，没有动作就不留假痕；到期的标本就无需解除（摘要 §8.10）。
         /// </summary>
         public void Unshelve(string tag, string op)
         {
             lock (_gate)
             {
-                if (!_shelved.Remove(tag))
+                var now = _clock.Now;
+                var effective = ShelvedUntilOf(tag, now);
+                _shelved.Remove(tag);                          // 过期旧账顺手清掉，登记本不养死单
+                if (effective is null)
                 {
-                    return;
+                    return;                                    // 没在搁置（没登记/已到期）：静默
                 }
 
-                Raise(new AlarmUnshelved(tag, _clock.Now, op));
+                Raise(new AlarmUnshelved(tag, now, op));
             }
         }
 

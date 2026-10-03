@@ -63,9 +63,11 @@ namespace Framework.Alarm.Tests
             Assert.Equal(AlarmState.Unacknowledged, member.State);
             Assert.Equal(HysteresisEvaluatorTests.T(31), member.ShelvedUntil); // 快照带标（主列表该滤掉它，搁置清单该见到它）
 
+            clock.Advance(TimeSpan.FromSeconds(12));                      // T(13)：操作员看见（在 Raised@T(12) 之后，履历时间不倒流）
             engine.Acknowledge(AlarmEngineTests.HEAT01, op: "王五");       // 搁置中照常确认（稳红）
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(12.5), Value: 245)); // 照常恢复闭环
 
+            Assert.Equal(HysteresisEvaluatorTests.T(13), Assert.IsType<AlarmAcknowledged>(events[2]).At); // 时钟当下（Raised@T(12) 之后）
             Assert.Equal(
                 new[] { nameof(AlarmShelved), nameof(AlarmRaised), nameof(AlarmAcknowledged), nameof(AlarmClosed) },
                 events.Select(e => e.GetType().Name));                    // 全量记录：一拍不缺，KPI 体检不是瞎子
@@ -229,6 +231,23 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>解除一个没搁置过的位号：静默——没有动作就没有痕，本子上不留 Unshelved 假事件。</summary>
+        [Fact]
+        public void 解除_已到期订单_静默()
+        {
+            var source = new FakeConditionSource();
+            var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
+            var engine = new AlarmEngine(source, AlarmEngineTests.StoreWithSample(), clock);
+            var events = new List<AlarmEvent>();
+            engine.EventRaised += events.Add;
+
+            engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // T(0) 下单，期限 T(30)
+            clock.Advance(TimeSpan.FromSeconds(31));                      // T(31)：订单已自然到期（标失效，早回主列表）
+            engine.Unshelve(AlarmEngineTests.HEAT01, op: "王五");          // 迟来的解除：无从解除
+
+            Assert.Equal(
+                new[] { nameof(AlarmShelved) },
+                events.Select(e => e.GetType().Name));                    // 不留 Unshelved 假痕（KPI 的操作动作统计不掺水）
+        }
         [Fact]
         public void 解除_未搁置位号_静默()
         {

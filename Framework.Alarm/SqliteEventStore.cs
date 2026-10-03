@@ -42,7 +42,7 @@ namespace Framework.Alarm
                 command.Parameters.AddWithValue("@Tag", e.Tag);
                 command.Parameters.AddWithValue("@At", e.At.ToString("O"));
                 command.Parameters.AddWithValue("@UtcTicks", e.At.UtcTicks);
-                command.Parameters.AddWithValue("@Priority", e is AlarmRaised raised ? raised.Priority.ToString() : DBNull.Value);
+                command.Parameters.AddWithValue("@Priority", PriorityOf(e));
                 command.Parameters.AddWithValue("@Operator", OperatorOf(e));
                 command.Parameters.AddWithValue("@ShelvedUntil", ShelvedUntilOf(e));
                 command.ExecuteNonQuery();
@@ -89,6 +89,13 @@ namespace Framework.Alarm
             AlarmShelved => nameof(AlarmShelved),
             AlarmUnshelved => nameof(AlarmUnshelved),
             _ => throw new NotSupportedException($"未知事件类型：{e.GetType().Name}")
+        };
+
+        /// <summary>优先级列：升级事件查矩阵的输出留档，其余事件该列为空。</summary>
+        private static object PriorityOf(AlarmEvent e) => e switch
+        {
+            AlarmRaised raised => raised.Priority.ToString(),
+            _ => DBNull.Value
         };
 
         /// <summary>操作员列：确认/搁置/解除三类操作员事件留名，其余事件该列为空。</summary>
