@@ -40,6 +40,23 @@ namespace Framework.Alarm.Tests
                 history);                                                // record 值相等：类型、时刻、优先级、操作员一个不丢
         }
 
+        /// <summary>搁置动作与带标事件都留痕（摘要 §8.10，哲学 §7 全量留痕【强制】）：
+        /// 搁置（带期限+操作员）、搁置中触发的带标升级、解除——三条原样读回，标与期限一个不丢。</summary>
+        public static void 搁置事件与带标升级_往返保真(IEventStore store)
+        {
+            var shelved = new AlarmShelved(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(1), HysteresisEvaluatorTests.T(31), "李四");
+            var raised = new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High, ShelvedUntil: HysteresisEvaluatorTests.T(31));
+            var unshelved = new AlarmUnshelved(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(3), "王五");
+
+            store.Append(shelved);
+            store.Append(raised);
+            store.Append(unshelved);
+
+            Assert.Equal(
+                new AlarmEvent[] { shelved, raised, unshelved },
+                store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10)));
+        }
+
         /// <summary>时间窗过滤（验收 from/to）：窗外的事件不可见；窗界（闭区间）上的事件可见。</summary>
         public static void 查询_窗口外不可见(IEventStore store)
         {

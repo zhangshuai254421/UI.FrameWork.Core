@@ -15,6 +15,49 @@ namespace Framework.Alarm.Tests
         public void 四种事件_往返保真() => EventStoreContract.四种事件_往返保真(NewStore());
 
         [Fact]
+        public void 搁置事件与带标升级_往返保真() => EventStoreContract.搁置事件与带标升级_往返保真(NewStore());
+
+        /// <summary>旧库迁移（加列）：上一版本的表结构（无 ShelvedUntil 列）接上新代码——
+        /// 幂等补列后照常落库读回带标事件，老数据不丢、新标不缺（历史库全量含带标事件，摘要 §8.10）。</summary>
+        [Fact]
+        public void 旧库无搁置标列_接新代码_补列照常往返()
+        {
+            var connection = new SqliteConnection("Data Source=:memory:");
+            connection.Open();
+            using (var command = connection.CreateCommand()) // 手工立上一版本的旧表：没有 ShelvedUntil 列
+            {
+                var legacyTicks = HysteresisEvaluatorTests.T(5).UtcTicks;
+                command.CommandText =
+                    $"""
+                    CREATE TABLE AlarmEvent (
+                        Seq INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Kind TEXT NOT NULL,
+                        Tag TEXT NOT NULL,
+                        At TEXT NOT NULL,
+                        UtcTicks INTEGER NOT NULL,
+                        Priority TEXT,
+                        Operator TEXT
+                    );
+                    INSERT INTO AlarmEvent (Kind, Tag, At, UtcTicks, Priority)
+                        VALUES ('AlarmClosed', 'HEAT01_TEMP_HI', '{HysteresisEvaluatorTests.T(5).ToString("O")}', {legacyTicks}, NULL)
+                    """;
+                command.ExecuteNonQuery();
+            }
+
+            var store = new SqliteEventStore(connection); // 构造即迁移：补列不毁旧数据
+
+            var legacy = Assert.Single(store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10)));
+            Assert.IsType<AlarmClosed>(legacy);           // 旧数据原样读回
+
+            var raised = new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High, ShelvedUntil: HysteresisEvaluatorTests.T(31));
+            store.Append(raised);                          // 新标照常落库
+
+            Assert.Equal(
+                new AlarmEvent[] { legacy, raised },
+                store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10)));
+        }
+
+        [Fact]
         public void 查询_窗口外不可见() => EventStoreContract.查询_窗口外不可见(NewStore());
 
         [Fact]

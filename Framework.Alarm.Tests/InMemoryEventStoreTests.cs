@@ -10,6 +10,9 @@ namespace Framework.Alarm.Tests
         public void 四种事件_往返保真() => EventStoreContract.四种事件_往返保真(new InMemoryEventStore());
 
         [Fact]
+        public void 搁置事件与带标升级_往返保真() => EventStoreContract.搁置事件与带标升级_往返保真(new InMemoryEventStore());
+
+        [Fact]
         public void 查询_窗口外不可见() => EventStoreContract.查询_窗口外不可见(new InMemoryEventStore());
 
         [Fact]
