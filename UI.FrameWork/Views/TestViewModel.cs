@@ -13,7 +13,10 @@ namespace SemiAppliaction.Views
         //DetectionTestCommand：导航到检测测试页（选图跑 YOLO 推理）
         public DelegateCommand DetectionTestCommand { get; }
 
-        /// <summary>构造：初始化相机测试与检测测试两个导航命令。</summary>
+        //AlarmTestCommand：导航到报警测试页（真引擎演示装置喂报警列表）
+        public DelegateCommand AlarmTestCommand { get; }
+
+        /// <summary>构造：初始化各测试入口的导航命令。</summary>
         public TestViewModel()
         {
             Test1Command = new DelegateCommand(() =>
@@ -21,6 +24,9 @@ namespace SemiAppliaction.Views
 
             DetectionTestCommand = new DelegateCommand(() =>
                 IoC.Get<INavigationService>().NavigateToAsync(nameof(DetectionTestView), RegionNames.MainRegion));
+
+            AlarmTestCommand = new DelegateCommand(() =>
+                IoC.Get<INavigationService>().NavigateToAsync(nameof(AlarmTestView), RegionNames.MainRegion));
         }
     }
 }

@@ -33,6 +33,7 @@ namespace SemiAppliaction
             containerRegistry.RegisterForNavigation<TestView, TestViewModel>();
             containerRegistry.RegisterForNavigation<CameraTestView, CameraTestViewModel>();
             containerRegistry.RegisterForNavigation<DetectionTestView, DetectionTestViewModel>();
+            containerRegistry.RegisterForNavigation<AlarmTestView, AlarmTestViewModel>();
         }
     }
 }

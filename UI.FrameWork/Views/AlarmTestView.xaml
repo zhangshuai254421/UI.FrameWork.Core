@@ -1,0 +1,325 @@
+<UserControl x:Class="SemiAppliaction.Views.AlarmTestView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:SemiAppliaction.Views"
+             xmlns:controls="https://github.io/semicontrol"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="1200">
+
+    <!-- 报警测试页（#15）：真引擎演示装置喂报警列表——主列表/搁置清单/详情档案，验证报警模块全链路 -->
+    <controls:LayoutPageControl IsRightPanelVisible="False">
+
+        <controls:LayoutPageControl.MainContent>
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 操作条：开演/暂停 + 状态 -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,4">
+                    <Button Content="开始模拟" Padding="16,4" Margin="0,0,8,0" Command="{Binding StartCommand}"/>
+                    <Button Content="停止模拟" Padding="16,4" Margin="0,0,16,0" Command="{Binding StopCommand}"/>
+                    <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- 两清单：主列表（宽）与搁置清单（窄）——同一份活跃投影的两个视图，过滤规矩在 AlarmFilters -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 主列表：闪红（未确认）/ 稳红（已确认）/ 闪绿（RTN） -->
+                    <DockPanel Grid.Column="0">
+                        <TextBlock DockPanel.Dock="Top" Text="报警列表" FontWeight="Bold" Margin="0,0,0,4"/>
+                        <ListView ItemsSource="{Binding List.MainRows}"
+                                  HorizontalContentAlignment="Stretch"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  BorderThickness="1" BorderBrush="{DynamicResource PrimaryControlToolBrush}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border x:Name="RowBg" CornerRadius="2" Padding="6,4" Margin="0,1">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
+                                                        <Setter Property="Background" Value="#66FF3030"/>
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard x:Name="BlinkRed">
+                                                                <Storyboard RepeatBehavior="Forever">
+                                                                    <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                                    From="#66FF3030" To="#E6FF3030"
+                                                                                    Duration="0:0:0.6" AutoReverse="True"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <RemoveStoryboard BeginStoryboardName="BlinkRed"/>
+                                                        </DataTrigger.ExitActions>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding State}" Value="Acknowledged">
+                                                        <Setter Property="Background" Value="#B4FF3030"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
+                                                        <Setter Property="Background" Value="#6600C853"/>
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard x:Name="BlinkGreen">
+                                                                <Storyboard RepeatBehavior="Forever">
+                                                                    <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                                    From="#6600C853" To="#E600C853"
+                                                                                    Duration="0:0:0.6" AutoReverse="True"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <RemoveStoryboard BeginStoryboardName="BlinkGreen"/>
+                                                        </DataTrigger.ExitActions>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="150"/>
+                                                <ColumnDefinition Width="64"/>
+                                                <ColumnDefinition Width="48"/>
+                                                <ColumnDefinition Width="84"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Tag}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Tag}"/>
+                                            <TextBlock Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="已确认"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
+                                                                <Setter Property="Text" Value="未确认"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
+                                                                <Setter Property="Text" Value="已恢复"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Grid.Column="2" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="中"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Priority}" Value="High">
+                                                                <Setter Property="Text" Value="高"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Priority}" Value="Low">
+                                                                <Setter Property="Text" Value="低"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Grid.Column="3" Text="{Binding Since, StringFormat=HH:mm:ss}" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="5" Orientation="Horizontal">
+                                                <Button Content="确认" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.AcknowledgeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                                <Button Content="搁置" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.ShelveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                                <Button Content="详情" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </DockPanel>
+
+                    <!-- 搁置清单：带标且期限未过的成员（到期拨表自然回主列表），解除搁置在这里点 -->
+                    <DockPanel Grid.Column="2">
+                        <TextBlock DockPanel.Dock="Top" Text="搁置清单" FontWeight="Bold" Margin="0,0,0,4"/>
+                        <ListView ItemsSource="{Binding List.ShelvedRows}"
+                                  HorizontalContentAlignment="Stretch"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  BorderThickness="1" BorderBrush="{DynamicResource PrimaryControlToolBrush}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#33808080" CornerRadius="2" Padding="6,4" Margin="0,1">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="150"/>
+                                                <ColumnDefinition Width="64"/>
+                                                <ColumnDefinition Width="84"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Tag}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Tag}"/>
+                                            <TextBlock Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="已确认"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
+                                                                <Setter Property="Text" Value="未确认"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
+                                                                <Setter Property="Text" Value="已恢复"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Grid.Column="2" Text="{Binding ShelvedUntil, StringFormat=HH:mm:ss}" VerticalAlignment="Center" ToolTip="搁置期限"/>
+                                            <StackPanel Grid.Column="4" Orientation="Horizontal">
+                                                <Button Content="解除搁置" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.UnshelveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                                <Button Content="详情" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </DockPanel>
+                </Grid>
+
+                <!-- 详情浮层 = MADB 档案原样呈现（哲学 §3.2）：操作动作最显眼——第三问的答案在这一屏第一个看到 -->
+                <Border Grid.RowSpan="2" Background="#88000000" Padding="40">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding List.Detail}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="6" Padding="16"
+                            MaxWidth="680" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <ScrollViewer MaxHeight="600" VerticalScrollBarVisibility="Auto">
+                            <StackPanel DataContext="{Binding List.Detail}">
+                                <DockPanel Margin="0,0,0,8">
+                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Priority}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                    <TextBlock Text="{Binding Tag, StringFormat=【{0}】}" FontSize="18" FontWeight="Bold"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding Description}" FontSize="14" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                                <!-- 操作动作：现在干什么——档案里最要紧的一行，框起来放大 -->
+                                <Border Background="#33FF3030" CornerRadius="4" Padding="10,8" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="现在做什么（操作动作）" FontWeight="Bold" FontSize="12"/>
+                                        <TextBlock Text="{Binding OperatorAction}" FontSize="16" FontWeight="Bold" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="12"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="最可能原因（排查起点）" FontWeight="Bold" FontSize="12"/>
+                                        <TextBlock Text="{Binding Cause}" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="不处理的后果" FontWeight="Bold" FontSize="12"/>
+                                        <TextBlock Text="{Binding Consequence}" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- 优先级坐标与响应窗口：S × T 查矩阵的输入与输出 -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                        <TextBlock Text="严重度" FontWeight="Bold" FontSize="12"/>
+                                        <TextBlock Text="{Binding Severity}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Margin="0,0,12,0">
+                                        <TextBlock Text="响应分档" FontWeight="Bold" FontSize="12"/>
+                                        <TextBlock Text="{Binding MtrTier}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" Margin="0,0,12,0">
+                                        <TextBlock Text="最大响应时间 MTR" FontWeight="Bold" FontSize="12"/>
+                                        <TextBlock Text="{Binding MaxResponseTime}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- 组态参数：整定依据来自合理化（档案驱动，不在 if 里长报警） -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                        <TextBlock Text="分类 / 分组" FontWeight="Bold" FontSize="12"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="{Binding Class}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Class}" Value="Process">
+                                                                <Setter Property="Text" Value="工艺"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Class}" Value="Equipment">
+                                                                <Setter Property="Text" Value="设备"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Class}" Value="Environment">
+                                                                <Setter Property="Text" Value="环境"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Class}" Value="Safety">
+                                                                <Setter Property="Text" Value="安全"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Group, StringFormat=  /  {0}}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Margin="0,0,12,0">
+                                        <TextBlock Text="限值 / 死区" FontWeight="Bold" FontSize="12"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                            <TextBlock Text="{Binding Limit}"/>
+                                            <TextBlock Text="  /  "/>
+                                            <TextBlock Text="{Binding Deadband}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- 评审留痕：档案的出生证 -->
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock Text="评审留痕" FontWeight="Bold" FontSize="12"/>
+                                    <TextBlock Text="{Binding RationalizedBy, StringFormat=评审人：{0}}" Margin="0,2,0,0"/>
+                                    <TextBlock Text="{Binding RationalizedOn, StringFormat=评审日期：{0:yyyy-MM-dd}}"/>
+                                    <TextBlock Text="{Binding PhilosophyVersion, StringFormat=报警哲学版本：{0}}"/>
+                                </StackPanel>
+
+                                <Button Content="收起" Padding="20,6" HorizontalAlignment="Right"
+                                        Command="{Binding DataContext.List.CloseDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Border>
+            </Grid>
+        </controls:LayoutPageControl.MainContent>
+
+        <!-- 底部工具栏 -->
+        <controls:LayoutPageControl.ToolBoxContent>
+            <Grid/>
+        </controls:LayoutPageControl.ToolBoxContent>
+
+    </controls:LayoutPageControl>
+
+</UserControl>

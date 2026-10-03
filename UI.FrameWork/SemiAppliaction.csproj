@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Framework.Alarm\Framework.Alarm.csproj" />
     <ProjectReference Include="..\Framework.Detection\Framework.Detection.csproj" />
     <ProjectReference Include="..\Log.UI\Log.UI.csproj" />
     <ProjectReference Include="..\PrismUI.Core\PrismUI.Core.csproj" />
