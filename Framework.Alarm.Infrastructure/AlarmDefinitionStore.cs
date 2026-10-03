@@ -75,9 +75,18 @@ namespace Framework.Alarm.Infrastructure
                 var existing = _context.AlarmDefinitions.Find(definition.Tag)
                     ?? throw new ArgumentException($"位号不存在：{definition.Tag}", nameof(definition));
 
-                _context.Entry(existing).CurrentValues.SetValues(definition);
-                _context.SaveChanges();
-                _context.ChangeTracker.Clear();
+                // 落库即清放 finally（#27）：写失败（如 busy 抛 DbUpdateException）的残留跟踪
+                // 不能留在长命上下文里——否则后续 Add 同位号在跟踪器上撞键、抛契约外的
+                // InvalidOperationException，撞号翻译永远轮不到。
+                try
+                {
+                    _context.Entry(existing).CurrentValues.SetValues(definition);
+                    _context.SaveChanges();
+                }
+                finally
+                {
+                    _context.ChangeTracker.Clear();
+                }
             }
         }
 
@@ -92,9 +101,16 @@ namespace Framework.Alarm.Infrastructure
                     return false;
                 }
 
-                _context.AlarmDefinitions.Remove(existing);
-                _context.SaveChanges();
-                _context.ChangeTracker.Clear();
+                try
+                {
+                    _context.AlarmDefinitions.Remove(existing);
+                    _context.SaveChanges();
+                }
+                finally
+                {
+                    _context.ChangeTracker.Clear(); // 落库即清放 finally：与 Add/Update 同款兜底（#27）
+                }
+
                 return true;
             }
         }
