@@ -32,6 +32,8 @@ namespace Framework.Alarm.Infrastructure.EntityTypeConfiguration
             builder.Property<int>("Id").ValueGeneratedOnAdd();  // 自增影子主键：落库先后（履历次序）
             builder.HasKey("Id");
             builder.Property<long>("UtcTicks");                 // 影子窗列：Append 时写 At.UtcTicks，查询按它筛窗
+            builder.HasIndex("UtcTicks");                       // 时间窗索引（#28）：启动回放与历史查询都按窗进来，
+                                                                // 90 天履历无索引即全表扫、成本随履历线性涨
 
             // 判别名 = 类型名（与退役的裸 SQLite 同口径，Raised/Acknowledged 直接可读）；
             // 映射表是单一真相：判别配置在此消费，查询点名的 CLR 类型→判别名走 KindOf（#18：判别名不出存储接口）

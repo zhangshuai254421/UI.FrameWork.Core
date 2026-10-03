@@ -114,6 +114,8 @@ namespace Framework.Alarm.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UtcTicks");
+
                     b.ToTable("AlarmEvent", (string)null);
 
                     b.HasDiscriminator<string>("Kind").HasValue("AlarmEvent");

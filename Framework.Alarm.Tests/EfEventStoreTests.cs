@@ -77,6 +77,18 @@ namespace Framework.Alarm.Tests
                 store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(13)).Select(e => e.GetType().Name));
         }
 
+        /// <summary>时间窗列有索引（#28）：启动回放与历史查询都按 UtcTicks BETWEEN 进来，
+        /// 90 天履历无索引即全表扫、成本随履历线性涨——索引在模型里钉死，走迁移落库。</summary>
+        [Fact]
+        public void 事件表_时间窗列有索引()
+        {
+            using var context = new DataContext(EfTestDb.MigratedOptions());
+
+            var entityType = context.Model.FindEntityType(typeof(AlarmEvent));
+            Assert.NotNull(entityType);
+            Assert.Contains(entityType.GetIndexes(), i => i.Properties.Single().Name == "UtcTicks");
+        }
+
         /// <summary>每测一个独立内存库；连接存活期内库有效，测试结束随连接释放。</summary>
         private static EventStore NewStore() => new(EfTestDb.MigratedOptions());
     }
