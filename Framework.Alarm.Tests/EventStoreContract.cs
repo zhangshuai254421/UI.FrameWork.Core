@@ -107,6 +107,54 @@ namespace Framework.Alarm.Tests
             Assert.Equal(2, store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10)).Count);
         }
 
+        // ══════════════ #18：种类过滤（回放点名，不全窗物化） ══════════════
+
+        /// <summary>种类过滤（#18）：混类本子里点名两种判别，只回点名的、落库先后照旧——
+        /// 回放扫描（#16）靠它在库里筛，别把百万行全类物化进内存。</summary>
+        public static void 查询_按种类过滤(IEventStore store)
+        {
+            store.Append(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(1), AlarmPriority.High));
+            var shelved = new AlarmShelved(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), HysteresisEvaluatorTests.T(32), "李四");
+            store.Append(shelved);
+            store.Append(new AlarmClosed(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(3)));
+            var unshelved = new AlarmUnshelved(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(4), "王五");
+            store.Append(unshelved);
+
+            Assert.Equal(
+                new AlarmEvent[] { shelved, unshelved },
+                store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10),
+                    kinds: [typeof(AlarmShelved), typeof(AlarmUnshelved)]));   // 次序仍是落库先后
+        }
+
+        /// <summary>种类与位号叠加：两个筛一起上，交集才回（KPI 查询两路都会用）。</summary>
+        public static void 查询_种类与位号叠加(IEventStore store)
+        {
+            store.Append(new AlarmShelved(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), HysteresisEvaluatorTests.T(32), "李四"));
+            store.Append(new AlarmShelved("PUMP01_STOP", HysteresisEvaluatorTests.T(3), HysteresisEvaluatorTests.T(33), "王五"));
+            store.Append(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(4), AlarmPriority.High));
+
+            var found = store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10),
+                tag: "PUMP01_STOP", kinds: [typeof(AlarmShelved)]);
+            Assert.Equal("PUMP01_STOP", Assert.Single(found).Tag);
+        }
+
+        /// <summary>空种类 = 不筛类：老调用（不点种类）的语义一字不变——接口形状向后兼容。</summary>
+        public static void 查询_空种类_全类照旧(IEventStore store)
+        {
+            store.Append(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High));
+            store.Append(new AlarmClosed(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(3)));
+
+            Assert.Equal(2, store.Query(
+                HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10), kinds: Array.Empty<Type>()).Count);
+        }
+
+        /// <summary>点名簿上没有的类型当庭退回：宁可炸得响，不悄悄回一本空账（与 Append 未知事件同口径）。</summary>
+        public static void 查询_未知种类_当庭退回(IEventStore store)
+        {
+            Assert.Throws<NotSupportedException>(
+                () => store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10), kinds: [typeof(string)]));
+        }
+
         /// <summary>接口形状钉死（验收「不存在任何改写路径」）：<see cref="IEventStore"/>
         /// 只声明 Append 与 Query 两个成员——更新/删除在类型层面就进不来，而非仅是实现里恰好没有。</summary>
         public static void 接口_只有Append与Query_无改写路径()

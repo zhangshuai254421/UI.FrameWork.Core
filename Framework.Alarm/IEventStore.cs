@@ -12,8 +12,9 @@ namespace Framework.Alarm
         /// <summary>追加：只进不改，一条事件一行，永不覆盖、永不删除。</summary>
         void Append(AlarmEvent e);
 
-        /// <summary>查询：按事件时刻窗口 [from, to]（闭区间）与可选位号过滤；
-        /// 结果按落库先后返回——append-only 本子的书写次序即履历次序，窗口只筛不排。</summary>
-        IReadOnlyList<AlarmEvent> Query(DateTimeOffset from, DateTimeOffset to, string? tag = null);
+        /// <summary>查询：按事件时刻窗口 [from, to]（闭区间）、可选位号与可选种类过滤（#18）。
+        /// kinds 点 CLR 事件类型（调用方不认得库内判别名，判别名不出存储接口）；null/空 = 全类。
+        /// 结果按落库先后返回——append-only 本子的书写次序即履历次序，过滤只筛不排。</summary>
+        IReadOnlyList<AlarmEvent> Query(DateTimeOffset from, DateTimeOffset to, string? tag = null, params Type[] kinds);
     }
 }

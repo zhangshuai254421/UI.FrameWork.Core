@@ -50,7 +50,7 @@ namespace Framework.Alarm
         }
 
         /// <inheritdoc/>
-        public IReadOnlyList<AlarmEvent> Query(DateTimeOffset from, DateTimeOffset to, string? tag = null)
+        public IReadOnlyList<AlarmEvent> Query(DateTimeOffset from, DateTimeOffset to, string? tag = null, params Type[] kinds)
         {
             lock (_gate)
             {
@@ -61,6 +61,17 @@ namespace Framework.Alarm
                 {
                     command.CommandText += " AND Tag = @Tag";
                     command.Parameters.AddWithValue("@Tag", tag);
+                }
+
+                if (kinds is { Length: > 0 })                   // 种类筛在库里做（#18）：别把整本子物化进内存再扔
+                {
+                    var names = kinds.Select(KindOfTypeOf).ToArray(); // 先验后拼：点名簿外的类型当庭退回，拼不出半句 SQL
+                    var placeholders = names.Select((_, i) => $"@Kind{i}");
+                    command.CommandText += $" AND Kind IN ({string.Join(", ", placeholders)})";
+                    for (var i = 0; i < names.Length; i++)
+                    {
+                        command.Parameters.AddWithValue($"@Kind{i}", names[i]);
+                    }
                 }
 
                 command.CommandText += " ORDER BY Seq";         // 落库先后即履历次序（append-only 本子），不靠查询计划碰运气
@@ -80,16 +91,16 @@ namespace Framework.Alarm
 
         /// <summary>事件类型 → 落库判别名（名字直接可读，审计友好）；未知类型当庭退回——
         /// 审计本子上宁可炸得响，也不能悄悄吞掉一拍。</summary>
-        private static string KindOf(AlarmEvent e) => e switch
-        {
-            AlarmRaised => nameof(AlarmRaised),
-            AlarmAcknowledged => nameof(AlarmAcknowledged),
-            AlarmAutoReturned => nameof(AlarmAutoReturned),
-            AlarmClosed => nameof(AlarmClosed),
-            AlarmShelved => nameof(AlarmShelved),
-            AlarmUnshelved => nameof(AlarmUnshelved),
-            _ => throw new NotSupportedException($"未知事件类型：{e.GetType().Name}")
-        };
+        private static string KindOf(AlarmEvent e) => KindOfTypeOf(e.GetType());
+
+        /// <summary>CLR 事件类型 → 判别名（#18 查询点名走它，落库判别同源）：点名簿外的类型退回。</summary>
+        private static string KindOfTypeOf(Type type) => type == typeof(AlarmRaised) ? nameof(AlarmRaised)
+            : type == typeof(AlarmAcknowledged) ? nameof(AlarmAcknowledged)
+            : type == typeof(AlarmAutoReturned) ? nameof(AlarmAutoReturned)
+            : type == typeof(AlarmClosed) ? nameof(AlarmClosed)
+            : type == typeof(AlarmShelved) ? nameof(AlarmShelved)
+            : type == typeof(AlarmUnshelved) ? nameof(AlarmUnshelved)
+            : throw new NotSupportedException($"未知事件类型：{type.Name}");
 
         /// <summary>优先级列：升级事件查矩阵的输出留档，其余事件该列为空。</summary>
         private static object PriorityOf(AlarmEvent e) => e switch

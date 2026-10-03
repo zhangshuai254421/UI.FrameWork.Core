@@ -26,6 +26,9 @@ namespace Framework.Alarm
         private readonly List<ActiveAlarm> _active = new();     // 活跃列表：事件流的投影，不是第二份真相
         private readonly Dictionary<string, DateTimeOffset> _shelved = new(); // 搁置登记：位号 → 期限（摘要 §8.10 的标）
 
+        /// <summary>回放点名簿（#18）：登记本只由搁置/解除两种事件写成，其余判别留在库里不物化。</summary>
+        private static readonly Type[] ShelveReplayKinds = [typeof(AlarmShelved), typeof(AlarmUnshelved)];
+
         /// <summary>一条报警的频道：档案（判定依据）+ 滤波器（何时够格）+ 状态机（被人处理到哪一步），状态私有。</summary>
         private sealed class Channel
         {
@@ -219,6 +222,8 @@ namespace Framework.Alarm
         /// 回放搁置登记（#16）：按落库先后（append-only 本子的书写次序即履历次序）重放
         /// <see cref="AlarmShelved"/>（登记期限）/ <see cref="AlarmUnshelved"/>（撤账）——
         /// 重复搁置以最新下单为准，与运行期同规矩；其余事件种类不动登记本（升级事件的标是读登记本打的，不是写）。
+        /// 回放点名搁置两种判别进库筛（#18）：判别名不出存储接口，引擎点 CLR 类型——
+        /// 库大即顿的解药是把筛下推进库，不把整本子物化进内存再扔。
         /// 回放完对表清旧账：已到期的订单不复活（时钟一过标自然失效，摘要 §8.10），档案已删的位号不进新登记本。
         /// append-only 边界：只读不写——回放期间不追加、不吐事件。
         /// 历史库启动期读不出来：登记回不来的后果是搁置失效回主列表（宁多报不漏报），不许挡引擎总装。
@@ -227,7 +232,8 @@ namespace Framework.Alarm
         {
             try
             {
-                foreach (var e in eventStore.Query(DateTimeOffset.MinValue, DateTimeOffset.MaxValue))
+                foreach (var e in eventStore.Query(
+                    DateTimeOffset.MinValue, DateTimeOffset.MaxValue, kinds: ShelveReplayKinds))
                 {
                     switch (e)
                     {

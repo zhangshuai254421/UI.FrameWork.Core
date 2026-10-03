@@ -6,7 +6,8 @@ namespace Framework.Alarm.Tests
     /// 搁置订单持久化恢复契约（#16）：搁置登记 = 事件流的投影（与活跃列表同一哲学）——
     /// 引擎总装时若接了历史库，按落库先后回放 <see cref="AlarmShelved"/>/<see cref="AlarmUnshelved"/>
     /// 重建登记本：未到期订单照常有效（操作员的 8 小时搁置单不因重启清零）、解除过的不复活、
-    /// 已到期的不复活、重复搁置以最新下单为准。append-only 铁律不受触碰：回放是读历史，不是改历史。
+    /// 已到期的不复活、重复搁置以最新下单为准。append-only 铁律不受触碰：回放是读历史，不是改历史；
+    /// 回放点名搁置两种判别进库筛（#18），不全窗全类物化。
     /// </summary>
     public class AlarmEngineShelveRestoreTests
     {
@@ -139,6 +140,40 @@ namespace Framework.Alarm.Tests
 
             Assert.Equal(1, history.Query(DateTimeOffset.MinValue, DateTimeOffset.MaxValue).Count); // 一行不多
             Assert.Empty(rebornEvents);                                   // 一拍不吐：回放不是播报
+        }
+
+        /// <summary>回放点名搁置两种判别（#18）：总装扫描在库里按种类筛——全窗全类物化是
+        /// 库大即顿的根子，引擎只拉搁置/解除两种；点名用 CLR 事件类型，判别名不出存储接口。</summary>
+        [Fact]
+        public void 回放_点名搁置两种判别_不全窗全类物化()
+        {
+            var probing = new ProbingEventStore();
+
+            _ = new AlarmEngine(
+                new FakeConditionSource(), AlarmEngineTests.StoreWithSample(),
+                new FakeClock(HysteresisEvaluatorTests.T(0)), probing);
+
+            var query = Assert.Single(probing.Queries);
+            Assert.Equal(
+                new[] { typeof(AlarmShelved), typeof(AlarmUnshelved) },
+                query);                                                   // 点名簿：只有搁置与解除
+        }
+
+        /// <summary>探针替身：只为记录引擎回放点名的种类，别无他用。</summary>
+        private sealed class ProbingEventStore : IEventStore
+        {
+            /// <summary>每次 Query 收到的种类点名，一行一次。</summary>
+            public List<Type[]> Queries { get; } = [];
+
+            public void Append(AlarmEvent e)
+            {
+            }
+
+            public IReadOnlyList<AlarmEvent> Query(DateTimeOffset from, DateTimeOffset to, string? tag = null, params Type[] kinds)
+            {
+                Queries.Add(kinds);
+                return [];
+            }
         }
     }
 }
