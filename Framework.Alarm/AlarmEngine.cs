@@ -12,7 +12,7 @@ namespace Framework.Alarm
     /// 线程模型：采集层线程喂事实、UI 线程查询/确认——入口全程加锁，活跃列表返回锁内快照；
     /// 订阅方跨线程编队归呈现层（摘要 §9.2）。
     /// </summary>
-    public sealed class AlarmEngine : IDisposable
+    public sealed class AlarmEngine : IAlarmFeed, IDisposable
     {
         private readonly object _gate = new();                  // 事实进、查询、确认三口的锁
         private readonly IAlarmClock _clock;
