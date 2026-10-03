@@ -45,6 +45,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EFCore.Infrastructure\EFCore.Infrastructure.csproj" />
+    <ProjectReference Include="..\Framework.Alarm.Infrastructure\Framework.Alarm.Infrastructure.csproj" />
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
     <ProjectReference Include="..\Framework.Device.Domain\Framework.Device.Domain.csproj" />
     <ProjectReference Include="..\Framework.Device.HikVision\Framework.Device.HikVision.csproj" />

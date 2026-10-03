@@ -6,7 +6,8 @@ namespace Framework.Alarm.Tests
 {
     /// <summary>
     /// EF 事件存储过契约——与内存替身同一套断言（家族持久化体系，ADR-0008；#21 接棒裸 SQLite）。
-    /// 测试用 :memory: 库：连接先开好再交给 EF（:memory: 库随连接存活，EF 自己开关连接库就蒸发了）。
+    /// 测试用 :memory: 库：连接先开好再交给 EF（:memory: 库随连接存活，EF 自己开关连接库就蒸发了）；
+    /// 建表自建（EfTestDb，#22 起建库不归存储构造）。
     /// 旧库加列迁移用例随裸 SQLite 一并退役：裸 SQLite 的旧库（Seq 表、列集不同）是外来 schema，
     /// 迁移见库里没有迁移史会走 InitialCreate、撞已有表当庭报错——响亮失败，不再静默补列后继续写。
     /// </summary>
@@ -71,12 +72,6 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>每测一个独立内存库；连接存活期内库有效，测试结束随连接释放。</summary>
-        private static EventStore NewStore()
-        {
-            var connection = new SqliteConnection("Data Source=:memory:");
-            connection.Open();
-            var options = new DbContextOptionsBuilder<DataContext>().UseSqlite(connection).Options;
-            return new EventStore(options);
-        }
+        private static EventStore NewStore() => new(EfTestDb.MigratedOptions());
     }
 }

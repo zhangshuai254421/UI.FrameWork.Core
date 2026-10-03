@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Windows.Threading;
 using Framework.Alarm;
+using Framework.Alarm.Domain;
 using Prism.Commands;
 using Prism.Navigation.Regions;
 using PrismUI.Core;
@@ -14,8 +15,8 @@ namespace SemiAppliaction.Views
     //       层级：主页→测试→报警测试（第 3 级，ADR-0005）。
     public class AlarmTestViewModel : BaseViewModel, INavigationAware
     {
-        /// <summary>演示装置：真引擎 + 三条演示档案 + 循环剧本。</summary>
-        private readonly AlarmDemoRig _rig = new();
+        /// <summary>演示装置：真引擎 + 三条演示档案 + 循环剧本（#22 起通电走真库）。</summary>
+        private readonly AlarmDemoRig _rig;
 
         /// <summary>剧本时钟：每拍 1 秒推进剧本并重切两清单（搁置到期靠这一拍对表自然回主列表）。</summary>
         private readonly DispatcherTimer _timer;
@@ -39,9 +40,13 @@ namespace SemiAppliaction.Views
         /// <summary>停止模拟命令（暂停剧本；已有报警与搁置标原样保留）。</summary>
         public DelegateCommand StopCommand { get; }
 
-        /// <summary>构造：把真引擎接上列表 VM（编队到 UI 线程），装好每秒一拍的剧本时钟。</summary>
-        public AlarmTestViewModel()
+        /// <summary>
+        /// 构造（#22 通电）：两存储由容器注入（宿主 AddAlarmServices 的单例，库由宿主建好），
+        /// 装置走真库通电；把真引擎接上列表 VM（编队到 UI 线程），装好每秒一拍的剧本时钟。
+        /// </summary>
+        public AlarmTestViewModel(IAlarmDefinitionStore definitions, IEventStore events)
         {
+            _rig = new AlarmDemoRig(definitions, events);
             // 事件编队接 UI 线程（摘要 §9.2 选型定案：SynchronizationContext.Post）——
             // VM 由 Prism 在 UI 线程创建，Current 即派发器上下文；兜底再造一个（设计器等无上下文场合）。
             var ui = SynchronizationContext.Current

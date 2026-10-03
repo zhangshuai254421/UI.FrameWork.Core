@@ -19,9 +19,10 @@ namespace SemiAppliaction.Views
     }
 
     /// <summary>
-    /// 报警演示装置（#15）：真引擎（<see cref="AlarmEngine"/>）+ 三条演示档案 + 循环剧本——
-    /// 演示的是产品不是 mock：报警判定、状态机、搁置打标全部走 Framework.Alarm 的真代码，
-    /// 唯一假装的是「现场」（采集层由剧本代替、时钟用墙钟、档案用引擎库的内存实现）。
+    /// 报警演示装置（#15 总装，#22 通电）：真引擎 + 三条演示档案 + 循环剧本——
+    /// 演示的是产品不是 mock：报警判定、状态机、搁置打标、落库全走 Framework.Alarm 的真代码，
+    /// 唯一假装的是「现场」（采集层由剧本代替、时钟用墙钟）；档案与事件史已通电走真库，
+    /// 库由宿主建好（AlarmDatabase.Initialize，#22），唯一还替身着的是采集层。
     /// 剧本一循环 9 拍（每拍 1 秒）：升温/憋压/液位上涨先后触发三条报警 → 保持两拍给操作员处置
     /// （确认/搁置在页面上点）→ 第 7 拍（下标 6）全体深回：恢复延时全是零，恢复即 RTN——
     /// 未确认的转闪绿留列表，已确认的当场闭环出列；末两拍停留观察，然后循环再升级。
@@ -56,8 +57,11 @@ namespace SemiAppliaction.Views
         /// <summary>模拟采集层：剧本的事实出口。</summary>
         public SimulatedConditionSource Source { get; } = new();
 
-        /// <summary>演示档案库：三条档案随装置就位（引擎库的内存实现，不落盘）。</summary>
-        public InMemoryAlarmDefinitionStore Store { get; }
+        /// <summary>档案库：三条演示档案随装置就位（#22 通电走宿主建库的真库，测试传内存替身）。</summary>
+        public IAlarmDefinitionStore Store { get; }
+
+        /// <summary>事件史：通电即落库（EventHistory 一行接线）；测试传 null 即不接本子。</summary>
+        public IEventStore? Events { get; }
 
         /// <summary>真引擎：档案装好、采集层接好、墙钟对好——页面拿它当 IAlarmFeed 用。</summary>
         public AlarmEngine Engine { get; }
@@ -65,11 +69,27 @@ namespace SemiAppliaction.Views
         /// <summary>剧本游标：循环推进。</summary>
         private int _step;
 
-        /// <summary>总装：先立档案（出生证先行），再总装引擎（无档案不报警的前提）。</summary>
-        public AlarmDemoRig()
+        /// <summary>
+        /// 通电（#22）：档案缺了才补（评审法定产出不改写——库里已有的档案不动，缺的位号补出生证），
+        /// 再总装引擎（无档案不报警的前提）；接了事件库则 EventHistory 一行接线——订阅即落库，
+        /// 演示的每一拍都进真本子（搁置单重启回放，#16，因此在演示页一并兑现）。
+        /// </summary>
+        /// <param name="store">档案库：宿主注入真库存储，测试传内存替身。</param>
+        /// <param name="events">事件史：宿主注入真库存储；null = 不接本子（测试的内存直通）。</param>
+        public AlarmDemoRig(IAlarmDefinitionStore store, IEventStore? events = null)
         {
-            Store = BuildStore();
-            Engine = new AlarmEngine(Source, Store, new SystemClock());
+            Store = store;
+            Events = events;
+            foreach (var definition in DemoDefinitions().Where(d => store.Find(d.Tag) is null))
+            {
+                store.Add(definition); // 缺了才补；撞位号当庭炸响（法定校验 + 唯一约束都在）
+            }
+
+            Engine = new AlarmEngine(Source, store, new SystemClock(), events);
+            if (events is not null)
+            {
+                _ = new EventHistory(events, Engine); // 订阅即落库（摘要 §8.11）：接线随装置存亡
+            }
         }
 
         /// <summary>剧本下一拍：三条条件事实同一时刻报进引擎（采集层一拍报全部点位）。</summary>
@@ -86,11 +106,9 @@ namespace SemiAppliaction.Views
         public void Dispose() => Engine.Dispose();
 
         /// <summary>三条演示档案（哲学 §6.1：操作动作必填——填不出的候选当庭退回）。</summary>
-        private static InMemoryAlarmDefinitionStore BuildStore()
+        private static IEnumerable<AlarmDefinition> DemoDefinitions()
         {
-            var store = new InMemoryAlarmDefinitionStore();
-
-            store.Add(new AlarmDefinition(
+            yield return new AlarmDefinition(
                 Tag: HeatTag,
                 Description: "加热板温度高于工艺上限",
                 Class: AlarmClass.Process,
@@ -108,9 +126,9 @@ namespace SemiAppliaction.Views
                 Group: "加热区",
                 RationalizedBy: "张三",
                 RationalizedOn: new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                PhilosophyVersion: "1.0"));
+                PhilosophyVersion: "1.0");
 
-            store.Add(new AlarmDefinition(
+            yield return new AlarmDefinition(
                 Tag: PressTag,
                 Description: "反应釜压力高于安全上限",
                 Class: AlarmClass.Safety,
@@ -128,9 +146,9 @@ namespace SemiAppliaction.Views
                 Group: "反应区",
                 RationalizedBy: "李四",
                 RationalizedOn: new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                PhilosophyVersion: "1.0"));
+                PhilosophyVersion: "1.0");
 
-            store.Add(new AlarmDefinition(
+            yield return new AlarmDefinition(
                 Tag: LiquidTag,
                 Description: "储罐液位高于溢流线",
                 Class: AlarmClass.Equipment,
@@ -148,9 +166,7 @@ namespace SemiAppliaction.Views
                 Group: "罐区",
                 RationalizedBy: "王五",
                 RationalizedOn: new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                PhilosophyVersion: "1.0"));
-
-            return store;
+                PhilosophyVersion: "1.0");
         }
     }
 }

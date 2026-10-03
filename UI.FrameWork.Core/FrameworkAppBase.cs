@@ -3,6 +3,7 @@ using DryIoc.Microsoft.DependencyInjection;
 using EFCore.Infrastructure;
 using EFCore.Repository;
 using Example;
+using Framework.Alarm.Infrastructure;
 using Framework.Core.Common;
 using Framework.Device.Domain;
 using Framework.Device.Infrastructure;
@@ -73,6 +74,7 @@ namespace UI.FrameWork.Core
             services.AddSerilogServices();
             services.AddRecipeServices();
             services.AddDeviceServices();
+            services.AddAlarmServices();
 
             
             services.AddSingleton<INavigationService, PrismUI.Core.NavigationService>();
@@ -91,7 +93,9 @@ namespace UI.FrameWork.Core
             Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Log.Infrastructure.DataContext>();
             Container.Resolve<IServiceProvider>().UseDatabaseEnsureCreated<Framework.Device.Infrastructure.DeviceDataContext>();
 
-          
+            // 报警库不走 EnsureCreated（迁移史要随库走，#21/#22），建库归 AlarmDatabase 一口
+            AlarmDatabase.Initialize();
+
             return Container.Resolve<ShellWindow>(); ;
         }
 

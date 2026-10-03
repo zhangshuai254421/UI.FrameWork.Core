@@ -9,7 +9,8 @@ namespace Framework.Alarm.Infrastructure
     /// <see cref="IEventStore"/> 契约的落库版。append-only 铁律不因换 EF 而松——
     /// 本类只有 Add 与查询，没有任何 Update/Remove 调用，改写路径在代码里不存在；
     /// 保留期 90 天（哲学 §8.1/§12 #3）是运维策略，过期清理不进本接口。
-    /// 构造即迁移（Migrate，幂等）：事件史要跨版本存活（90 天保留），schema 演化走迁移，
+    /// 建库归宿主（#22，AlarmDatabase.Initialize 启动时一口）：构造不再迁移，
+    /// 存储只认「库已就位」的前提；事件史要跨版本存活（90 天保留），schema 演化走迁移，
     /// 不用 EnsureCreated（对已存表静默跳过，且建出的库套不上迁移——接盘即弃库）。
     /// 线程模型：Append 跑在引擎产事件的线程、Query 跑在 UI 线程，全程加锁。
     /// 连接模型（评审留痕）：存储实例独享 <see cref="DataContext"/>（自带连接），
@@ -25,11 +26,10 @@ namespace Framework.Alarm.Infrastructure
 
         private readonly DataContext _context;
 
-        /// <summary>用上下文选项构造存储；建库（迁移，幂等）在此时完成。</summary>
+        /// <summary>用上下文选项构造存储；建库不在此处——宿主启动时 AlarmDatabase.Initialize 一口负责（#22）。</summary>
         public EventStore(DbContextOptions<DataContext> options)
         {
             _context = new DataContext(options);
-            _context.Database.Migrate();
         }
 
         /// <summary>追加：只进不改，一条事件一行，永不覆盖、永不删除（同一实例二度追加也是重开一行——

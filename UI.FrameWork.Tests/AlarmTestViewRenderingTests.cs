@@ -41,7 +41,7 @@ namespace SemiAppliaction.Views.Tests
                 }
 
                 // 数据层先行：与 AlarmDemoRigTests 同款直通——先证明 MainRows 里有货
-                var rig = new AlarmDemoRig();
+                var rig = new AlarmDemoRig(new InMemoryAlarmDefinitionStore());
                 var ui = new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher);
                 var list = new AlarmListViewModel(rig.Engine, rig.Store, ui);
                 var dc = new PageStub(list);

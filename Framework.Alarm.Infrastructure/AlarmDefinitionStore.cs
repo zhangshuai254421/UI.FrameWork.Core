@@ -7,7 +7,8 @@ namespace Framework.Alarm.Infrastructure
     /// 档案存储的 EF 实现（家族持久化体系，ADR-0008；#21 接棒退役的裸 SQLite 实现）：
     /// <see cref="IAlarmDefinitionStore"/> 契约的落库版——增/改前过法定校验（当庭退回），
     /// 位号主键撞车 / 改无此档由数据库约束报出、翻译成契约约定的 <see cref="ArgumentException"/>。
-    /// 构造即迁移（Migrate，幂等）：与事件库同库（Alarm\AlarmDomain.db）同迁移史，
+    /// 建库归宿主（#22，AlarmDatabase.Initialize 启动时一口）：构造不再迁移，
+    /// 存储只认「库已就位」的前提；schema 演化走迁移（90 天保留跨版本存活，#21 拍板），
     /// 不用 EnsureCreated（对已存表静默跳过，且建出的库套不上迁移）。
     /// 线程模型：引擎启动 LoadAll、UI 线程查详情随时并发，全程加锁。
     /// 连接模型（评审留痕）：与事件库各自独享 <see cref="DataContext"/>（自带连接），
@@ -23,11 +24,10 @@ namespace Framework.Alarm.Infrastructure
 
         private readonly DataContext _context;
 
-        /// <summary>用上下文选项构造存储；建库（迁移，幂等）在此时完成。</summary>
+        /// <summary>用上下文选项构造存储；建库不在此处——宿主启动时 AlarmDatabase.Initialize 一口负责（#22）。</summary>
         public AlarmDefinitionStore(DbContextOptions<DataContext> options)
         {
             _context = new DataContext(options);
-            _context.Database.Migrate();
         }
 
         /// <summary>增：先过法定校验（当庭退回）；位号已存在则抛 <see cref="ArgumentException"/>。</summary>
