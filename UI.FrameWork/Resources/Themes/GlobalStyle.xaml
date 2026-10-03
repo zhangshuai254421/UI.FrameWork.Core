@@ -27,4 +27,11 @@
         <Setter Property="BorderBrush" Value="{DynamicResource DefaultButton_DefaultBorderBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource DefaultButton_DefaultTextBrush}"/>
     </Style>
+
+    <!-- 隐式 ListView / ListViewItem 样式（空）：HandyControl 3.5.1 给 ListView 的隐式模板是 Border 包 hc:Empty 占位——
+         没有 ItemsPresenter，条目永不显示（报警测试页两清单一直空的根子）；其隐式 ListViewItem 模板里还有
+         碰冻结背景刷的路径动画，条目一实例化就抛 XamlParseException。空样式不设任何属性，控件回落
+         WPF 主题默认模板，条目照常生成；ListBox 的 HandyControl 定制不受影响。 -->
+    <Style TargetType="ListView"/>
+    <Style TargetType="ListViewItem"/>
 </ResourceDictionary>

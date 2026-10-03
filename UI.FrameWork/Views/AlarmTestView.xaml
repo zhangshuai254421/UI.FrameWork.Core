@@ -42,48 +42,52 @@
                                   BorderThickness="1" BorderBrush="{DynamicResource PrimaryControlToolBrush}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Border x:Name="RowBg" CornerRadius="2" Padding="6,4" Margin="0,1">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
-                                                        <Setter Property="Background" Value="#66FF3030"/>
-                                                        <DataTrigger.EnterActions>
-                                                            <BeginStoryboard x:Name="BlinkRed">
-                                                                <Storyboard RepeatBehavior="Forever">
-                                                                    <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                                                    From="#66FF3030" To="#E6FF3030"
-                                                                                    Duration="0:0:0.6" AutoReverse="True"/>
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </DataTrigger.EnterActions>
-                                                        <DataTrigger.ExitActions>
-                                                            <RemoveStoryboard BeginStoryboardName="BlinkRed"/>
-                                                        </DataTrigger.ExitActions>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding State}" Value="Acknowledged">
-                                                        <Setter Property="Background" Value="#B4FF3030"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
-                                                        <Setter Property="Background" Value="#6600C853"/>
-                                                        <DataTrigger.EnterActions>
-                                                            <BeginStoryboard x:Name="BlinkGreen">
-                                                                <Storyboard RepeatBehavior="Forever">
-                                                                    <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                                                    From="#6600C853" To="#E600C853"
-                                                                                    Duration="0:0:0.6" AutoReverse="True"/>
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </DataTrigger.EnterActions>
-                                                        <DataTrigger.ExitActions>
-                                                            <RemoveStoryboard BeginStoryboardName="BlinkGreen"/>
-                                                        </DataTrigger.ExitActions>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <Grid>
+                                    <Grid x:Name="RowRoot" Margin="0,1">
+                                        <!-- 行卡底色层：样式挂在自己身上（Style 触发器 Setter 不许 TargetName——MC4011）；
+                                             闪烁打 Opacity（普通属性动画），不碰背景刷——样式 Setter 里的刷子随样式密封被冻结，
+                                             ColorAnimation 走 (Border.Background).(SolidColorBrush.Color) 路径会当场炸 XamlParseException -->
+                                        <Border x:Name="RowBg" CornerRadius="2">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
+                                                            <Setter Property="Background" Value="#66FF3030"/>
+                                                            <DataTrigger.EnterActions>
+                                                                <BeginStoryboard x:Name="BlinkRed">
+                                                                    <Storyboard RepeatBehavior="Forever">
+                                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                                         From="1" To="0.4" Duration="0:0:0.6" AutoReverse="True"/>
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </DataTrigger.EnterActions>
+                                                            <DataTrigger.ExitActions>
+                                                                <RemoveStoryboard BeginStoryboardName="BlinkRed"/>
+                                                            </DataTrigger.ExitActions>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding State}" Value="Acknowledged">
+                                                            <Setter Property="Background" Value="#B4FF3030"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
+                                                            <Setter Property="Background" Value="#6600C853"/>
+                                                            <DataTrigger.EnterActions>
+                                                                <BeginStoryboard x:Name="BlinkGreen">
+                                                                    <Storyboard RepeatBehavior="Forever">
+                                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                                         From="1" To="0.4" Duration="0:0:0.6" AutoReverse="True"/>
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </DataTrigger.EnterActions>
+                                                            <DataTrigger.ExitActions>
+                                                                <RemoveStoryboard BeginStoryboardName="BlinkGreen"/>
+                                                            </DataTrigger.ExitActions>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                        </Border>
+                                        <Border Padding="6,4">
+                                            <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="150"/>
                                                 <ColumnDefinition Width="64"/>
@@ -130,7 +134,8 @@
                                                 <Button Content="详情" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
                                             </StackPanel>
                                         </Grid>
-                                    </Border>
+                                        </Border>
+                                    </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
