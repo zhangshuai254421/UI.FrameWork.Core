@@ -1,15 +1,15 @@
-using Framework.Alarm;
-
-namespace Framework.Alarm.Tests
+namespace Framework.Alarm
 {
     /// <summary>
-    /// 内存档案存储（测试替身，摘要 §8.4「测试用内存档案」）：字典实现，行为与 SQLite 实现同一契约。
+    /// 内存档案库（摘要 §8.4）：字典实现，行为与 SQLite 实现同一契约（增/改都过法定校验，
+    /// 位号唯一）。宿主演示装置、撒种脚本与测试共用这一份——替身不另养副本。
     /// </summary>
     public sealed class InMemoryAlarmDefinitionStore : IAlarmDefinitionStore
     {
+        /// <summary>档案登记：位号 → 档案。</summary>
         private readonly Dictionary<string, AlarmDefinition> _definitions = new();
 
-        /// <inheritdoc/>
+        /// <summary>增：先过法定校验（当庭退回），位号已存在则拒。</summary>
         public void Add(AlarmDefinition definition)
         {
             definition.EnsureValid(); // 当庭退回：操作动作必填、触发延时 < MTR（哲学 §6.1/§6.2）
@@ -20,10 +20,10 @@ namespace Framework.Alarm.Tests
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>查：按位号取档案，无则 null（「无档案不报警」的数据侧前提）。</summary>
         public AlarmDefinition? Find(string tag) => _definitions.TryGetValue(tag, out var definition) ? definition : null;
 
-        /// <inheritdoc/>
+        /// <summary>改：先过法定校验，位号不存在则拒。</summary>
         public void Update(AlarmDefinition definition)
         {
             definition.EnsureValid(); // 改档同样过法定校验
@@ -36,10 +36,10 @@ namespace Framework.Alarm.Tests
             _definitions[definition.Tag] = definition;
         }
 
-        /// <inheritdoc/>
+        /// <summary>删：删到返回真。</summary>
         public bool Delete(string tag) => _definitions.Remove(tag);
 
-        /// <inheritdoc/>
+        /// <summary>全量加载：引擎启动时读全部档案。</summary>
         public IReadOnlyList<AlarmDefinition> LoadAll() => _definitions.Values.ToList();
     }
 }

@@ -13,6 +13,9 @@ namespace SemiAppliaction.Views
         /// <summary>状态后端字段。</summary>
         private AlarmState _state;
 
+        /// <summary>活跃起点后端字段。</summary>
+        private DateTimeOffset _since;
+
         /// <summary>搁置标后端字段。</summary>
         private DateTimeOffset? _shelvedUntil;
 
@@ -22,7 +25,7 @@ namespace SemiAppliaction.Views
             Tag = tag;
             _state = state;
             Priority = priority;
-            Since = since;
+            _since = since;
             _shelvedUntil = shelvedUntil;
         }
 
@@ -41,8 +44,8 @@ namespace SemiAppliaction.Views
         /// <summary>优先级：来自档案，排序置顶按它。</summary>
         public AlarmPriority Priority { get; }
 
-        /// <summary>活跃起点：本次升级时刻。</summary>
-        public DateTimeOffset Since { get; }
+        /// <summary>活跃起点：本次升级时刻（RTN 再激活随事件刷新）。</summary>
+        public DateTimeOffset Since { get => _since; private set => SetProperty(ref _since, value); }
 
         /// <summary>搁置标：期限未过则带标（主列表/搁置清单按它切分，到期由 AlarmFilters 对表失效）。</summary>
         public DateTimeOffset? ShelvedUntil { get => _shelvedUntil; private set => SetProperty(ref _shelvedUntil, value); }
@@ -55,5 +58,14 @@ namespace SemiAppliaction.Views
 
         /// <summary>搁置事件的原位修正（Shelved 带新标 / Unshelved 撤标传 null）。</summary>
         public void SetMark(DateTimeOffset? shelvedUntil) => ShelvedUntil = shelvedUntil;
+
+        /// <summary>升级事件的原位修正（首升造行，RTN 再激活走这里）：状态回未确认、
+        /// 起点/搁置标照事件刷新——行实例不换（列表不闪、选中与详情弹窗不脱钩）。</summary>
+        public void Reraise(DateTimeOffset since, DateTimeOffset? shelvedUntil)
+        {
+            State = AlarmState.Unacknowledged;
+            Since = since;
+            ShelvedUntil = shelvedUntil;
+        }
     }
 }

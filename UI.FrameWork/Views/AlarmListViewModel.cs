@@ -7,14 +7,16 @@ namespace SemiAppliaction.Views
 {
     /// <summary>
     /// 报警列表 ViewModel（摘要 §9.3，哲学 §3.2 呈现纪律【强制】）：事件 → 集合变更的直译，
-    /// Apply 里零判定——Raised→Add、Acknowledged/AutoReturned→UpdateState、Closed→Remove、
+    /// Apply 里零判定——Raised→Upsert、Acknowledged/AutoReturned→UpdateState、Closed→Remove、
     /// Shelved/Unshelved→UpdateMark。「RTN 留列表、Closed 移出、按标过滤」的规矩都是引擎定的，
     /// UI 照单全收；排序按档案 Priority（高优永远在顶），过滤调用引擎库的 <see cref="AlarmFilters"/>。
     /// 跨线程编队（摘要 §9.2 选型定案：SynchronizationContext.Post）：引擎在通讯线程吐事件，
     /// 本类把每一拍 Post 到注入的上下文再翻译；测试注入同步上下文即同步执行路径（不依赖真线程）。
     /// 只认 <see cref="IAlarmFeed"/> 接缝——测试 fake 一个 feed 即可红绿灯，不依赖真引擎。
+    /// 行实例终生制：事件只原位刷行、清单原位对账（容器不重建，闪烁不重启、选中不丢）；
+    /// <see cref="Dispose"/> 退订事件流——feed 长命（单例引擎）而页面短命时由宿主收口。
     /// </summary>
-    public sealed class AlarmListViewModel : BindableBase
+    public sealed class AlarmListViewModel : BindableBase, IDisposable
     {
         /// <summary>馈送接缝：事件流与操作员动作的唯一通道（UI 不认得引擎具体类）。</summary>
         private readonly IAlarmFeed _feed;
@@ -159,7 +161,7 @@ namespace SemiAppliaction.Views
         }
 
         /// <summary>重切两清单：主列表/搁置清单 = AlarmFilters 对同一份行的两个视图（到期标自然失效在呈现侧的重算入口）。
-        /// 排序按档案 Priority（高优永远在顶），同优先级内按活跃起点先后。</summary>
+        /// 排序按档案 Priority（高优永远在顶），同优先级内按活跃起点先后；清单原位对账（见 <see cref="Refill"/>）。</summary>
         public void RefreshFilters()
         {
             var now = _now();
@@ -186,8 +188,17 @@ namespace SemiAppliaction.Views
             switch (e)
             {
                 case AlarmRaised raised:
-                    // 升级（含 RTN 再激活）：同一行原位重建（State 回未确认、起点/标刷新），列表不闪。
-                    _rows[raised.Tag] = new AlarmRow(raised.Tag, AlarmState.Unacknowledged, raised.Priority, raised.At, raised.ShelvedUntil);
+                    // 升级（含 RTN 再激活）：行存在则原位刷（状态回未确认、起点/标照事件刷新），
+                    // 行实例不换——选中与详情弹窗不脱钩；首升才造行。
+                    if (_rows.TryGetValue(raised.Tag, out var existing))
+                    {
+                        existing.Reraise(raised.At, raised.ShelvedUntil);
+                    }
+                    else
+                    {
+                        _rows[raised.Tag] = new AlarmRow(raised.Tag, AlarmState.Unacknowledged, raised.Priority, raised.At, raised.ShelvedUntil);
+                    }
+
                     break;
                 case AlarmAcknowledged:
                     UpdateState(e.Tag, AlarmState.Acknowledged);                // 稳红：责任接管
@@ -227,19 +238,36 @@ namespace SemiAppliaction.Views
             }
         }
 
-        /// <summary>清空重填一个集合：把 ActiveAlarm 投影映射回行对象（行复用：列表不闪、选中不丢）。</summary>
-        private void Refill(ObservableCollection<AlarmRow> target, IEnumerable<ActiveAlarm> source)
+        /// <summary>清单原位对账：移除不在名单里的行、按快照次序插入/搬移——不 Clear 重填
+        /// （容器不重建：闪烁动画不重启、ListView 选中不丢）。成员都来自行登记，按位号直取。</summary>
+        private void Refill(ObservableCollection<AlarmRow> target, IReadOnlyList<ActiveAlarm> source)
         {
-            target.Clear();
-            foreach (ActiveAlarm member in source)
+            for (var i = target.Count - 1; i >= 0; i--)
             {
-                if (_rows.TryGetValue(member.Tag, out var row))
+                if (source.All(member => member.Tag != target[i].Tag))
                 {
-                    target.Add(row);
+                    target.RemoveAt(i);
+                }
+            }
+
+            for (var i = 0; i < source.Count; i++)
+            {
+                var row = _rows[source[i].Tag];
+                var current = target.IndexOf(row);
+                if (current < 0)
+                {
+                    target.Insert(i, row);
+                }
+                else if (current != i)
+                {
+                    target.Move(current, i);
                 }
             }
         }
 
         #endregion
+
+        /// <summary>退订事件流：feed 长命而页面短命时由宿主收口，废弃的 VM 不再被引擎喂养。</summary>
+        public void Dispose() => _feed.EventRaised -= OnEventRaised;
     }
 }

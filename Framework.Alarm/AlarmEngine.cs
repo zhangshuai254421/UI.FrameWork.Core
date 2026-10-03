@@ -234,7 +234,19 @@ namespace Framework.Alarm
             }
         }
 
-        /// <summary>事件出口：订阅方（历史库/UI）从这收，引擎不知道订阅方是谁。</summary>
-        private void Raise(AlarmEvent e) => EventRaised?.Invoke(e);
+        /// <summary>事件出口：订阅方（历史库/UI）从这收，引擎不知道订阅方是谁。
+        /// 订阅方异常不回传引擎（锁内播报：一家落库失败不许拖垮事实流、更不许留下投影与历史各说各话的
+        /// 半拍——落库重试是订阅方自己的职责，引擎只保证条件事实不停摆）。</summary>
+        private void Raise(AlarmEvent e)
+        {
+            try
+            {
+                EventRaised?.Invoke(e);
+            }
+            catch
+            {
+                // 吞：订阅方（历史库/UI）的故障停在订阅方；事实与投影已先行落定（投影先行，事件后发）。
+            }
+        }
     }
 }

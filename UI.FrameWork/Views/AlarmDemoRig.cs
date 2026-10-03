@@ -18,52 +18,12 @@ namespace SemiAppliaction.Views
     }
 
     /// <summary>
-    /// 内存档案库（#15 演示装置）：<see cref="IAlarmDefinitionStore"/> 的字典实现——
-    /// 宿主生产环境注 SQLite 实现（SqliteAlarmDefinitionStore），演示页不落盘、随页生灭。
-    /// </summary>
-    public sealed class InMemoryDefinitionStore : IAlarmDefinitionStore
-    {
-        /// <summary>档案登记：位号 → 档案。</summary>
-        private readonly Dictionary<string, AlarmDefinition> _items = new();
-
-        /// <summary>增：先过法定校验（当庭退回），位号已存在则拒。</summary>
-        public void Add(AlarmDefinition definition)
-        {
-            definition.EnsureValid();
-            if (!_items.TryAdd(definition.Tag, definition))
-            {
-                throw new ArgumentException($"位号已存在：{definition.Tag}", nameof(definition));
-            }
-        }
-
-        /// <summary>查：按位号取档案，无则 null。</summary>
-        public AlarmDefinition? Find(string tag)
-            => _items.TryGetValue(tag, out var definition) ? definition : null;
-
-        /// <summary>改：按位号整行覆盖，位号不存在则拒。</summary>
-        public void Update(AlarmDefinition definition)
-        {
-            if (!_items.ContainsKey(definition.Tag))
-            {
-                throw new ArgumentException($"位号不存在：{definition.Tag}", nameof(definition));
-            }
-
-            _items[definition.Tag] = definition;
-        }
-
-        /// <summary>删：删到返回真。</summary>
-        public bool Delete(string tag) => _items.Remove(tag);
-
-        /// <summary>全量加载：引擎启动时读全部档案。</summary>
-        public IReadOnlyList<AlarmDefinition> LoadAll() => _items.Values.ToList();
-    }
-
-    /// <summary>
     /// 报警演示装置（#15）：真引擎（<see cref="AlarmEngine"/>）+ 三条演示档案 + 循环剧本——
     /// 演示的是产品不是 mock：报警判定、状态机、搁置打标全部走 Framework.Alarm 的真代码，
-    /// 唯一假装的是「现场」（采集层由剧本代替、时钟用墙钟、档案在内存）。
+    /// 唯一假装的是「现场」（采集层由剧本代替、时钟用墙钟、档案用引擎库的内存实现）。
     /// 剧本一循环 9 拍（每拍 1 秒）：升温/憋压/液位上涨先后触发三条报警 → 保持两拍给操作员处置
-    /// （确认/搁置在页面上点）→ 全体深回 → 闪绿等确认 → 循环。确认后的闭环与再升级一循环内可见。
+    /// （确认/搁置在页面上点）→ 第 7 拍（下标 6）全体深回：恢复延时全是零，恢复即 RTN——
+    /// 未确认的转闪绿留列表，已确认的当场闭环出列；末两拍停留观察，然后循环再升级。
     /// </summary>
     public sealed class AlarmDemoRig : IDisposable
     {
@@ -77,7 +37,8 @@ namespace SemiAppliaction.Views
         public const string LiquidTag = "LIQ01_LEVEL_HI";
 
         /// <summary>剧本：一循环的工艺量三拍手（温度/压力/液位）——数值对着三条档案的限值排的，
-        /// 触发时序错开一拍（升温 2s 延时、憋压即时、液位 1s 延时），主列表不至于一拍齐刷刷三行。</summary>
+        /// 触发时序错开一拍（升温 2s 延时、憋压即时、液位 1s 延时），主列表不至于一拍齐刷刷三行；
+        /// 恢复延时全是零：深回第一拍即 Clear（下标 6），末两拍是停留观察拍。</summary>
         private static readonly (double Heat, double Press, double Liquid)[] Script =
         [
             (200, 0.4, 50), // 基线：全体限内
@@ -86,16 +47,16 @@ namespace SemiAppliaction.Views
             (255, 0.9, 90), // 温度满 2s 延时（温度报警升）；液位越限（延时累计起点）
             (255, 0.9, 90), // 液位满 1s 延时（液位报警升）
             (255, 0.9, 90), // 保持：三行同挂，等操作员确认/搁置
-            (200, 0.4, 50), // 全体深回（恢复累计起点）
-            (200, 0.4, 50), // 恢复满：未确认的全体 RTN（闪绿等确认）
-            (200, 0.4, 50), // 再停一拍（确认后的报警在此闭环出列），然后循环
+            (200, 0.4, 50), // 全体深回：恢复延时为零，恢复即 Clear——未确认的转 RTN 闪绿，已确认的当场闭环出列
+            (200, 0.4, 50), // 停留观察拍（RTN 的等确认；再升级在下一循环）
+            (200, 0.4, 50), // 停留观察拍，然后循环
         ];
 
         /// <summary>模拟采集层：剧本的事实出口。</summary>
         public SimulatedConditionSource Source { get; } = new();
 
-        /// <summary>演示档案库：三条档案随装置就位。</summary>
-        public InMemoryDefinitionStore Store { get; }
+        /// <summary>演示档案库：三条档案随装置就位（引擎库的内存实现，不落盘）。</summary>
+        public InMemoryAlarmDefinitionStore Store { get; }
 
         /// <summary>真引擎：档案装好、采集层接好、墙钟对好——页面拿它当 IAlarmFeed 用。</summary>
         public AlarmEngine Engine { get; }
@@ -124,9 +85,9 @@ namespace SemiAppliaction.Views
         public void Dispose() => Engine.Dispose();
 
         /// <summary>三条演示档案（哲学 §6.1：操作动作必填——填不出的候选当庭退回）。</summary>
-        private static InMemoryDefinitionStore BuildStore()
+        private static InMemoryAlarmDefinitionStore BuildStore()
         {
-            var store = new InMemoryDefinitionStore();
+            var store = new InMemoryAlarmDefinitionStore();
 
             store.Add(new AlarmDefinition(
                 Tag: HeatTag,

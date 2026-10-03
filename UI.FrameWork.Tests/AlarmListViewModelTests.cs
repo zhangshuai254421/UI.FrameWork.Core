@@ -166,6 +166,24 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(AlarmState.ReturnToNormal, vm.MainRows[0].State);
         }
 
+        /// <summary>RTN 再激活：未确认自愈的行还挂着（RTN 闪绿），条件再越限触发再激活——
+        /// 同一行实例原位刷回未确认、活跃起点照事件刷新，行不换实例（选中与详情弹窗不脱钩）。</summary>
+        [Fact]
+        public void 再激活_同一行回未确认_起点刷新()
+        {
+            var (vm, feed, _) = NewVm();
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+            feed.Emit(new AlarmAutoReturned(HeatTag, T(4)));               // 未确认自愈：闪绿留列表
+            var row = vm.MainRows[0];
+
+            feed.Emit(new AlarmRaised(HeatTag, T(6), AlarmPriority.High)); // 条件再越限：再激活
+
+            Assert.Single(vm.MainRows);
+            Assert.Same(row, vm.MainRows[0]);                              // 行实例不换：原位刷
+            Assert.Equal(AlarmState.Unacknowledged, row.State);            // 回闪红
+            Assert.Equal(T(6), row.Since);                                 // 起点刷新
+        }
+
         /// <summary>验收「移除正确」：Closed → 行从两清单里消失（Closed 移出是引擎定的规矩，UI 照单全收）。</summary>
         [Fact]
         public void 闭环_移出列表()
