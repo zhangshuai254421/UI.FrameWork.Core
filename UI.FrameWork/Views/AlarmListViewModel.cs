@@ -15,6 +15,7 @@ namespace SemiAppliaction.Views
     /// 本类把每一拍 Post 到注入的上下文再翻译；测试注入同步上下文即同步执行路径（不依赖真线程）。
     /// 只认 <see cref="IAlarmFeed"/> 接缝——测试 fake 一个 feed 即可红绿灯，不依赖真引擎。
     /// 行实例终生制：事件只原位刷行、清单原位对账（容器不重建，闪烁不重启、选中不丢）；
+    /// 唯一例外是 <see cref="Reload"/> 整体重建——走完按位号重锚选中（#25），弹窗不绑死旧实例；
     /// <see cref="Dispose"/> 退订事件流——feed 长命（单例引擎）而页面短命时由宿主收口。
     /// </summary>
     public sealed class AlarmListViewModel : BindableBase, IDisposable
@@ -149,7 +150,8 @@ namespace SemiAppliaction.Views
 
         #region 事件直译与清单重切
 
-        /// <summary>活跃快照对账：行登记整体重建自 feed.Active（进页/回页对账，事件流断档的兜底）。</summary>
+        /// <summary>活跃快照对账：行登记整体重建自 feed.Active（进页/回页对账，事件流断档的兜底）。
+        /// 整体重建是行实例终生制的唯一例外，走完按位号重锚选中（#25）。</summary>
         public void Reload()
         {
             _rows.Clear();
@@ -159,6 +161,13 @@ namespace SemiAppliaction.Views
             }
 
             RefreshFilters();
+
+            // 重锚选中（#25）：行登记重建后旧实例已死，开着的详情弹窗不能绑死旧行——
+            // 按位号认领新行（setter 顺带重取档案，详情拿到新库态）；位号不在了就置 null 收弹窗。
+            if (SelectedRow is not null)
+            {
+                SelectedRow = _rows.GetValueOrDefault(SelectedRow.Tag);
+            }
         }
 
         /// <summary>重切两清单：主列表/搁置清单 = AlarmFilters 对同一份行的两个视图（到期标自然失效在呈现侧的重算入口）。

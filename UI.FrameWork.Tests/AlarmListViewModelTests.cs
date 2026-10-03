@@ -288,6 +288,40 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(T(35), shelved.ShelvedUntil);
         }
 
+        /// <summary>回页对账重锚选中（#25）：Reload 重建行登记后，开着的详情弹窗认领新实例——
+        /// 不绑死被遗弃的旧行（引擎后续事件刷的是新实例，弹窗绑旧行就冻死在旧状态）。</summary>
+        [Fact]
+        public void 还原_重锚选中行_详情跟随新实例()
+        {
+            var (vm, feed, _) = NewVm();
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);
+            var stale = vm.SelectedRow;
+
+            feed.Active = [new ActiveAlarm(HeatTag, AlarmState.Unacknowledged, AlarmPriority.High, T(2))];
+            vm.Reload();
+
+            Assert.NotNull(vm.SelectedRow);
+            Assert.NotSame(stale, vm.SelectedRow);                          // 旧实例已弃：选中认领新行
+            Assert.Same(vm.MainRows[0], vm.SelectedRow);                    // 指向重建后的行
+            Assert.NotNull(vm.Detail);                                      // 弹窗开着：档案重取不脱钩
+        }
+
+        /// <summary>回页对账时位号已不在活跃快照：开着的详情收起——不留悬空选中与挡屏弹窗（#25）。</summary>
+        [Fact]
+        public void 还原_选中位号已消失_收起弹窗()
+        {
+            var (vm, feed, _) = NewVm();
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);
+
+            feed.Active = [];                                               // 对账快照里没了（已闭环/被摘）
+            vm.Reload();
+
+            Assert.Null(vm.SelectedRow);
+            Assert.Null(vm.Detail);
+        }
+
         // ══════════════════════ 操作员动作转手 feed（UI 不自改状态） ══════════════════════
 
         /// <summary>确认命令：转手 feed.Acknowledge(tag, op)——VM 不自己改状态，等引擎的 Acknowledged 事件回弹。</summary>
