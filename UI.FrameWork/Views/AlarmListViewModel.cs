@@ -151,10 +151,14 @@ namespace SemiAppliaction.Views
         #region 事件直译与清单重切
 
         /// <summary>活跃快照对账：行登记整体重建自 feed.Active（进页/回页对账，事件流断档的兜底）。
-        /// 整体重建是行实例终生制的唯一例外，走完按位号重锚选中（#25）。</summary>
+        /// 整体重建是行实例终生制的唯一例外，两清单一并清空重填——Refill 的原位对账只认位号，
+        /// 留着上一代的行会跟新实例同位号双行（#25 评审），所以这里不走 Refill 的留旧路径。
+        /// 走完按位号重锚选中（#25）。</summary>
         public void Reload()
         {
             _rows.Clear();
+            MainRows.Clear();
+            ShelvedRows.Clear();
             foreach (ActiveAlarm member in _feed.Active)
             {
                 _rows[member.Tag] = new AlarmRow(member);

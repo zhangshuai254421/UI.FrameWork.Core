@@ -10,9 +10,9 @@ namespace Framework.Core.Common
     /// </summary>
     public static class EfSqlLogging
     {
-        /// <summary>诊断开关是否打开：环境变量 EF_SQL_LOG 取 1 或 true（大小写不敏感）。</summary>
+        /// <summary>诊断开关是否打开：环境变量 EF_SQL_LOG 取 1 或 true（大小写不敏感，容忍首尾空白——setx 手滑带空格不算关）。</summary>
         public static bool Enabled
             => Environment.GetEnvironmentVariable("EF_SQL_LOG") is { Length: > 0 } value
-                && (value == "1" || value.Equals("true", StringComparison.OrdinalIgnoreCase));
+                && (value.Trim() == "1" || value.Trim().Equals("true", StringComparison.OrdinalIgnoreCase));
     }
 }

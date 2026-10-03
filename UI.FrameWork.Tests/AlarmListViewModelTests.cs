@@ -337,6 +337,23 @@ namespace SemiAppliaction.Views.Tests
             Assert.Null(vm.Detail);
         }
 
+        /// <summary>回页对账不复活旧行（#25 评审）：集合里已有事件喂出的同位号行时，Reload 整体重建
+        /// 必须连旧实例一并清走——Refill 按位号对账只删「快照里没有的」，旧实例不清理就同位号双行，
+        /// 旧行还被 Apply 遗弃冻死在旧状态。</summary>
+        [Fact]
+        public void 还原_活页再对账_同位号不双行()
+        {
+            var (vm, feed, _) = NewVm();
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));  // 事件已喂出一行（活页）
+            var stale = vm.MainRows[0];
+
+            feed.Active = [new ActiveAlarm(HeatTag, AlarmState.Unacknowledged, AlarmPriority.High, T(2))];
+            vm.Reload();
+
+            var row = Assert.Single(vm.MainRows);                           // 旧行不能阴魂不散
+            Assert.NotSame(stale, row);                                     // 留下的必须是重建的新实例
+        }
+
         // ══════════════════════ 操作员动作转手 feed（UI 不自改状态） ══════════════════════
 
         /// <summary>确认命令：转手 feed.Acknowledge(tag, op)——VM 不自己改状态，等引擎的 Acknowledged 事件回弹。</summary>

@@ -23,6 +23,9 @@ namespace SemiAppliaction.Views
         /// <summary>泵线取消源：后台泵的生命开关（null = 没在泵）。</summary>
         private CancellationTokenSource? _pumpCts;
 
+        /// <summary>泵线代数：每次开演自增——在途拍出手前对暗号，暂停/换代后的尾拍不出手（#29 评审）。</summary>
+        private int _pumpGen;
+
         /// <summary>列表 VM：主列表/搁置清单/详情的数据源（页面绑定都打在 List.* 上）。</summary>
         public AlarmListViewModel List { get; }
 
@@ -57,7 +60,7 @@ namespace SemiAppliaction.Views
             List = new AlarmListViewModel(_rig.Engine, _rig.Store, _ui);
 
             StartCommand = new DelegateCommand(Start);
-            StopCommand = new DelegateCommand(Stop);
+            StopCommand = new DelegateCommand(() => Stop());
         }
 
         /// <summary>开演：后台泵走起来——条件事实进引擎与落库都在后台线程（#29 病根在此）：
@@ -71,6 +74,7 @@ namespace SemiAppliaction.Views
 
             _pumpCts = new CancellationTokenSource();
             var token = _pumpCts.Token;
+            var gen = ++_pumpGen;
             _ = Task.Run(async () =>
             {
                 while (!token.IsCancellationRequested)
@@ -84,14 +88,21 @@ namespace SemiAppliaction.Views
                         return; // 停演：正常收场
                     }
 
+                    // 出手前对暗号（#29 评审）：暂停/换代后已在途的这拍不出手——
+                    // 否则库忙拖住一拍时，状态栏已报「已暂停」、新报警却姗姗落地。
+                    if (token.IsCancellationRequested || gen != _pumpGen)
+                    {
+                        return;
+                    }
+
                     try
                     {
                         _rig.PumpNext();                        // 剧本下一拍：条件事实进真引擎（后台执行，事件由列表 VM 编队回 UI）
                         _ui.Post(_ => List.RefreshFilters(), null); // 对表重切两清单（集合动作归 UI 线程）：搁置到期在这里自然回主列表
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        _ui.Post(_ => Stop(), null);            // 泵坏了就地停演（现场保留，与暂停同义）；收口回 UI 线程
+                        _ui.Post(_ => Stop($"模拟故障停演：{ex.Message}"), null); // 故障说出口（#29 评审）：别装成人为暂停，现场没处查
                         return;
                     }
                 }
@@ -100,12 +111,13 @@ namespace SemiAppliaction.Views
             StatusText = "模拟中：升温/憋压/液位上涨 → 保持 → 全体恢复，循环投喂真引擎";
         }
 
-        /// <summary>暂停：泵线停下，现场（报警与搁置标）原样保留。</summary>
-        private void Stop()
+        /// <summary>暂停：泵线停下，现场（报警与搁置标）原样保留；<paramref name="reason"/> 非空时状态栏如实报因。</summary>
+        private void Stop(string? reason = null)
         {
             _pumpCts?.Cancel();
             _pumpCts = null;
-            StatusText = "模拟已暂停";
+            _pumpGen++;                                     // 立即作废在途拍：暂停后不落尾拍（#29 评审）
+            StatusText = reason ?? "模拟已暂停";
         }
 
         #region INavigationAware

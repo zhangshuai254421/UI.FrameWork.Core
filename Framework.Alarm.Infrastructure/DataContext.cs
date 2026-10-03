@@ -1,3 +1,4 @@
+using EFCore.Infrastructure;
 using Framework.Alarm.Domain;
 using Framework.Core.Common;
 using Microsoft.EntityFrameworkCore;
@@ -44,12 +45,7 @@ namespace Framework.Alarm.Infrastructure
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 #if DEBUG
-            if (EfSqlLogging.Enabled)
-            {
-                optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                    .EnableDetailedErrors();
-            }
+            optionsBuilder.UseDiagnosticSqlLogging();   // #30：EF_SQL_LOG=1 才开，四家族同款一句门
 #endif
             // 仅当未显式传入选项（如测试传入内存库）时才落到磁盘库。
             if (!optionsBuilder.IsConfigured)
