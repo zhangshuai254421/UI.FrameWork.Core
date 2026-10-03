@@ -192,11 +192,13 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>
-        /// 转换五（哲学 §3.1）：RTN 等到了那个「看见了」——操作员确认恢复，产 <see cref="AlarmClosed"/>
-        /// 闭环并移出列表。闭环保留痕：时刻取时钟接缝当下（操作员动作，与条件驱动的闭环区分）。
+        /// 转换五（哲学 §3.1）：RTN 等到了那个「看见了」——操作员确认恢复，产
+        /// <see cref="AlarmClosedByOperator"/> 闭环并移出列表。闭环保留痕：时刻取时钟接缝当下
+        /// （操作员动作，与条件驱动的闭环区分），**操作员留名**（#26）——四类操作员动作
+        /// 确认/搁置/解除/确认闭环全量留痕，「这条 RTN 是谁确认闭环的」审计答得上来。
         /// </summary>
         [Fact]
-        public void 确认恢复_RTN确认后Closed闭环()
+        public void 确认恢复_RTN确认后操作员闭环_留名()
         {
             var source = new FakeConditionSource();
             var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
@@ -212,11 +214,12 @@ namespace Framework.Alarm.Tests
             engine.Acknowledge(HEAT01, op: "王五");                            // 补一个「看见了」
 
             Assert.Equal(
-                new[] { nameof(AlarmRaised), nameof(AlarmAutoReturned), nameof(AlarmClosed) },
-                events.Select(e => e.GetType().Name));                        // 履历：无人看见的恢复 + 真闭环，两种事件分立
+                new[] { nameof(AlarmRaised), nameof(AlarmAutoReturned), nameof(AlarmClosedByOperator) },
+                events.Select(e => e.GetType().Name));                        // 履历：无人看见的恢复 + 操作员闭环，两种事件分立
 
-            var closed = Assert.IsType<AlarmClosed>(events[2]);
+            var closed = Assert.IsType<AlarmClosedByOperator>(events[2]);
             Assert.Equal(HysteresisEvaluatorTests.T(10), closed.At);                                   // 操作员驱动的闭环取时钟当下
+            Assert.Equal("王五", closed.Operator);                            // 留名（#26）：全量留痕的最后一处补齐
             Assert.Empty(engine.Active);                                      // 闭环：移出列表
         }
 

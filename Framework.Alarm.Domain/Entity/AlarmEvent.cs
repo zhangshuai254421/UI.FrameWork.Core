@@ -33,10 +33,21 @@ namespace Framework.Alarm.Domain
     /// <param name="At">清除时刻（补满恢复延时的那条事实的时间戳）。</param>
     public sealed record AlarmAutoReturned(string Tag, DateTimeOffset At) : AlarmEvent(Tag, At);
 
-    /// <summary>真闭环：已确认后条件恢复直接闭环，或 RTN 等到了那个「看见了」；移出活跃列表。</summary>
+    /// <summary>真闭环：已确认后条件恢复直接闭环，或 RTN 等到了那个「看见了」；移出活跃列表。
+    /// 不密封：操作员确认闭环（<see cref="AlarmClosedByOperator"/>，#26）由它派生——
+    /// 消费方的类型匹配照旧吃派生型，闭环语义一处定义。</summary>
     /// <param name="Tag">位号。</param>
     /// <param name="At">闭环时刻（条件恢复取事实时间戳，RTN 确认取时钟接缝当下）。</param>
-    public sealed record AlarmClosed(string Tag, DateTimeOffset At) : AlarmEvent(Tag, At);
+    public record AlarmClosed(string Tag, DateTimeOffset At) : AlarmEvent(Tag, At);
+
+    /// <summary>操作员确认闭环（#26）：RTN 等到了那个「看见了」，由操作员亲手关账。与条件驱动的
+    /// <see cref="AlarmClosed"/> 分型——「无人看见的恢复后闭环」与「操作员确认的闭环」在本子上可分，
+    /// 审计答得出「这条 RTN 是谁确认闭环的」（操作员动作全量留痕，哲学 §7【强制】）。
+    /// 派生自 AlarmClosed：消费方的类型匹配（呈现层 Closed 移出列表等）照旧吃它，闭环语义不变。</summary>
+    /// <param name="Tag">位号。</param>
+    /// <param name="At">闭环时刻（操作员动作，取时钟接缝当下）。</param>
+    /// <param name="Operator">操作员：动作全量留痕。</param>
+    public sealed record AlarmClosedByOperator(string Tag, DateTimeOffset At, string Operator) : AlarmClosed(Tag, At);
 
     /// <summary>操作员搁置（摘要 §8.10）：合法闭嘴的正门——报警该乱报的照常走状态机，只是带标退到搁置清单。
     /// 期限必带（无限期搁置 = 变相删报警，哲学 §7【强制】），时刻取时钟接缝当下，操作员全量留痕。</summary>

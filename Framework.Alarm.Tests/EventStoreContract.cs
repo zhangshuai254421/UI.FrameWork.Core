@@ -40,6 +40,35 @@ namespace Framework.Alarm.Tests
                 history);                                                // record 值相等：类型、时刻、优先级、操作员一个不丢
         }
 
+        /// <summary>操作员闭环往返保真（#26）：派生型闭环带操作员名原样读回——
+        /// 「这条 RTN 是谁确认闭环的」在盘上有答案。</summary>
+        public static void 操作员闭环_往返保真(IEventStore store)
+        {
+            var closed = new AlarmClosedByOperator(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(5), "王五");
+
+            store.Append(closed);
+
+            var found = Assert.Single(store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10)));
+            Assert.Equal(closed, found);                                 // record 值相等：操作员一个不丢
+        }
+
+        /// <summary>两种闭环判别分立（#26）：点 AlarmClosed 查不到 AlarmClosedByOperator——
+        /// 条件闭环无主、操作员闭环留名，分型是设计不是冗余，种类查询不混捞；按派生型点名原样回。</summary>
+        public static void 查询_两种闭环_判别分立(IEventStore store)
+        {
+            var conditionClosed = new AlarmClosed(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(3));
+            var operatorClosed = new AlarmClosedByOperator("PUMP01_STOP", HysteresisEvaluatorTests.T(4), "王五");
+            store.Append(conditionClosed);
+            store.Append(operatorClosed);
+
+            Assert.Equal(
+                new AlarmEvent[] { conditionClosed },
+                store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10), kinds: [typeof(AlarmClosed)]));
+            Assert.Equal(
+                new AlarmEvent[] { operatorClosed },
+                store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10), kinds: [typeof(AlarmClosedByOperator)]));
+        }
+
         /// <summary>搁置动作与带标事件都留痕（摘要 §8.10，哲学 §7 全量留痕【强制】）：
         /// 搁置（带期限+操作员）、搁置中触发的带标升级、解除——三条原样读回，标与期限一个不丢。</summary>
         public static void 搁置事件与带标升级_往返保真(IEventStore store)

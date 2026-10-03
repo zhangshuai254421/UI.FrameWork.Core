@@ -9,7 +9,7 @@ namespace Framework.Alarm.Tests
         private static readonly HashSet<Type> KnownKinds =
         [
             typeof(AlarmRaised), typeof(AlarmAcknowledged), typeof(AlarmAutoReturned),
-            typeof(AlarmClosed), typeof(AlarmShelved), typeof(AlarmUnshelved),
+            typeof(AlarmClosed), typeof(AlarmClosedByOperator), typeof(AlarmShelved), typeof(AlarmUnshelved),
         ];
 
         private readonly List<AlarmEvent> _events = new();

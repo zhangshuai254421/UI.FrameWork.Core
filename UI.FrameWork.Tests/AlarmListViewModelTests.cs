@@ -214,6 +214,21 @@ namespace SemiAppliaction.Views.Tests
             Assert.Null(vm.Detail);
         }
 
+        /// <summary>操作员闭环事件同规矩移出列表（#26）：AlarmClosedByOperator 派生自 AlarmClosed，
+        /// 呈现层的类型匹配照旧吃它——闭环语义不因分型而变，VM 不认得新事件照样直译。</summary>
+        [Fact]
+        public void 操作员闭环_同规矩移出列表()
+        {
+            var (vm, feed, _) = NewVm();
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+            feed.Emit(new AlarmAutoReturned(HeatTag, T(2.5)));
+
+            feed.Emit(new AlarmClosedByOperator(HeatTag, T(10), "王五"));
+
+            Assert.Empty(vm.MainRows);
+            Assert.Empty(vm.ShelvedRows);
+        }
+
         /// <summary>Shelved/Unshelved 事件 → 行标的直译：搁置退到搁置清单，解除回主列表（事件驱动，无轮询）。</summary>
         [Fact]
         public void 搁置与解除事件_行在两清单间移动()

@@ -192,6 +192,18 @@ namespace Framework.Alarm.Infrastructure.Migrations
 
                     b.HasDiscriminator().HasValue("AlarmUnshelved");
                 });
+
+            modelBuilder.Entity("Framework.Alarm.Domain.AlarmClosedByOperator", b =>
+                {
+                    b.HasBaseType("Framework.Alarm.Domain.AlarmClosed");
+
+                    b.Property<string>("Operator")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Operator");
+
+                    b.HasDiscriminator().HasValue("AlarmClosedByOperator");
+                });
 #pragma warning restore 612, 618
         }
     }

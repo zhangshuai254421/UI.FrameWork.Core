@@ -139,7 +139,7 @@ namespace Framework.Alarm
         /// <summary>
         /// 操作员确认入口（摘要 §8.4 IAlarmFeed.Acknowledge）：一个「看见了」两个去处——
         /// 未确认 → 已确认，产 <see cref="AlarmAcknowledged"/>（责任接管，仍留列表）；
-        /// RTN → 确认恢复闭环，产 <see cref="AlarmClosed"/> 并移出列表。
+        /// RTN → 确认恢复闭环，产 <see cref="AlarmClosedByOperator"/>（操作员闭环留名，#26）并移出列表。
         /// 状态不许可时静默忽略（非法转换契约，ADR-0009 规则 9）。时刻取时钟接缝当下，操作员全量留痕。
         /// </summary>
         public void Acknowledge(string tag, string op)
@@ -166,7 +166,7 @@ namespace Framework.Alarm
                 if (machine.CurrentState != before)
                 {
                     _active.RemoveAll(a => a.Tag == tag);
-                    Raise(new AlarmClosed(tag, _clock.Now));
+                    Raise(new AlarmClosedByOperator(tag, _clock.Now, op)); // 操作员闭环留名（#26）：与条件驱动的闭环分型
                 }
             }
         }
