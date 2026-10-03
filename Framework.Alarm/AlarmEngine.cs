@@ -8,6 +8,9 @@ namespace Framework.Alarm
     /// 两条沉默决策（哲学 §3.4【强制】）：无档案不报警、报警中不重播。
     /// 搁置 = 事件打标（<c>ShelvedUntil</c>，摘要 §8.10，哲学 §7【强制】）：不拦状态机，
     /// 搁置期间条件照常触发、事件照常落库，只是带标——呈现按标过滤，到期标自然失效。
+    /// 搁置登记是事件流的投影（#16）：总装时若接了历史库（<paramref name="eventStore"/>），
+    /// 按落库先后回放搁置/解除事件重建登记本——重启、改档重建都不丢操作员的搁置单；
+    /// 回放是读历史，不是改历史（append-only 铁律不受触碰）。
     /// 每条报警一个频道：滤波器组态来自档案（组态参数来自档案，哲学 §6.1）。
     /// 档案启动时全量加载，运行期只读（档案驱动，不在 if 里长报警）；改档后重建引擎接新档案，
     /// 旧实例 <see cref="Dispose"/> 退订采集层，避免双引擎重复播报。
@@ -59,12 +62,18 @@ namespace Framework.Alarm
             }
         }
 
-        /// <summary>总装：接上采集层（订阅条件事实）、装上档案（全量加载，档案驱动）、对好表（时钟接缝）。</summary>
-        public AlarmEngine(IConditionSource source, IAlarmDefinitionStore store, IAlarmClock clock)
+        /// <summary>总装：接上采集层（订阅条件事实）、装上档案（全量加载，档案驱动）、对好表（时钟接缝）；
+        /// 给了历史库则回放搁置登记（<see cref="RestoreShelved"/>，#16）——重启不丢操作员的搁置单。</summary>
+        public AlarmEngine(IConditionSource source, IAlarmDefinitionStore store, IAlarmClock clock, IEventStore? eventStore = null)
         {
             _source = source;
             _clock = clock;
             _channels = store.LoadAll().ToDictionary(d => d.Tag, d => new Channel(d));
+            if (eventStore is not null)
+            {
+                RestoreShelved(eventStore);
+            }
+
             source.ConditionChanged += OnConditionChanged;
         }
 
@@ -201,6 +210,44 @@ namespace Framework.Alarm
                 }
 
                 Raise(new AlarmUnshelved(tag, now, op));
+            }
+        }
+
+        /// <summary>
+        /// 回放搁置登记（#16）：按落库先后（append-only 本子的书写次序即履历次序）重放
+        /// <see cref="AlarmShelved"/>（登记期限）/ <see cref="AlarmUnshelved"/>（撤账）——
+        /// 重复搁置以最新下单为准，与运行期同规矩；其余事件种类不动登记本（升级事件的标是读登记本打的，不是写）。
+        /// 回放完对表清旧账：已到期的订单不复活（时钟一过标自然失效，摘要 §8.10），档案已删的位号不进新登记本。
+        /// append-only 边界：只读不写——回放期间不追加、不吐事件。
+        /// 历史库启动期读不出来：登记回不来的后果是搁置失效回主列表（宁多报不漏报），不许挡引擎总装。
+        /// </summary>
+        private void RestoreShelved(IEventStore eventStore)
+        {
+            try
+            {
+                foreach (var e in eventStore.Query(DateTimeOffset.MinValue, DateTimeOffset.MaxValue))
+                {
+                    switch (e)
+                    {
+                        case AlarmShelved shelved:
+                            _shelved[shelved.Tag] = shelved.ShelvedUntil;
+                            break;
+                        case AlarmUnshelved:
+                            _shelved.Remove(e.Tag);
+                            break;
+                    }
+                }
+            }
+            catch
+            {
+                // 历史库故障：空登记起步（fail toward alarming），故障归历史库通道自证。
+                return;
+            }
+
+            var now = _clock.Now;
+            foreach (var tag in _shelved.Where(kv => kv.Value <= now || !_channels.ContainsKey(kv.Key)).Select(kv => kv.Key).ToList())
+            {
+                _shelved.Remove(tag); // 旧账与死单不进新登记本
             }
         }
 
