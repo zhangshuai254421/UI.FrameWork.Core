@@ -159,18 +159,46 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>铁律二边界（哲学 §6.2「死区 ≥ 信号噪声幅值」）：零延时隔离死区——
-        /// 噪声幅值(3℃)超过死区(2℃)时，值在两线外来回即翻转，死区保不了你：铁律不是白写的。</summary>
+        /// 噪声幅值(3℃)超过死区(2℃)时，值在两线外来回即翻转，死区保不了你：铁律不是白写的。
+        /// 首条事实即越限且零延时：直接升级（#17 修正——零延时本就无「累计」可言，开机盲区不吞它）。</summary>
         [Fact]
         public void 死区_噪声幅值超过死区_照翻转()
         {
             var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.Zero, offDelay: TimeSpan.Zero);
 
-            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 250.5)));
-            Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(0.5), Value: 250.5))); // 零延时即升
+            Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 250.5)));   // 首条即越限：零延时立即升
+            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0.5), Value: 250.5))); // 报警中：不重播
 
             Assert.Equal(FilterDecision.Clear, evaluator.Evaluate(new ConditionSample(At: T(1), Value: 247.5)));   // 噪声低谷穿出恢复点
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(1.5), Value: 250.5))); // 噪声高峰穿出限值
             Assert.Equal(FilterDecision.Clear, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 247.5)));   // 照翻不误
+        }
+
+        /// <summary>
+        /// 首条事实盲区修正（#17）：OnDelay = 0 的「即时触发」档案，开机时条件已越限——
+        /// 首条事实直接升级，不等第二条定界（否则若第二条已回限内，这次越限永远不升，最坏漏报一段）。
+        /// 延时为零没有「累计」可言：单条事实即够格。升级后报警中不重播照旧、深回清除照旧。
+        /// </summary>
+        [Fact]
+        public void 盲区修正_首条事实_零延时且已越限_立即升()
+        {
+            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.Zero, offDelay: TimeSpan.Zero);
+
+            Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260))); // 开机即越限：立即升
+            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(1), Value: 261)));  // 报警中：不重播
+            Assert.Equal(FilterDecision.Clear, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 245))); // 深回即清（恢复延时 0）
+        }
+
+        /// <summary>首条事实的既有契约不变（#17 只动零延时一格）：带触发延时的档案，首条立段不升——
+        /// 没有前序事实就无从认定「持续」，延时未满照旧静默，满延时照常升级。</summary>
+        [Fact]
+        public void 首条事实_有延时_照旧立段静默()
+        {
+            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.Zero);
+
+            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260))); // 首条立段：延时未满
+            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(1.9), Value: 261)));
+            Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 262))); // 满延时照常
         }
 
         /// <summary>乱序事实（时间戳倒流）：忽略不计——不许倒拨累计，也不许把进行中的越限段当「回限内」清零。</summary>
