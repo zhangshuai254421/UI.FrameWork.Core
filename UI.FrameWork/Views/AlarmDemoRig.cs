@@ -6,7 +6,8 @@ namespace SemiAppliaction.Views
     /// <summary>
     /// 模拟采集层（#15 演示装置）：<see cref="IConditionSource"/> 的剧本实现——
     /// 只报条件事实，不懂「报警」二字；越没越限由真引擎对照档案判定（判定权只住引擎层）。
-    /// 页面 VM 用 DispatcherTimer 每拍调 <see cref="Report"/> 系成员推进剧本。
+    /// 页面 VM 用后台泵线每拍调 <see cref="Report"/> 系成员推进剧本（#29：泵在后台线程，
+    /// 事件由列表 VM 编队回 UI）——真宿主的采集层也从采集线程泵，演示页同规矩。
     /// </summary>
     public sealed class SimulatedConditionSource : IConditionSource
     {
