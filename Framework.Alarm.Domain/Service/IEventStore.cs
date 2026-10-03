@@ -1,4 +1,4 @@
-namespace Framework.Alarm
+namespace Framework.Alarm.Domain
 {
     /// <summary>
     /// 事件历史库存储接缝（摘要 §8.11，哲学 §8.1【强制】）：append-only 只进不改——

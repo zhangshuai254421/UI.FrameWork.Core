@@ -1,4 +1,4 @@
-namespace Framework.Alarm
+namespace Framework.Alarm.Domain
 {
     /// <summary>
     /// 报警优先级，固定三级（哲学 §4.1【强制】，§12 #1 拍板）——优先级矩阵的**输出**：

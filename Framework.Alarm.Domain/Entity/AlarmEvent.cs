@@ -1,4 +1,4 @@
-namespace Framework.Alarm
+namespace Framework.Alarm.Domain
 {
     /// <summary>
     /// 报警事件族（摘要 §8.5）：事件就是报警的履历，引擎产出的全量落历史库（append-only）。
@@ -6,6 +6,9 @@ namespace Framework.Alarm
     /// 无人看见的恢复 ≠ 真闭环，早班的「昨夜发生过什么」靠这条区别（哲学 §3.5【强制】）。
     /// 时间口径：条件驱动的事件（升级/清除）带条件事实的时间戳，操作员驱动的事件（确认/闭环/搁置/解除）
     /// 带时钟接缝的当下（ADR-0009 规则 6）。
+    /// #20 实体转正：事件住家族模型中心（ADR-0008 家族形态）。历史一拍一横锤、永不改写——
+    /// record 不可变正是 append-only 的类型级表达；值相等契约是往返「原样读回」的断言依据。
+    /// EF 映射（#21）走构造绑定 + TPH 判别，履历次序（自增列）由持久化层配置。
     /// </summary>
     /// <param name="Tag">位号：哪条报警。</param>
     /// <param name="At">事件时刻。</param>

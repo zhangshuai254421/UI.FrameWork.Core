@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Framework.Alarm\Framework.Alarm.csproj" />
+    <ProjectReference Include="..\Framework.Alarm.Domain\Framework.Alarm.Domain.csproj" />
   </ItemGroup>
 
 </Project>

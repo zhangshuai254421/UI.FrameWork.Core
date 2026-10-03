@@ -1,4 +1,4 @@
-namespace Framework.Alarm
+namespace Framework.Alarm.Domain
 {
     /// <summary>报警分类（MADB「分类」栏，哲学 §6.1）。</summary>
     public enum AlarmClass

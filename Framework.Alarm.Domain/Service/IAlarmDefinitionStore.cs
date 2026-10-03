@@ -1,4 +1,4 @@
-namespace Framework.Alarm
+namespace Framework.Alarm.Domain
 {
     /// <summary>
     /// 档案存储接缝（ADR-0009 规则 5，摘要 §8.4）：MADB 档案的增删改查与全量加载。

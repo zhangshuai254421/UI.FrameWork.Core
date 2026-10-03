@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Framework.Alarm;
+using Framework.Alarm.Domain;
 using Prism.Commands;
 using Prism.Mvvm;
 

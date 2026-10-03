@@ -1,4 +1,4 @@
-namespace Framework.Alarm
+namespace Framework.Alarm.Domain
 {
     /// <summary>
     /// 后果严重度分档（MADB「严重度档」栏）——优先级矩阵的**输入**（哲学 §4.2；

@@ -1,4 +1,4 @@
-namespace Framework.Alarm
+namespace Framework.Alarm.Domain
 {
     /// <summary>
     /// 最大响应时间分档（MADB「优先级+依据」栏的矩阵 T 轴坐标）——优先级矩阵的**输入**。

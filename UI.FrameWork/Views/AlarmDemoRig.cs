@@ -1,4 +1,5 @@
 using Framework.Alarm;
+using Framework.Alarm.Domain;
 
 namespace SemiAppliaction.Views
 {

@@ -1,4 +1,5 @@
 using Framework.Alarm;
+using Framework.Alarm.Domain;
 using Prism.Mvvm;
 
 namespace SemiAppliaction.Views
