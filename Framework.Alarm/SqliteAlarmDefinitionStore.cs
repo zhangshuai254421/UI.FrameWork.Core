@@ -6,11 +6,17 @@ namespace Framework.Alarm
     /// <summary>
     /// 档案存储的 SQLite 实现（存储 v1 直接 SQLite，ADR-0009 规则 5、摘要 §8.4）。
     /// 表在构造时幂等建立（CREATE TABLE IF NOT EXISTS），连接由宿主开好注入、生命周期归宿主。
+    /// 与 SqliteEventStore 同一共享连接模型：同一连接不接受并发命令——宿主常把两个库接在
+    /// 同一条连接上，引擎在通讯线程 Append 事件、UI 线程查档案（详情弹窗）随时并发，
+    /// 全部命令过同一把门锁（同 <see cref="SqliteEventStore"/> 口径）。
     /// 落库映射：DateTimeOffset → ISO-8601 TEXT（保时区，往返无损）；TimeSpan → INTEGER ticks；
     /// 枚举 → TEXT 名字（S2/T1/High 直接可读，审计友好）；<c>Limit</c>/<c>Group</c> 是 SQL 关键字，标识符加引号。
     /// </summary>
     public sealed class SqliteAlarmDefinitionStore : IAlarmDefinitionStore
     {
+        /// <summary>共享连接的门锁：同一连接不接受并发命令（与 SqliteEventStore 同口径）。</summary>
+        private readonly object _gate = new();
+
         private const string Columns =
             "Tag, Description, Class, Consequence, Cause, OperatorAction, MaxResponseTime, Severity, " +
             "MtrTier, Priority, \"Limit\", Deadband, OnDelay, OffDelay, \"Group\", " +
@@ -30,34 +36,40 @@ namespace Framework.Alarm
         {
             definition.EnsureValid(); // 当庭退回：操作动作必填、触发延时 < MTR（哲学 §6.1/§6.2）
 
-            using var command = _connection.CreateCommand();
-            command.CommandText =
-                $"INSERT INTO AlarmDefinition ({Columns}) " +
-                "VALUES (@Tag, @Description, @Class, @Consequence, @Cause, @OperatorAction, @MaxResponseTime, " +
-                "@Severity, @MtrTier, @Priority, @Limit, @Deadband, @OnDelay, @OffDelay, @Group, " +
-                "@RationalizedBy, @RationalizedOn, @PhilosophyVersion)";
-            Bind(command, definition);
+            lock (_gate)
+            {
+                using var command = _connection.CreateCommand();
+                command.CommandText =
+                    $"INSERT INTO AlarmDefinition ({Columns}) " +
+                    "VALUES (@Tag, @Description, @Class, @Consequence, @Cause, @OperatorAction, @MaxResponseTime, " +
+                    "@Severity, @MtrTier, @Priority, @Limit, @Deadband, @OnDelay, @OffDelay, @Group, " +
+                    "@RationalizedBy, @RationalizedOn, @PhilosophyVersion)";
+                Bind(command, definition);
 
-            try
-            {
-                command.ExecuteNonQuery();
-            }
-            catch (SqliteException ex) when (ex.SqliteExtendedErrorCode is 2067 or 1555)
-            // SQLITE_CONSTRAINT_UNIQUE / _PRIMARYKEY：位号撞车；其余约束违约（NOT NULL 等）原样外抛，不冒充「位号已存在」
-            {
-                throw new ArgumentException($"位号已存在：{definition.Tag}", nameof(definition), ex);
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (SqliteException ex) when (ex.SqliteExtendedErrorCode is 2067 or 1555)
+                // SQLITE_CONSTRAINT_UNIQUE / _PRIMARYKEY：位号撞车；其余约束违约（NOT NULL 等）原样外抛，不冒充「位号已存在」
+                {
+                    throw new ArgumentException($"位号已存在：{definition.Tag}", nameof(definition), ex);
+                }
             }
         }
 
         /// <inheritdoc/>
         public AlarmDefinition? Find(string tag)
         {
-            using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT {Columns} FROM AlarmDefinition WHERE Tag = @Tag";
-            command.Parameters.AddWithValue("@Tag", tag);
+            lock (_gate)
+            {
+                using var command = _connection.CreateCommand();
+                command.CommandText = $"SELECT {Columns} FROM AlarmDefinition WHERE Tag = @Tag";
+                command.Parameters.AddWithValue("@Tag", tag);
 
-            using var reader = command.ExecuteReader();
-            return reader.Read() ? Map(reader) : null;
+                using var reader = command.ExecuteReader();
+                return reader.Read() ? Map(reader) : null;
+            }
         }
 
         /// <inheritdoc/>
@@ -65,52 +77,63 @@ namespace Framework.Alarm
         {
             definition.EnsureValid(); // 改档同样过法定校验
 
-            using var command = _connection.CreateCommand();
-            command.CommandText =
-                "UPDATE AlarmDefinition SET Description = @Description, Class = @Class, Consequence = @Consequence, " +
-                "Cause = @Cause, OperatorAction = @OperatorAction, MaxResponseTime = @MaxResponseTime, " +
-                "Severity = @Severity, MtrTier = @MtrTier, Priority = @Priority, \"Limit\" = @Limit, " +
-                "Deadband = @Deadband, OnDelay = @OnDelay, OffDelay = @OffDelay, \"Group\" = @Group, " +
-                "RationalizedBy = @RationalizedBy, RationalizedOn = @RationalizedOn, PhilosophyVersion = @PhilosophyVersion " +
-                "WHERE Tag = @Tag";
-            Bind(command, definition);
-
-            if (command.ExecuteNonQuery() == 0)
+            lock (_gate)
             {
-                throw new ArgumentException($"位号不存在：{definition.Tag}", nameof(definition));
+                using var command = _connection.CreateCommand();
+                command.CommandText =
+                    "UPDATE AlarmDefinition SET Description = @Description, Class = @Class, Consequence = @Consequence, " +
+                    "Cause = @Cause, OperatorAction = @OperatorAction, MaxResponseTime = @MaxResponseTime, " +
+                    "Severity = @Severity, MtrTier = @MtrTier, Priority = @Priority, \"Limit\" = @Limit, " +
+                    "Deadband = @Deadband, OnDelay = @OnDelay, OffDelay = @OffDelay, \"Group\" = @Group, " +
+                    "RationalizedBy = @RationalizedBy, RationalizedOn = @RationalizedOn, PhilosophyVersion = @PhilosophyVersion " +
+                    "WHERE Tag = @Tag";
+                Bind(command, definition);
+
+                if (command.ExecuteNonQuery() == 0)
+                {
+                    throw new ArgumentException($"位号不存在：{definition.Tag}", nameof(definition));
+                }
             }
         }
 
         /// <inheritdoc/>
         public bool Delete(string tag)
         {
-            using var command = _connection.CreateCommand();
-            command.CommandText = "DELETE FROM AlarmDefinition WHERE Tag = @Tag";
-            command.Parameters.AddWithValue("@Tag", tag);
-            return command.ExecuteNonQuery() > 0;
+            lock (_gate)
+            {
+                using var command = _connection.CreateCommand();
+                command.CommandText = "DELETE FROM AlarmDefinition WHERE Tag = @Tag";
+                command.Parameters.AddWithValue("@Tag", tag);
+                return command.ExecuteNonQuery() > 0;
+            }
         }
 
         /// <inheritdoc/>
         public IReadOnlyList<AlarmDefinition> LoadAll()
         {
-            using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT {Columns} FROM AlarmDefinition";
-
-            using var reader = command.ExecuteReader();
-            var definitions = new List<AlarmDefinition>();
-            while (reader.Read())
+            lock (_gate)
             {
-                definitions.Add(Map(reader));
-            }
+                using var command = _connection.CreateCommand();
+                command.CommandText = $"SELECT {Columns} FROM AlarmDefinition";
 
-            return definitions;
+                using var reader = command.ExecuteReader();
+                var definitions = new List<AlarmDefinition>();
+                while (reader.Read())
+                {
+                    definitions.Add(Map(reader));
+                }
+
+                return definitions;
+            }
         }
 
         /// <summary>建表（幂等）：位号主键即唯一性约束。</summary>
         private void EnsureTable()
         {
-            using var command = _connection.CreateCommand();
-            command.CommandText =
+            lock (_gate)
+            {
+                using var command = _connection.CreateCommand();
+                command.CommandText =
                 """
                 CREATE TABLE IF NOT EXISTS AlarmDefinition (
                     Tag TEXT PRIMARY KEY,
@@ -133,7 +156,8 @@ namespace Framework.Alarm
                     PhilosophyVersion TEXT NOT NULL
                 )
                 """;
-            command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
+            }
         }
 
         /// <summary>整行参数绑定：INSERT 与 UPDATE 共用。</summary>

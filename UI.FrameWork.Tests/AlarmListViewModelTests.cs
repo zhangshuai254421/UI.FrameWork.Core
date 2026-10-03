@@ -198,6 +198,21 @@ namespace SemiAppliaction.Views.Tests
             Assert.Empty(vm.ShelvedRows);
         }
 
+        /// <summary>闭环时开着的详情弹窗一并收起：报警已闭环，档案浮层别再挡屏（也不留一行已消失的报警的档案）。</summary>
+        [Fact]
+        public void 闭环_开着的详情一并收起()
+        {
+            var (vm, feed, _) = NewVm();
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);
+            Assert.NotNull(vm.Detail);
+
+            feed.Emit(new AlarmClosed(HeatTag, T(4)));
+
+            Assert.Null(vm.SelectedRow);
+            Assert.Null(vm.Detail);
+        }
+
         /// <summary>Shelved/Unshelved 事件 → 行标的直译：搁置退到搁置清单，解除回主列表（事件驱动，无轮询）。</summary>
         [Fact]
         public void 搁置与解除事件_行在两清单间移动()

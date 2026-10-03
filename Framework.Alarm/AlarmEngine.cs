@@ -41,7 +41,9 @@ namespace Framework.Alarm
             public AlarmStateMachine Machine { get; } = new();
         }
 
-        /// <summary>事件流出口：落历史库、推 UI 都从这里订阅（订阅即落库，一行接线，摘要 §8.11）。</summary>
+        /// <summary>事件流出口：落历史库、推 UI 都从这里订阅（订阅即落库，一行接线，摘要 §8.11）。
+        /// 订阅方必须异步编队（Post/BeginInvoke）回自己的线程——引擎在锁内同步播报，同步等待 UI
+        /// （Invoke/.Result 等）即死锁；跨线程编队归呈现层（摘要 §9.2）。</summary>
         public event Action<AlarmEvent>? EventRaised;
 
         /// <summary>活跃列表只读投影：成员 = 未确认 + 已确认 + RTN；按活跃起点先后排列（排序置顶按档案优先级是呈现层的事）。

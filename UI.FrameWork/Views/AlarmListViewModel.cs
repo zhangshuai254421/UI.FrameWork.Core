@@ -208,6 +208,11 @@ namespace SemiAppliaction.Views
                     break;
                 case AlarmClosed:
                     _rows.Remove(e.Tag);                                        // Closed 移出：引擎定的规矩
+                    if (SelectedRow?.Tag == e.Tag)
+                    {
+                        SelectedRow = null;                                     // 详情开着就一并收起：报警已闭环，档案别再挡屏
+                    }
+
                     break;
                 case AlarmShelved shelved:
                     UpdateMark(shelved.Tag, shelved.ShelvedUntil);              // 带标：退到搁置清单
