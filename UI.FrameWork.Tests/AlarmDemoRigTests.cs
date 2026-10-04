@@ -66,7 +66,8 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(3, store.LoadAll().Count);
         }
 
-        /// <summary>通电落库（#22）：接了事件史，演示的每一拍全量进本子——五拍憋压即时档升的那一次，库里就有。</summary>
+        /// <summary>通电落库（#22）：接了事件史，演示的每一拍全量进本子——五拍憋压即时档升的那一次，库里就有。
+        /// 落库走后台冲账（#31），断言前经装置冲账：存量清完才对账。</summary>
         [Fact]
         public void 接通事件库_剧本五拍_事件全量落本子()
         {
@@ -79,6 +80,8 @@ namespace SemiAppliaction.Views.Tests
                 rig.PumpNext();
                 vm.RefreshFilters();
             }
+
+            rig.History?.Dispose();                              // 冲账：后台写者清完存量再断言（#31）
 
             var record = Assert.Single(events.Events);           // 引擎升几次，本子记几笔：一笔不缺
             var raised = Assert.IsType<AlarmRaised>(record);

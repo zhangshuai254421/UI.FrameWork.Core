@@ -1,6 +1,6 @@
 # 报警是遵循 GB/T 41261 的顶层纯能力库：Framework.Alarm
 
-Status: accepted——存储选型与家族判据两处已被 ADR-0010 翻案（见规则 5 与 Considered Options 的标注），其余规则继续有效
+Status: accepted——存储选型与家族判据两处已被 ADR-0010 翻案（见规则 5 与 Considered Options 的标注），落库时序一处已被 ADR-0011 翻案（规则 5 的「订阅即落库」改写后队列，append-only 与接缝不动），其余规则继续有效
 
 核心原则一句话：报警判定是一个独立能力库（Framework.Alarm，零 Prism/WPF 依赖），**判定权只住引擎层**——引擎读档案（`AlarmDefinition`）对条件事实做滤波与四状态流转，产出 `AlarmEvent` 流与活跃列表；设计依据是《报警哲学》（`Docs/alarm-philosophy.md` v1.0），规范依据是 GB/T 41261-2022《过程工业报警系统管理》（IDT IEC 62682:2014）。
 

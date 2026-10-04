@@ -1,3 +1,4 @@
+using System.IO;
 using Framework.Alarm;
 using Framework.Alarm.Domain;
 
@@ -52,16 +53,36 @@ namespace SemiAppliaction.Views.Tests
             public void Emit(AlarmEvent e) => EventRaised?.Invoke(e);
         }
 
-        /// <summary>档案替身：只实现 Find（详情弹窗的数据源），载一条演示档案。</summary>
+        /// <summary>档案替身：只实现 Find（详情弹窗的数据源），载两条演示档案；
+        /// Find 留了线程号（#31：档案取用不许占选中线程）与炸点开关（故障不炸屏的考官）。</summary>
         private sealed class FakeStore : IAlarmDefinitionStore
         {
             private readonly Dictionary<string, AlarmDefinition> _items = new();
 
-            public FakeStore() => _items[HeatTag] = Sample();
+            public FakeStore()
+            {
+                _items[HeatTag] = Sample();
+                _items[PumpTag] = PumpSample();
+            }
+
+            /// <summary>Find 炸点：置真即每次取档都炸（模拟库暂时进不去）。</summary>
+            public bool FindThrows { get; set; }
+
+            /// <summary>Find 跑过的线程号（#31：默认接线必须是后台线程）。</summary>
+            public List<int> FindThreadIds { get; } = [];
 
             public void Add(AlarmDefinition definition) => throw new NotSupportedException();
 
-            public AlarmDefinition? Find(string tag) => _items.TryGetValue(tag, out var definition) ? definition : null;
+            public AlarmDefinition? Find(string tag)
+            {
+                FindThreadIds.Add(Environment.CurrentManagedThreadId);
+                if (FindThrows)
+                {
+                    throw new IOException("库暂时进不去（模拟外部锁库）");
+                }
+
+                return _items.TryGetValue(tag, out var definition) ? definition : null;
+            }
 
             public void Update(AlarmDefinition definition) => throw new NotSupportedException();
 
@@ -91,12 +112,38 @@ namespace SemiAppliaction.Views.Tests
             RationalizedOn: T(0),
             PhilosophyVersion: "1.0");
 
-        /// <summary>造一台被测：注入替身馈送、档案库、同步编队与固定 now。</summary>
-        private static (AlarmListViewModel Vm, FakeFeed Feed, FakeStore Store) NewVm(Func<DateTimeOffset>? now = null)
+        /// <summary>演示档案：PUMP01（中优，换行选中的另一头）。</summary>
+        private static AlarmDefinition PumpSample() => new(
+            Tag: PumpTag,
+            Description: "泵停运联锁",
+            Class: AlarmClass.Equipment,
+            Consequence: "供料中断",
+            Cause: "停机联锁或泵故障",
+            OperatorAction: "确认停泵原因",
+            MaxResponseTime: TimeSpan.FromMinutes(10),
+            Severity: AlarmSeverity.S3,
+            MtrTier: ResponseTimeTier.T2,
+            Priority: AlarmPriority.Medium,
+            Limit: 0,
+            Deadband: 0,
+            OnDelay: TimeSpan.Zero,
+            OffDelay: TimeSpan.Zero,
+            Group: "泵区",
+            RationalizedBy: "李四",
+            RationalizedOn: T(0),
+            PhilosophyVersion: "1.0");
+
+        /// <summary>造一台被测：注入替身馈送、档案库、同步编队与固定 now；取档默认内联（断言同步到位），
+        /// 要验后台取档的测试经 <paramref name="runOffUiThread"/> 换接缝或直造。</summary>
+        private static (AlarmListViewModel Vm, FakeFeed Feed, FakeStore Store) NewVm(
+            Func<DateTimeOffset>? now = null,
+            Action<Action>? runOffUiThread = null)
         {
             var feed = new FakeFeed();
             var store = new FakeStore();
-            var vm = new AlarmListViewModel(feed, store, new SyncContext(), now ?? (Func<DateTimeOffset>)(() => T(0)));
+            var vm = new AlarmListViewModel(
+                feed, store, new SyncContext(), now ?? (Func<DateTimeOffset>)(() => T(0)),
+                runOffUiThread ?? (a => a()));
             return (vm, feed, store);
         }
 
@@ -419,6 +466,67 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(TimeSpan.FromMinutes(5), detail.MaxResponseTime);   // MTR
             Assert.Equal(ResponseTimeTier.T1, detail.MtrTier);               // 优先级坐标（S2 × T1）
             Assert.Equal("张三", detail.RationalizedBy);                      // 评审留痕
+        }
+
+        /// <summary>慢档不出手（#31 读侧）：取档在后台走，选中已换人时回来的旧档不得闪进弹窗——
+        /// 代数对暗号（同泵线规矩），新档归位旧档作废。</summary>
+        [Fact]
+        public void 详情_慢档未归_换行选中_旧档不出手()
+        {
+            var pending = new List<Action>();                            // 手动泵：取档下单压着不放
+            var feed = new FakeFeed();
+            var store = new FakeStore();
+            var vm = new AlarmListViewModel(feed, store, new SyncContext(), runOffUiThread: a => pending.Add(a));
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+            feed.Emit(new AlarmRaised(PumpTag, T(3), AlarmPriority.Medium));
+
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 选中热板：取档下单（档未归）
+            vm.ShowDetailCommand.Execute(vm.MainRows[1]);                // 换选泵：又一单
+            Assert.Null(vm.Detail);                                      // 档未归：弹窗空着，不许拿空当有档案
+
+            pending[0]();                                                // 旧档回来：代数已换代
+            Assert.Null(vm.Detail);                                      // 不出手——库慢也不闪旧账
+
+            pending[1]();                                                // 新档回来：对上暗号
+            Assert.NotNull(vm.Detail);
+            Assert.Equal(PumpTag, vm.Detail?.Tag);                       // 弹窗认的是当下选中那位的档案
+        }
+
+        /// <summary>默认接线真走后台（#31）：不注取档接缝时（产品接线），Find 不得跑在选中线程上——
+        /// 库被外部锁住时 busy 等待冻的是后台线程，不是点了行的 UI。</summary>
+        [Fact]
+        public void 详情_默认后台取档_不占选中线程()
+        {
+            var feed = new FakeFeed();
+            var store = new FakeStore();
+            var vm = new AlarmListViewModel(feed, store, new SyncContext()); // 不注接缝：走产品默认
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+
+            var selectedOn = Environment.CurrentManagedThreadId;
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);
+
+            var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(2);    // 等后台档归（只影响速度不影响结论）
+            while (vm.Detail is null && DateTime.UtcNow < deadline)
+            {
+                Thread.Sleep(5);
+            }
+
+            Assert.NotNull(vm.Detail);
+            Assert.NotEqual(selectedOn, Assert.Single(store.FindThreadIds)); // Find 不在选中线程：解耦真发生
+        }
+
+        /// <summary>取档炸了不炸屏（#31 读侧）：库暂时进不去（外部锁库的替身）时——故障停在取档处，
+        /// 不许炸上 UI 线程；弹窗保持收起，等下一次点行重新下单。</summary>
+        [Fact]
+        public void 详情_取档炸了_不炸屏()
+        {
+            var (vm, feed, store) = NewVm();
+            store.FindThrows = true;
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 内联接线：炸点当场现形
+
+            Assert.Null(vm.Detail);                                      // 档没取到：弹窗保持收起
         }
     }
 }

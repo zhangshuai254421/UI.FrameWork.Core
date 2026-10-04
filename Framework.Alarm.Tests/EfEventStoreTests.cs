@@ -58,7 +58,7 @@ namespace Framework.Alarm.Tests
         /// <summary>
         /// 端到端联测（验收「接线后每一拍在库」走真存储）：引擎 → EventHistory → EF 库 → 查询。
         /// 六拍剧本五条事件全在盘上（:memory: 库），重启连接即失——落盘持久性是宿主选库文件的事，
-        /// 本测钉的是「真库也吃得下引擎流」。
+        /// 本测钉的是「真库也吃得下引擎流」。落库走后台冲账（#31），断言前先冲账。
         /// </summary>
         [Fact]
         public void 端到端_引擎流经接线进真库_六拍全在()
@@ -68,9 +68,10 @@ namespace Framework.Alarm.Tests
             var source = new FakeConditionSource();
             var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
             var engine = new AlarmEngine(source, AlarmEngineTests.StoreWithSample(), clock);
-            _ = new EventHistory(store, engine);
+            var history = new EventHistory(store, engine);
 
             SixBeatScript.Run(source, engine, clock);
+            history.Dispose();                               // 冲账：后台写者清完存量再断言（#31）
 
             Assert.Equal(
                 SixBeatScript.ExpectedEventTypes,

@@ -61,8 +61,11 @@ namespace SemiAppliaction.Views
         /// <summary>档案库：三条演示档案随装置就位（#22 通电走宿主建库的真库，测试传内存替身）。</summary>
         public IAlarmDefinitionStore Store { get; }
 
-        /// <summary>事件史：通电即落库（EventHistory 一行接线）；测试传 null 即不接本子。</summary>
+        /// <summary>事件史：通电即落库（写后队列后台冲账，#31）；测试断言前经 <see cref="History"/> 冲账。null = 不接本子。</summary>
         public IEventStore? Events { get; }
+
+        /// <summary>事件史接线：随装置存亡（#31 落库改后台，冲账/收口经此——null = 没接本子）。</summary>
+        public EventHistory? History { get; }
 
         /// <summary>真引擎：档案装好、采集层接好、墙钟对好——页面拿它当 IAlarmFeed 用。</summary>
         public AlarmEngine Engine { get; }
@@ -72,8 +75,8 @@ namespace SemiAppliaction.Views
 
         /// <summary>
         /// 通电（#22）：档案缺了才补（评审法定产出不改写——库里已有的档案不动，缺的位号补出生证），
-        /// 再总装引擎（无档案不报警的前提）；接了事件库则 EventHistory 一行接线——订阅即落库，
-        /// 演示的每一拍都进真本子（搁置单重启回放，#16，因此在演示页一并兑现）。
+        /// 再总装引擎（无档案不报警的前提）；接了事件库则 EventHistory 一行接线——订阅即入队、
+        /// 后台冲账（#31），演示的每一拍都进真本子（搁置单重启回放，#16，因此在演示页一并兑现）。
         /// </summary>
         /// <param name="store">档案库：宿主注入真库存储，测试传内存替身。</param>
         /// <param name="events">事件史：宿主注入真库存储；null = 不接本子（测试的内存直通）。</param>
@@ -89,7 +92,7 @@ namespace SemiAppliaction.Views
             Engine = new AlarmEngine(Source, store, new SystemClock(), events);
             if (events is not null)
             {
-                _ = new EventHistory(events, Engine); // 订阅即落库（摘要 §8.11）：接线随装置存亡
+                History = new EventHistory(events, Engine); // 订阅即入队，后台冲账（摘要 §8.11、#31）：接线随装置存亡
             }
         }
 

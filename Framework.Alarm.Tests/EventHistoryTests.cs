@@ -1,24 +1,25 @@
 namespace Framework.Alarm.Tests
 {
     /// <summary>
-    /// EventHistory 接线契约（摘要 §8.11、哲学 §8.1【强制】）：订阅即落库——构造即把
-    /// 引擎事件流接到存储 Append，引擎产出的每一拍自动进本子；引擎静默的每一拍库里也
-    /// 无假事件（寂静也是断言）。联测走真实引擎：FakeConditionSource 喂条件、InMemoryEventStore
-    /// 收流，复用 #12 引擎总装的数据流走查六拍剧本。
+    /// EventHistory 接线契约（摘要 §8.11、哲学 §8.1【强制】、#31 写后队列）：订阅即入队，
+    /// 后台单写者冲账——引擎产事件的线程只付入队成本，库再慢冻的是后台写者、不是事实流与 UI；
+    /// 每一拍最终进本子（冲账后断言）、先后不乱；引擎静默的每一拍库里也无假事件（寂静也是断言）。
+    /// 联测走真实引擎：FakeConditionSource 喂条件、替身存储收流，复用 #12 引擎总装的数据流走查六拍剧本。
     /// </summary>
     public class EventHistoryTests
     {
-        /// <summary>订阅即落库：引擎产一拍，库里多一行——一行接线，不需要谁记得手动落库。</summary>
+        /// <summary>订阅即落库：引擎产一拍，冲账后库里多一行——一行接线，不需要谁记得手动落库。</summary>
         [Fact]
         public void 接线_引擎产事件_自动落库()
         {
             var source = new FakeConditionSource();
             var engine = new AlarmEngine(source, AlarmEngineTests.StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var store = new InMemoryEventStore();
-            _ = new EventHistory(store, engine);
+            var history = new EventHistory(store, engine);
 
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266)); // 满延时 → Raised
+            history.Dispose();                              // 冲账：后台写者清完存量再断言（#31 落库改异步）
 
             var raised = Assert.IsType<AlarmRaised>(Assert.Single(store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10))));
             Assert.Equal(AlarmPriority.High, raised.Priority);              // 档案优先级随事件进本子
@@ -26,7 +27,7 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>
-        /// 验收联测：数据流走查六拍剧本（摘要 §8.6，与引擎总装票同一剧本）跑完，
+        /// 验收联测：数据流走查六拍剧本（摘要 §8.6，与引擎总装票同一剧本）跑完冲账，
         /// 库里恰好五条、先后不乱、内容无损——两分支（确认闭环/无人看见自愈）的每一拍都有记录。
         /// </summary>
         [Fact]
@@ -36,18 +37,19 @@ namespace Framework.Alarm.Tests
             var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
             var engine = new AlarmEngine(source, AlarmEngineTests.StoreWithSample(), clock);
             var store = new InMemoryEventStore();
-            _ = new EventHistory(store, engine);
+            var history = new EventHistory(store, engine);
 
             SixBeatScript.Run(source, engine, clock);
+            history.Dispose();                              // 冲账：本子次序即履历次序，冲完再对账
 
-            var history = store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(13));
-            Assert.Equal(SixBeatScript.ExpectedEventTypes, history.Select(e => e.GetType().Name)); // 每一拍在库：履历完整，两分支分立
+            var history6 = store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(13));
+            Assert.Equal(SixBeatScript.ExpectedEventTypes, history6.Select(e => e.GetType().Name)); // 每一拍在库：履历完整，两分支分立
 
-            var first = Assert.IsType<AlarmRaised>(history[0]);
+            var first = Assert.IsType<AlarmRaised>(history6[0]);
             Assert.Equal(HysteresisEvaluatorTests.T(2), first.At);       // 条件驱动：带事实时间戳
-            var closed = Assert.IsType<AlarmClosed>(history[2]);
+            var closed = Assert.IsType<AlarmClosed>(history6[2]);
             Assert.Equal(HysteresisEvaluatorTests.T(2.5), closed.At);
-            var last = Assert.IsType<AlarmAutoReturned>(history[4]);
+            var last = Assert.IsType<AlarmAutoReturned>(history6[4]);
             Assert.Equal(HysteresisEvaluatorTests.T(12.5), last.At);     // 无人看见的恢复：单独留痕，绝没有混成 Closed
         }
 
@@ -59,7 +61,7 @@ namespace Framework.Alarm.Tests
             var source = new FakeConditionSource();
             var engine = new AlarmEngine(source, AlarmEngineTests.StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
             var store = new InMemoryEventStore();
-            _ = new EventHistory(store, engine);
+            var history = new EventHistory(store, engine);
 
             source.Feed("NO_MADB_ENTRY", new ConditionSample(At: HysteresisEvaluatorTests.T(1), Value: 999)); // 无档案：静默
             engine.Acknowledge(AlarmEngineTests.HEAT01, op: "李四");          // Normal 时确认：静默
@@ -68,10 +70,118 @@ namespace Framework.Alarm.Tests
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266)); // Raised
             engine.Acknowledge(AlarmEngineTests.HEAT01, op: "李四");          // 第一次确认：真转换
             engine.Acknowledge(AlarmEngineTests.HEAT01, op: "王五");          // 重复确认：静默
+            history.Dispose();                              // 冲账：静默的拍子不许有人替它补账
 
             Assert.Equal(
                 new[] { nameof(AlarmRaised), nameof(AlarmAcknowledged) },
                 store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10)).Select(e => e.GetType().Name));
+        }
+
+        /// <summary>库被锁住，事件流不等落库（#31 核心回归）：Append 卡在闸上（库文件被外部独占），
+        /// 引擎产事件的线程照常走完——落库在后台写者手里，busy 等待不再穿透回引擎关键区冻 UI；
+        /// 开闸冲账后那一拍仍进本子，一笔不缺。</summary>
+        [Fact]
+        public async Task 库被锁住_事件流不等落库_冲账后进本子()
+        {
+            var source = new FakeConditionSource();
+            var engine = new AlarmEngine(source, AlarmEngineTests.StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
+            var store = new BlockedEventStore();
+            var history = new EventHistory(store, engine);
+
+            var emit = Task.Run(() =>
+            {
+                source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265)); // 越限段起点（静默拍）
+                source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266)); // 满延时 → Raised
+            });
+            try
+            {
+                await emit.WaitAsync(TimeSpan.FromSeconds(2));           // 旧接线（同步落库）在这里冻到超时
+            }
+            catch (TimeoutException)
+            {
+                Assert.Fail("库被锁住时引擎产事件被落库拖住：写后队列未生效");
+            }
+
+            Assert.True(store.Entered.Wait(TimeSpan.FromSeconds(2)));    // 后台写者确实已进 Append（卡在闸上）
+            Assert.Empty(store.Landed);                                  // 闸未开：还没落进本子
+
+            store.Gate.Set();                                            // 开闸（外部锁解除）
+            history.Dispose();                                           // 冲账：存量清完才收工
+
+            var raised = Assert.IsType<AlarmRaised>(Assert.Single(store.Landed));
+            Assert.Equal(HysteresisEvaluatorTests.T(2), raised.At);
+        }
+
+        /// <summary>队列封顶，丢新保旧（ADR-0011 的取舍）：容量 1 的队列，写者持着第一拍卡在闸上，
+        /// 后续两拍只有一拍能进队——满了再来的新拍出局，队里已在的旧拍活着；开闸冲账后本子
+        /// 头上两拍俱在、次序不乱、绝没有第三条——库长时间进不去时，最先发生的证据优先存活。</summary>
+        [Fact]
+        public void 队列满_丢新保旧_本子头上不缺页()
+        {
+            var store = new BlockedEventStore();
+            var feed = new FakeFeed();
+            var history = new EventHistory(store, feed, capacity: 1);
+
+            feed.Emit(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(1), AlarmPriority.High)); // 写者取走，卡闸
+            Assert.True(store.Entered.Wait(TimeSpan.FromSeconds(2)));    // 写者确实持着第一拍
+            feed.Emit(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High)); // 入队（最后一个空位）
+            feed.Emit(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(3), AlarmPriority.High)); // 队列满：新拍出局
+
+            store.Gate.Set();                                            // 开闸（外部锁解除）
+            history.Dispose();                                           // 冲账
+
+            Assert.Equal(
+                [HysteresisEvaluatorTests.T(1), HysteresisEvaluatorTests.T(2)],
+                store.Landed.Select(e => e.At));                         // 头上两拍俱在、次序不乱
+        }
+
+        /// <summary>落库失败按拍重试到成功（#31）：前两试炸（busy 超时的替身），后台写者等一拍再试——
+        /// 等到落定再冲账收工：那一拍落定且只落定一次，失败的尝试不留半句假账；顺序不跳位。</summary>
+        [Fact]
+        public void 落库失败_重试到成功_不重复不缺账()
+        {
+            var store = new FlakyEventStore(failures: 2);
+            var feed = new FakeFeed();
+            var history = new EventHistory(store, feed, retryDelay: TimeSpan.FromMilliseconds(1)); // 测试不等真钟
+
+            feed.Emit(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High));
+            Assert.True(store.LandedOnce.Wait(TimeSpan.FromSeconds(2)), "重试没等到成功"); // 等落定，不猜钟
+            history.Dispose();                                           // 冲账收工
+
+            var landed = Assert.Single(store.Landed);                    // 落定一次：不重复
+            Assert.Equal(HysteresisEvaluatorTests.T(2), landed.At);
+            Assert.Equal(3, store.Attempts);                             // 两败一成：重试真发生过
+        }
+
+        /// <summary>收工让位（#31）：库持续进不去（每试必炸的替身）时收口——在途重试放弃、
+        /// 没冲完的账随进程去，Dispose 收得回来，不许拖着宿主关屏等 busy 窗口。</summary>
+        [Fact]
+        public void 收工让位_库持续进不去_不拖收工()
+        {
+            var store = new BrokenEventStore();
+            var feed = new FakeFeed();
+            var history = new EventHistory(store, feed, retryDelay: TimeSpan.FromMilliseconds(50));
+
+            feed.Emit(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High));
+
+            var dispose = Task.Run(history.Dispose);                     // 库治不好的话，收工不许赖着不走
+            Assert.True(dispose.Wait(TimeSpan.FromSeconds(2)), "库持续进不去时 Dispose 被重试拖住：收工让位未生效");
+            Assert.Empty(store.Landed);                                  // 账没落成：随进程去（ADR-0011 取舍的收工口）
+        }
+
+        /// <summary>收工后不再进水：<see cref="EventHistory.Dispose"/> 退订馈送——收工后的拍子
+        /// 不再欠账（宿主收口后引擎万一还有尾拍，不写入半句）。</summary>
+        [Fact]
+        public void 收工后_不再进水()
+        {
+            var store = new InMemoryEventStore();
+            var feed = new FakeFeed();
+            var history = new EventHistory(store, feed);
+
+            history.Dispose();
+            feed.Emit(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High)); // 收工后的拍子
+
+            Assert.Empty(store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10)));
         }
     }
 }

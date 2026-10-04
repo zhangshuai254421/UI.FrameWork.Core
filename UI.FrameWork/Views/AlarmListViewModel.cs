@@ -16,6 +16,9 @@ namespace SemiAppliaction.Views
     /// 只认 <see cref="IAlarmFeed"/> 接缝——测试 fake 一个 feed 即可红绿灯，不依赖真引擎。
     /// 行实例终生制：事件只原位刷行、清单原位对账（容器不重建，闪烁不重启、选中不丢）；
     /// 唯一例外是 <see cref="Reload"/> 整体重建——走完按位号重锚选中（#25），弹窗不绑死旧实例；
+    /// 详情档案走后台预取（#31）：选行只是下单，档案由取档接缝在后台去库里拿，取回编队回 UI——
+    /// 库被外部锁住（#29 场景）时 busy 等待冻的是后台线程，不是点了行的 UI；换行对暗号（代数，
+    /// 同泵线规矩），慢档归位时选中已换人就作废不出手。取档炸了也停在取档处，不炸上 UI。
     /// <see cref="Dispose"/> 退订事件流——feed 长命（单例引擎）而页面短命时由宿主收口。
     /// </summary>
     public sealed class AlarmListViewModel : BindableBase, IDisposable
@@ -32,16 +35,29 @@ namespace SemiAppliaction.Views
         /// <summary>读取时刻：喂给 AlarmFilters 对表（测试注入固定值拨表）。</summary>
         private readonly Func<DateTimeOffset> _now;
 
+        /// <summary>取档接缝（#31）：下单在后台跑——产品默认 Task.Run（线程池），测试注入内联即同步路径。</summary>
+        private readonly Action<Action> _runOffUiThread;
+
+        /// <summary>取档代数（#31）：每回下单自增——慢档归位对暗号，选中已换人就作废不出手。</summary>
+        private int _detailGen;
+
         /// <summary>行登记：位号 → 行（事件只更行，两清单由 Refill 重切）。</summary>
         private readonly Dictionary<string, AlarmRow> _rows = new();
 
         /// <summary>构造：订上馈送事件流（Post 编队到 UI 线程），初始对一次表。</summary>
-        public AlarmListViewModel(IAlarmFeed feed, IAlarmDefinitionStore store, SynchronizationContext ui, Func<DateTimeOffset>? now = null)
+        /// <param name="feed">馈送接缝：事件流与操作员动作的通道。</param>
+        /// <param name="store">档案接缝：详情弹窗的数据源（只经取档接缝在后台碰）。</param>
+        /// <param name="ui">UI 上下文：事件与取回的档案都编队回这里。</param>
+        /// <param name="now">读取时刻：测试拨表用。</param>
+        /// <param name="runOffUiThread">取档接缝（#31）：默认 Task.Run 后台线程；测试注内联即同步路径。</param>
+        public AlarmListViewModel(IAlarmFeed feed, IAlarmDefinitionStore store, SynchronizationContext ui,
+            Func<DateTimeOffset>? now = null, Action<Action>? runOffUiThread = null)
         {
             _feed = feed;
             _store = store;
             _ui = ui;
             _now = now ?? (() => DateTimeOffset.Now);
+            _runOffUiThread = runOffUiThread ?? (fetch => Task.Run(fetch));
             _feed.EventRaised += OnEventRaised;
 
             AcknowledgeCommand = new DelegateCommand<AlarmRow>(Acknowledge);
@@ -66,7 +82,7 @@ namespace SemiAppliaction.Views
         /// <summary>选中行的后端字段。</summary>
         private AlarmRow? _selectedRow;
 
-        /// <summary>选中行：详情弹窗的数据锚点；置行即取档案，置空即收起弹窗。</summary>
+        /// <summary>选中行：详情弹窗的数据锚点；置行即下单取档案（后台，#31），置空即收起弹窗。</summary>
         public AlarmRow? SelectedRow
         {
             get => _selectedRow;
@@ -74,7 +90,7 @@ namespace SemiAppliaction.Views
             {
                 if (SetProperty(ref _selectedRow, value))
                 {
-                    Detail = value is null ? null : _store.Find(value.Tag);
+                    FetchDetail(value?.Tag);
                 }
             }
         }
@@ -144,6 +160,45 @@ namespace SemiAppliaction.Views
             {
                 SelectedRow = row;
             }
+        }
+
+        #endregion
+
+        #region 详情档案后台预取（#31）
+
+        /// <summary>下单取档（#31）：UI 线程只下单——档案由取档接缝在后台去库里拿，取回编队回 UI；
+        /// 换行对暗号（代数自增），慢档归位时选中已换人就作废不出手。置空选中即收弹窗，
+        /// 在途的旧单作废；取档炸了停在取档处（故障不炸上 UI），弹窗保持现状等下次点行。</summary>
+        private void FetchDetail(string? tag)
+        {
+            var gen = ++_detailGen;
+            if (tag is null)
+            {
+                Detail = null;                              // 收起弹窗；在途旧单已被换代作废
+                return;
+            }
+
+            _runOffUiThread(() =>
+            {
+                AlarmDefinition? definition = null;
+                try
+                {
+                    definition = _store.Find(tag);
+                }
+                catch
+                {
+                    // 库暂时进不去（busy 超时/磁盘抖动）：档没取到就当没取到，故障停在取档处——
+                    // 不许炸上 UI 线程；弹窗等操作员下一次点行重新下单
+                }
+
+                _ui.Post(_ =>
+                {
+                    if (gen == _detailGen)                  // 对暗号：中间没换过选中，这份档案才配归位
+                    {
+                        Detail = definition;
+                    }
+                }, null);
+            });
         }
 
         #endregion
