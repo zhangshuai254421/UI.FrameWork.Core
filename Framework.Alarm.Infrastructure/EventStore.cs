@@ -12,7 +12,8 @@ namespace Framework.Alarm.Infrastructure
     /// 建库归宿主（#22，AlarmDatabase.Initialize 启动时一口）：构造不再迁移，
     /// 存储只认「库已就位」的前提；事件史要跨版本存活（90 天保留），schema 演化走迁移，
     /// 不用 EnsureCreated（对已存表静默跳过，且建出的库套不上迁移——接盘即弃库）。
-    /// 线程模型：Append 跑在引擎产事件的线程、Query 跑在 UI 线程，全程加锁。
+    /// 线程模型（ADR-0011 口径）：Append 跑在 EventHistory 后台写者线程、Query 跑在 UI 线程，
+    /// 全程加锁——库被外部锁住时 busy 等待冻的是后台写者，不是引擎与 UI。
     /// 连接模型（评审留痕）：存储实例独享 <see cref="DataContext"/>（自带连接），
     /// 与档案库互不串锁；但宿主接线后两存储各开连接打同一个库文件，跨连接并发写
     /// 靠 SQLite 文件锁挡——busy_timeout/WAL 的拍板归 #22 宿主建库。

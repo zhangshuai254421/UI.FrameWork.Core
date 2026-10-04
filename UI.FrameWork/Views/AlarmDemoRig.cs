@@ -106,8 +106,13 @@ namespace SemiAppliaction.Views
             Source.Report(LiquidTag, liquid, now);
         }
 
-        /// <summary>退订采集层：页面随应用存亡，规范起见随宿主处置。</summary>
-        public void Dispose() => Engine.Dispose();
+        /// <summary>收口（#31）：先冲账（本子不欠账，队列尾部不随进程散）再退订采集层——
+        /// 接线随装置存亡，收口也是；页面随应用存亡，规范起见随宿主处置。</summary>
+        public void Dispose()
+        {
+            History?.Dispose();
+            Engine.Dispose();
+        }
 
         /// <summary>三条演示档案（哲学 §6.1：操作动作必填——填不出的候选当庭退回）。</summary>
         private static IEnumerable<AlarmDefinition> DemoDefinitions()

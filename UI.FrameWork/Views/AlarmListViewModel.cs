@@ -82,13 +82,15 @@ namespace SemiAppliaction.Views
         /// <summary>选中行的后端字段。</summary>
         private AlarmRow? _selectedRow;
 
-        /// <summary>选中行：详情弹窗的数据锚点；置行即下单取档案（后台，#31），置空即收起弹窗。</summary>
+        /// <summary>选中行：详情弹窗的数据锚点；置行即下单取档案（后台，#31），置空即收起弹窗；
+        /// 重按同一行也下单——上次取档没归（库忙/炸了）时，再点一次就是重新下单。</summary>
         public AlarmRow? SelectedRow
         {
             get => _selectedRow;
             set
             {
-                if (SetProperty(ref _selectedRow, value))
+                var changed = SetProperty(ref _selectedRow, value);
+                if (changed || value is not null)
                 {
                     FetchDetail(value?.Tag);
                 }
@@ -168,7 +170,7 @@ namespace SemiAppliaction.Views
 
         /// <summary>下单取档（#31）：UI 线程只下单——档案由取档接缝在后台去库里拿，取回编队回 UI；
         /// 换行对暗号（代数自增），慢档归位时选中已换人就作废不出手。置空选中即收弹窗，
-        /// 在途的旧单作废；取档炸了停在取档处（故障不炸上 UI），弹窗保持现状等下次点行。</summary>
+        /// 在途的旧单作废；取档炸了停在取档处（故障不炸上 UI），弹窗空着——重按同一行即重新下单。</summary>
         private void FetchDetail(string? tag)
         {
             var gen = ++_detailGen;
@@ -188,7 +190,7 @@ namespace SemiAppliaction.Views
                 catch
                 {
                     // 库暂时进不去（busy 超时/磁盘抖动）：档没取到就当没取到，故障停在取档处——
-                    // 不许炸上 UI 线程；弹窗等操作员下一次点行重新下单
+                    // 不许炸上 UI 线程；弹窗空着，操作员重按同一行即重新下单
                 }
 
                 _ui.Post(_ =>
@@ -341,7 +343,12 @@ namespace SemiAppliaction.Views
 
         #endregion
 
-        /// <summary>退订事件流：feed 长命而页面短命时由宿主收口，废弃的 VM 不再被引擎喂养。</summary>
-        public void Dispose() => _feed.EventRaised -= OnEventRaised;
+        /// <summary>收口：作废在途取档（代数换代，慢档归位不出手）再退订事件流——
+        /// feed 长命而页面短命时由宿主收口，废弃的 VM 不再被引擎喂养、也不被旧单复活。</summary>
+        public void Dispose()
+        {
+            _detailGen++;
+            _feed.EventRaised -= OnEventRaised;
+        }
     }
 }

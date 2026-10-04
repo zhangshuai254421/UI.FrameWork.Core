@@ -87,5 +87,26 @@ namespace SemiAppliaction.Views.Tests
             var raised = Assert.IsType<AlarmRaised>(record);
             Assert.Equal(AlarmDemoRig.PressTag, raised.Tag);     // 憋压即时档（其余两位延时未满）
         }
+
+        /// <summary>装置收口冲账（#31 评审）：Dispose 先冲账再退订采集层——收口那一刻队列里的
+        /// 尾巴要进本子，宿主正常关屏不许丢账（崩溃窗口才是 ADR-0011 认的丢账口）。</summary>
+        [Fact]
+        public void 装置收口_先冲账再退订_本子不欠账()
+        {
+            var events = new RecordingEventStore();
+            var rig = new AlarmDemoRig(new InMemoryAlarmDefinitionStore(), events);
+            var vm = new AlarmListViewModel(rig.Engine, rig.Store, new SyncContext());
+
+            for (var beat = 0; beat < 5; beat++)
+            {
+                rig.PumpNext();
+                vm.RefreshFilters();
+            }
+
+            rig.Dispose();                                       // 收口：冲账在前，退订在后
+
+            var record = Assert.Single(events.Events);           // 队列尾巴进了本子：一笔不缺
+            Assert.Equal(AlarmDemoRig.PressTag, Assert.IsType<AlarmRaised>(record).Tag);
+        }
     }
 }

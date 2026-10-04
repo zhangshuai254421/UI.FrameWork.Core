@@ -158,7 +158,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 收工让位_库持续进不去_不拖收工()
         {
-            var store = new BrokenEventStore();
+            var store = new FlakyEventStore(int.MaxValue);               // 每试必炸：库彻底坏掉
             var feed = new FakeFeed();
             var history = new EventHistory(store, feed, retryDelay: TimeSpan.FromMilliseconds(50));
 
@@ -167,6 +167,23 @@ namespace Framework.Alarm.Tests
             var dispose = Task.Run(history.Dispose);                     // 库治不好的话，收工不许赖着不走
             Assert.True(dispose.Wait(TimeSpan.FromSeconds(2)), "库持续进不去时 Dispose 被重试拖住：收工让位未生效");
             Assert.Empty(store.Landed);                                  // 账没落成：随进程去（ADR-0011 取舍的收工口）
+        }
+
+        /// <summary>收工限时（#31 评审）：库锁死在 Append 里（闸永不开的替身，真库即 30 秒 busy 窗口）
+        /// 时收口照样收得回来——冲账限时等 5 个重试拍，没冲完的账随进程去，不许把冻结搬到关屏路上。</summary>
+        [Fact]
+        public void 收工限时_库锁死在Append里_收得回来()
+        {
+            var store = new BlockedEventStore();                         // 闸永不开：Append 卡死在 busy 窗口
+            var feed = new FakeFeed();
+            var history = new EventHistory(store, feed, retryDelay: TimeSpan.FromMilliseconds(10)); // 限时 = 5 拍 = 50ms
+
+            feed.Emit(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High));
+            Assert.True(store.Entered.Wait(TimeSpan.FromSeconds(2)));    // 写者确实卡在 Append 里
+
+            var dispose = Task.Run(history.Dispose);                     // 锁死也不许拖收工
+            Assert.True(dispose.Wait(TimeSpan.FromSeconds(2)), "库锁死时 Dispose 被在途 Append 拖住：限时收口未生效");
+            Assert.Empty(store.Landed);                                  // 账没冲完：随进程去
         }
 
         /// <summary>收工后不再进水：<see cref="EventHistory.Dispose"/> 退订馈送——收工后的拍子

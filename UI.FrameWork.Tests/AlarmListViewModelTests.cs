@@ -528,5 +528,46 @@ namespace SemiAppliaction.Views.Tests
 
             Assert.Null(vm.Detail);                                      // 档没取到：弹窗保持收起
         }
+
+        /// <summary>取档没归，重按同一行即重新下单（#31 评审）：上次取档炸了弹窗空着，库缓过来后
+        /// 操作员再点同一行——选中引用没变也得重新下单，不许把「换个行再换回来」当唯一出路。</summary>
+        [Fact]
+        public void 详情_取档炸了_重按同一行_重新下单()
+        {
+            var pending = new List<Action>();                            // 手动泵：下单压着不放
+            var feed = new FakeFeed();
+            var store = new FakeStore();
+            var vm = new AlarmListViewModel(feed, store, new SyncContext(), runOffUiThread: a => pending.Add(a));
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+
+            store.FindThrows = true;                                     // 头一单赶上库忙
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);
+            pending[0]();
+            Assert.Null(vm.Detail);                                      // 没取到：弹窗空着
+
+            store.FindThrows = false;                                    // 库缓过来了
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 重按同一行（引用没变）
+            pending[1]();                                                // 第二单真下了、也真归位
+
+            Assert.NotNull(vm.Detail);                                   // 重新下单兑现
+            Assert.Equal(HeatTag, vm.Detail?.Tag);
+        }
+
+        /// <summary>收口作废在途取档（#31 评审）：VM 处置后慢档才归位——不许给废弃的 VM 喂档案。</summary>
+        [Fact]
+        public void 收口_在途取档作废()
+        {
+            var pending = new List<Action>();
+            var feed = new FakeFeed();
+            var store = new FakeStore();
+            var vm = new AlarmListViewModel(feed, store, new SyncContext(), runOffUiThread: a => pending.Add(a));
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
+
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 下单（档未归）
+            vm.Dispose();                                                // 收口：代数换代
+            pending[0]();                                                // 迟到的档案
+
+            Assert.Null(vm.Detail);                                      // 废弃的 VM 不接档
+        }
     }
 }

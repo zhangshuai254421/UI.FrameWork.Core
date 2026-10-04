@@ -2,7 +2,8 @@ namespace Framework.Alarm.Tests
 {
     /// <summary>
     /// 会抖的存储替身（#31）：前 <see cref="_failures"/> 次 Append 一律炸（模拟 busy 超时/磁盘抖动），
-    /// 之后放行——重试契约的考官；<see cref="Attempts"/> 记出手次数，<see cref="Landed"/> 只记走完的。
+    /// 之后放行——重试契约的考官；<c>int.MaxValue</c> 即每试必炸（库彻底坏掉的替身）。
+    /// <see cref="Attempts"/> 记出手次数，<see cref="Landed"/> 只记走完的。
     /// </summary>
     internal sealed class FlakyEventStore : IEventStore
     {

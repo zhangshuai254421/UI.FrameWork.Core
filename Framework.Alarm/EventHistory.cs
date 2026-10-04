@@ -17,7 +17,7 @@ namespace Framework.Alarm
     /// 写入路径只有存储的 Append，本类不提供任何改写手段；引擎静默的拍子库里也无假事件。
     /// 生命周期随引擎：引擎重建换档案时，旧引擎 <see cref="AlarmEngine.Dispose"/> 退订采集层后
     /// 不再产事件，本接线随之自然哑火，不留双份落库；<see cref="Dispose"/> 停进水、关闸、
-    /// 冲完存量再收工（测试断言前冲账即全量落定；宿主收口时本子不欠账）。
+    /// 限时冲完存量再收工（测试断言前冲账即全量落定；宿主收口时本子不欠账）。
     /// </summary>
     public sealed class EventHistory : IDisposable
     {
@@ -85,14 +85,15 @@ namespace Framework.Alarm
             }
         }
 
-        /// <summary>收工冲账：停进水 → 关闸 → 等存量清完。库彻底坏了时在途重试让位收工，
-        /// 没冲完的账随进程去（ADR-0011 的崩溃窗口取舍在收工口的延伸）。</summary>
+        /// <summary>收工冲账：停进水 → 关闸 → 等存量清完。冲账限时（等 5 个重试拍）——
+        /// 库真被锁死（Append 卡在 busy 窗口里）时收口照样收得回来，没冲完的账随进程去
+        /// （ADR-0011 崩溃窗口取舍在收工口的延伸）；库正常时毫秒级冲完，限时形同虚设。</summary>
         public void Dispose()
         {
             _feed.EventRaised -= Enqueue;                      // 先停进水：收工后的拍子不再欠账
             _queue.Writer.TryComplete();                       // 关闸：ReadAllAsync 清完存量自然收束
             _stopping = true;                                  // 在途重试别恋战
-            _drain.Wait();                                     // 冲完才下班
+            _drain.Wait(TimeSpan.FromMilliseconds(_retryDelay.TotalMilliseconds * 5)); // 限时收口，不拖宿主关屏
         }
     }
 }
