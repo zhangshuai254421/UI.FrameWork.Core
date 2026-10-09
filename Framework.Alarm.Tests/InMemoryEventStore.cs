@@ -5,7 +5,7 @@ namespace Framework.Alarm.Tests
     /// <summary>事件存储内存替身：契约测试与引擎联测用，行为与 SQLite 实现同一套契约。</summary>
     internal sealed class InMemoryEventStore : IEventStore
     {
-        /// <summary>已知判别册（与 SQLite 实现同一份点名簿）：簿外种类当庭退回，不悄悄回空账。</summary>
+        /// <summary>已知类型清单（与 SQLite 实现同一份名单）：名单外的类型直接抛异常，不悄悄返回空结果。</summary>
         private static readonly HashSet<Type> KnownKinds =
         [
             typeof(AlarmRaised), typeof(AlarmAcknowledged), typeof(AlarmAutoReturned),
@@ -27,7 +27,7 @@ namespace Framework.Alarm.Tests
                 .Where(e => e.At >= from && e.At <= to)
                 .Where(e => tag == null || e.Tag == tag)
                 .Where(e => kinds is not { Length: > 0 } || kinds.Contains(e.GetType()))
-                .ToList(); // 落库先后即履历次序，不重排
+                .ToList(); // 入库先后就是事件次序，不重排
         }
     }
 }

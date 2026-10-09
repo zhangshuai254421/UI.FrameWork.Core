@@ -1,7 +1,7 @@
 namespace Framework.Alarm.Tests
 {
-    /// <summary>馈送替身：测试直控事件流的拍子（EventHistory 接线契约用）——不架真引擎，
-    /// 想吐哪一拍吐哪一拍；动作成员全 no-op（本类只验接线的落库侧）。</summary>
+    /// <summary>报警事件的测试替身，EventHistory 接线契约用。不架真引擎，测试想发哪条就发哪条；
+    /// 操作成员全部空实现，因为本类只验接线中落库这一侧。</summary>
     internal sealed class FakeFeed : IAlarmFeed
     {
         public event Action<AlarmEvent>? EventRaised;
@@ -24,7 +24,7 @@ namespace Framework.Alarm.Tests
         {
         }
 
-        /// <summary>模拟引擎吐事件（测试直控拍点与内容）。</summary>
+        /// <summary>模拟引擎发事件（测试直接控制时机与内容）。</summary>
         public void Emit(AlarmEvent e) => EventRaised?.Invoke(e);
     }
 }

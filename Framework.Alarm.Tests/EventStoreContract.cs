@@ -3,13 +3,13 @@ using Framework.Alarm;
 namespace Framework.Alarm.Tests
 {
     /// <summary>
-    /// 事件存储契约：内存替身与 SQLite 实现共用同一套行为断言（验收：两套各测一遍）。
-    /// 契约方法只断言、不建存储——存储由各测试套件注入。
+    /// 事件存储契约：内存替身与 SQLite 实现共用同一套行为断言，两套各测一遍。
+    /// 契约方法只断言、不建存储，存储由各测试套件注入。
     /// 依据：摘要 §8.11、哲学 §8.1【强制】、§11 警示 13（append-only）。
     /// </summary>
     internal static class EventStoreContract
     {
-        /// <summary>追加后查询可见（验收）：Raised 存进去，时间窗内原样读回（record 值相等）。</summary>
+        /// <summary>追加后查询可见（验收项）：Raised 存进去，时间窗内原样读回（record 值相等）。</summary>
         public static void 追加_查询可见_原样读回(IEventStore store)
         {
             var raised = new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High);
@@ -20,8 +20,8 @@ namespace Framework.Alarm.Tests
             Assert.Equal(raised, found);
         }
 
-        /// <summary>四种事件都留痕（哲学 §3.5）：确认带操作员、AutoReturned 与 Closed 分立——
-        /// 早班的「昨夜发生过什么」靠这条区别；四条各自原样读回（值相等，字段不丢）。</summary>
+        /// <summary>四种事件都留痕（哲学 §3.5）：确认带操作员，AutoReturned 与 Closed 分立，
+        /// 早班查「昨夜发生过什么」靠这条区别。四条各自原样读回，值相等、字段不丢。</summary>
         public static void 四种事件_往返保真(IEventStore store)
         {
             var raised = new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High);
@@ -40,8 +40,8 @@ namespace Framework.Alarm.Tests
                 history);                                                // record 值相等：类型、时刻、优先级、操作员一个不丢
         }
 
-        /// <summary>操作员闭环往返保真（#26）：派生型闭环带操作员名原样读回——
-        /// 「这条 RTN 是谁确认闭环的」在盘上有答案。</summary>
+        /// <summary>操作员闭环往返保真（#26）：派生型闭环带操作员名原样读回，
+        /// 事后查「这条 RTN 是谁确认闭环的」有答案。</summary>
         public static void 操作员闭环_往返保真(IEventStore store)
         {
             var closed = new AlarmClosedByOperator(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(5), "王五");
@@ -52,8 +52,8 @@ namespace Framework.Alarm.Tests
             Assert.Equal(closed, found);                                 // record 值相等：操作员一个不丢
         }
 
-        /// <summary>两种闭环判别分立（#26）：点 AlarmClosed 查不到 AlarmClosedByOperator——
-        /// 条件闭环无主、操作员闭环留名，分型是设计不是冗余，种类查询不混捞；按派生型点名原样回。</summary>
+        /// <summary>两种闭环判别分立（#26）：按 AlarmClosed 查询查不到 AlarmClosedByOperator。
+        /// 条件闭环无主、操作员闭环留名，分成两类是设计不是冗余，种类查询互不混入。</summary>
         public static void 查询_两种闭环_判别分立(IEventStore store)
         {
             var conditionClosed = new AlarmClosed(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(3));
@@ -69,8 +69,8 @@ namespace Framework.Alarm.Tests
                 store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10), kinds: [typeof(AlarmClosedByOperator)]));
         }
 
-        /// <summary>搁置动作与带标事件都留痕（摘要 §8.10，哲学 §7 全量留痕【强制】）：
-        /// 搁置（带期限+操作员）、搁置中触发的带标升级、解除——三条原样读回，标与期限一个不丢。</summary>
+        /// <summary>搁置动作与带期限事件都留痕（摘要 §8.10、哲学 §7 全量留痕【强制】）：
+        /// 搁置（带期限和操作员）、搁置中触发的带期限升级、解除。三条原样读回，期限一个不丢。</summary>
         public static void 搁置事件与带标升级_往返保真(IEventStore store)
         {
             var shelved = new AlarmShelved(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(1), HysteresisEvaluatorTests.T(31), "李四");
@@ -86,7 +86,7 @@ namespace Framework.Alarm.Tests
                 store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10)));
         }
 
-        /// <summary>时间窗过滤（验收 from/to）：窗外的事件不可见；窗界（闭区间）上的事件可见。</summary>
+        /// <summary>时间窗过滤（验收 from/to）：窗外的事件不可见，窗界上的事件可见（闭区间）。</summary>
         public static void 查询_窗口外不可见(IEventStore store)
         {
             store.Append(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High));
@@ -107,9 +107,9 @@ namespace Framework.Alarm.Tests
             Assert.Equal("PUMP01_STOP", Assert.Single(found).Tag);
         }
 
-        /// <summary>查询按落库先后返回——append-only 本子的书写次序就是履历次序。条件事件带事实
-        /// 时间戳、操作员事件带时钟当下，两路时间源无法合成一个诚实的全序；窗口只管筛，不管排
-        /// （乱序时刻的追加按追加次序读回，本子不重排）。</summary>
+        /// <summary>查询按写入先后返回：append-only 存储，写入次序就是履历次序。
+        /// 条件事件带事实时间戳，操作员事件带操作时的时钟读数，两种时间源合不成一个可靠的全序，
+        /// 所以查询窗口只管筛选、不负责排序。乱序时刻追加的事件按追加次序读回，存储不重排。</summary>
         public static void 查询_按落库先后返回(IEventStore store)
         {
             store.Append(new AlarmClosed(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(5)));
@@ -124,8 +124,8 @@ namespace Framework.Alarm.Tests
                      .Select(e => (e.GetType().Name, e.At)));
         }
 
-        /// <summary>只进不改（验收）：同值事件重复追加，两条都留——没有 upsert 语义，
-        /// 本子上一行是一行；改历史 = 毁证据（哲学 §3.5、§11 警示 13）。</summary>
+        /// <summary>只进不改（验收项）：同值事件重复追加，两条都留。
+        /// 没有 upsert 语义，写进一行就是一行；改历史等于毁证据（哲学 §3.5、§11 警示 13）。</summary>
         public static void 只进不改_重复追加_两条都留(IEventStore store)
         {
             var raised = new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High);
@@ -136,10 +136,10 @@ namespace Framework.Alarm.Tests
             Assert.Equal(2, store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10)).Count);
         }
 
-        // ══════════════ #18：种类过滤（回放点名，不全窗物化） ══════════════
+        // ══════════════ #18：种类过滤（回放按类型筛，不把整窗数据搬进内存） ══════════════
 
-        /// <summary>种类过滤（#18）：混类本子里点名两种判别，只回点名的、落库先后照旧——
-        /// 回放扫描（#16）靠它在库里筛，别把百万行全类物化进内存。</summary>
+        /// <summary>种类过滤（#18）：混合存放的事件里按类型点名，只返回点名的，写入先后照旧。
+        /// 回放扫描（#16）靠它在库里筛，避免把百万行全部搬进内存。</summary>
         public static void 查询_按种类过滤(IEventStore store)
         {
             store.Append(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(1), AlarmPriority.High));
@@ -152,10 +152,10 @@ namespace Framework.Alarm.Tests
             Assert.Equal(
                 new AlarmEvent[] { shelved, unshelved },
                 store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10),
-                    kinds: [typeof(AlarmShelved), typeof(AlarmUnshelved)]));   // 次序仍是落库先后
+                    kinds: [typeof(AlarmShelved), typeof(AlarmUnshelved)]));   // 次序仍是写入先后
         }
 
-        /// <summary>种类与位号叠加：两个筛一起上，交集才回（KPI 查询两路都会用）。</summary>
+        /// <summary>种类与位号叠加：两个条件一起上，交集才返回（KPI 查询两路都会用）。</summary>
         public static void 查询_种类与位号叠加(IEventStore store)
         {
             store.Append(new AlarmShelved(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), HysteresisEvaluatorTests.T(32), "李四"));
@@ -167,7 +167,7 @@ namespace Framework.Alarm.Tests
             Assert.Equal("PUMP01_STOP", Assert.Single(found).Tag);
         }
 
-        /// <summary>空种类 = 不筛类：老调用（不点种类）的语义一字不变——接口形状向后兼容。</summary>
+        /// <summary>空种类等于不筛类型：不指定种类的老调用语义一字不变，接口向后兼容。</summary>
         public static void 查询_空种类_全类照旧(IEventStore store)
         {
             store.Append(new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High));
@@ -177,7 +177,7 @@ namespace Framework.Alarm.Tests
                 HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10), kinds: Array.Empty<Type>()).Count);
         }
 
-        /// <summary>点名簿上没有的类型当庭退回：宁可炸得响，不悄悄回一本空账（与 Append 未知事件同口径）。</summary>
+        /// <summary>名单外的类型直接抛异常：宁可失败得响亮，也不悄悄返回一份空结果（与 Append 收到未知事件同口径）。</summary>
         public static void 查询_未知种类_当庭退回(IEventStore store)
         {
             Assert.Throws<NotSupportedException>(
@@ -185,7 +185,7 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>接口形状钉死（验收「不存在任何改写路径」）：<see cref="IEventStore"/>
-        /// 只声明 Append 与 Query 两个成员——更新/删除在类型层面就进不来，而非仅是实现里恰好没有。</summary>
+        /// 只声明 Append 与 Query 两个成员，更新和删除在类型层面就进不来，而不是实现里恰好没有。</summary>
         public static void 接口_只有Append与Query_无改写路径()
         {
             var members = typeof(IEventStore)

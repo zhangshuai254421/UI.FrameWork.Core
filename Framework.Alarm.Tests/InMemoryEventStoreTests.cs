@@ -1,6 +1,6 @@
 namespace Framework.Alarm.Tests
 {
-    /// <summary>内存事件存储过契约——与 SQLite 实现同一套断言。</summary>
+    /// <summary>内存事件存储过契约，与 SQLite 实现同一套断言。</summary>
     public class InMemoryEventStoreTests
     {
         [Fact]

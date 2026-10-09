@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 namespace Framework.Alarm.Tests
 {
     /// <summary>
-    /// EF 事件存储过契约——与内存替身同一套断言（家族持久化体系，ADR-0008；#21 接棒裸 SQLite）。
-    /// 测试用 :memory: 库：连接先开好再交给 EF（:memory: 库随连接存活，EF 自己开关连接库就蒸发了）；
-    /// 建表自建（EfTestDb，#22 起建库不归存储构造）。
+    /// EF 事件存储过契约，与内存替身同一套断言（持久化体系见 ADR-0008，#21 接替裸 SQLite）。
+    /// 测试用 :memory: 库：连接要先开好再交给 EF，因为 :memory: 库随连接存活，EF 自己开关连接库就没了；
+    /// 建表走 EfTestDb，#22 起建库不归存储构造管。
     /// 旧库加列迁移用例随裸 SQLite 一并退役：裸 SQLite 的旧库（Seq 表、列集不同）是外来 schema，
-    /// 迁移见库里没有迁移史会走 InitialCreate、撞已有表当庭报错——响亮失败，不再静默补列后继续写。
+    /// 迁移发现库里没有迁移史会走 InitialCreate，撞上已有表直接报错，响亮失败，不再静默补列后继续写。
     /// </summary>
     public class EfEventStoreTests
     {
@@ -56,9 +56,9 @@ namespace Framework.Alarm.Tests
         public void 接口_只有Append与Query_无改写路径() => EventStoreContract.接口_只有Append与Query_无改写路径();
 
         /// <summary>
-        /// 端到端联测（验收「接线后每一拍在库」走真存储）：引擎 → EventHistory → EF 库 → 查询。
-        /// 六拍剧本五条事件全在盘上（:memory: 库），重启连接即失——落盘持久性是宿主选库文件的事，
-        /// 本测钉的是「真库也吃得下引擎流」。落库走后台冲账（#31），断言前先冲账。
+        /// 端到端联测，验收「接线后每条事件都在库」，走真存储：引擎 → EventHistory → EF 库 → 查询。
+        /// 六拍剧本的五条事件全部要能查到。:memory: 库在连接关闭后就没了，落盘持久性是宿主选库文件的事，
+        /// 本测要钉住的是「真库也吃得下引擎的事件流」。写库走后台队列（#31），断言前先等它写完。
         /// </summary>
         [Fact]
         public void 端到端_引擎流经接线进真库_六拍全在()
@@ -71,15 +71,15 @@ namespace Framework.Alarm.Tests
             var history = new EventHistory(store, engine);
 
             SixBeatScript.Run(source, engine, clock);
-            history.Dispose();                               // 冲账：后台写者清完存量再断言（#31）
+            history.Dispose();                               // 收尾：等后台写者把存量写完再断言（#31）
 
             Assert.Equal(
                 SixBeatScript.ExpectedEventTypes,
                 store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(13)).Select(e => e.GetType().Name));
         }
 
-        /// <summary>时间窗列有索引（#28）：启动回放与历史查询都按 UtcTicks BETWEEN 进来，
-        /// 90 天履历无索引即全表扫、成本随履历线性涨——索引在模型里钉死，走迁移落库。</summary>
+        /// <summary>时间窗列有索引（#28）：启动回放与历史查询都按 UtcTicks BETWEEN 查询，
+        /// 90 天履历没有索引就是全表扫描，成本随履历条数线性上涨。索引在模型里钉死，随迁移写进库。</summary>
         [Fact]
         public void 事件表_时间窗列有索引()
         {

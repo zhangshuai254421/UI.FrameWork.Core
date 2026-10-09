@@ -54,8 +54,8 @@ namespace Framework.Alarm.Tests
             Assert.Equal("1.0", def.PhilosophyVersion);                       // ⑫ 评审留痕：哲学版本
         }
 
-        /// <summary>当庭退回：负死区把恢复点抬到限上，报警中途就清、清完又升——永久颤抖，
-        /// 正是死区要治的病灶（哲学 §6.2），档案门就不该放进来。</summary>
+        /// <summary>负死区会把恢复点抬到限值上，报警中途就清、清完又升，永久颤抖，
+        /// 这正是死区要治的毛病（哲学 §6.2），档案校验不该放它进来。</summary>
         [Fact]
         public void 校验_负死区_当庭退回()
         {
@@ -65,8 +65,8 @@ namespace Framework.Alarm.Tests
             Assert.Contains("死区", ex.Message);
         }
 
-        /// <summary>当庭退回：NaN/Infinity 限值让滤波器永不报警（NaN 与谁比较都是假），
-        /// 落 SQLite 还会变 NULL 读不回来——档案门退回有限数要求。</summary>
+        /// <summary>NaN/Infinity 限值让滤波器永不报警（NaN 与谁比较都是假），
+        /// 写进 SQLite 还会变成 NULL 读不回来，所以校验要求限值必须是有限数。</summary>
         [Fact]
         public void 校验_限值非有限数_当庭退回()
         {
@@ -74,7 +74,7 @@ namespace Framework.Alarm.Tests
             Assert.Throws<ArgumentException>(() => (Sample() with { Deadband = double.PositiveInfinity }).EnsureValid());
         }
 
-        /// <summary>当庭退回：负延时等于没有延时——触发延时整定失效（毛刺照报）、恢复延时整定失效。</summary>
+        /// <summary>负延时等于没有延时，触发延时和恢复延时的整定都失效（毛刺照报），校验直接拒绝。</summary>
         [Fact]
         public void 校验_负延时_当庭退回()
         {

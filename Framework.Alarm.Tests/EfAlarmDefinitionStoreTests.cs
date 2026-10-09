@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Framework.Alarm.Tests
 {
     /// <summary>
-    /// EF 档案存储过契约——与内存替身同一套断言（家族持久化体系，ADR-0008；#21 接棒裸 SQLite）。
-    /// 测试用 :memory: 库：连接先开好再交给 EF（:memory: 库随连接存活，EF 自己开关连接库就蒸发了）；
-    /// 建表自建（EfTestDb，#22 起建库不归存储构造）。
+    /// EF 档案存储过契约，与内存替身同一套断言（持久化体系见 ADR-0008，#21 接替裸 SQLite）。
+    /// 测试用 :memory: 库：连接要先开好再交给 EF，因为 :memory: 库随连接存活，EF 自己开关连接库就没了；
+    /// 建表走 EfTestDb，#22 起建库不归存储构造管。
     /// </summary>
     public class EfAlarmDefinitionStoreTests
     {
@@ -45,7 +45,7 @@ namespace Framework.Alarm.Tests
             var store = new AlarmDefinitionStore(options);
             store.Add(AlarmDefinitionTests.Sample());
 
-            // 注入一次性写失败：UPDATE 全 ABORT 的触发器（旁路上下文走同一条内存库连接）
+            // 注入一次性写失败：UPDATE 一律 ABORT 的触发器（旁路上下文走同一条内存库连接）
             using (var raw = new DataContext(options))
             {
                 raw.Database.ExecuteSqlRaw(
@@ -60,8 +60,8 @@ namespace Framework.Alarm.Tests
                 raw.Database.ExecuteSqlRaw("DROP TRIGGER fail_update;");
             }
 
-            // 毒化断言（#27）：失败残留不许带进下一口——同位号 Add 必须走到库层撞号、
-            // 翻译成契约约定的 ArgumentException；残留跟踪在-context 里则轮不到库、抛契约外的 InvalidOperationException
+            // 残留断言（#27）：上一次失败的残留不许影响下一次操作。同位号 Add 必须走到库层撞主键冲突、
+            // 翻译成契约约定的 ArgumentException；残留若还留在 EF 跟踪缓存里，就轮不到库层、会抛契约外的 InvalidOperationException
             Assert.Throws<ArgumentException>(() => store.Add(AlarmDefinitionTests.Sample()));
 
             store.Update(AlarmDefinitionTests.Sample() with { Limit = 260 }); // 触发器撤了，改恢复如常
@@ -89,7 +89,7 @@ namespace Framework.Alarm.Tests
             }
 
             Assert.NotNull(store.Find("HEAT01_TEMP_HI"));                       // 删失败：档还在
-            Assert.Throws<ArgumentException>(() => store.Add(AlarmDefinitionTests.Sample())); // 残留不毒化（#27）：撞号走库层翻译
+            Assert.Throws<ArgumentException>(() => store.Add(AlarmDefinitionTests.Sample())); // 残留不影响后续（#27）：主键冲突走库层翻译
             Assert.True(store.Delete("HEAT01_TEMP_HI"));                        // 恢复后删得掉
             Assert.Null(store.Find("HEAT01_TEMP_HI"));
         }

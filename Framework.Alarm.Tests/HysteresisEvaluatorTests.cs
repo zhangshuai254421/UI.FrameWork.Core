@@ -5,7 +5,7 @@ namespace Framework.Alarm.Tests
     /// <summary>
     /// 死区 + 触发/恢复延时滤波器契约测试（报警哲学 §6.2【强制】）。
     /// 全部时间由条件事实自带的时间戳承载（摘要 §8.7：越限累计用条件自带的时间戳，
-    /// 不用引擎本地时钟），测试拨表 = 喂时间戳，不真睡、无 DateTime.Now（ADR-0009 规则 6）。
+    /// 不用引擎本地时钟），测试里控制时间 = 喂时间戳，不真等待、不用 DateTime.Now（ADR-0009 规则 6）。
     /// 示例组态：限值 250℃、死区 2℃（恢复点 248℃）、触发延时 2s、恢复延时 1s。
     /// </summary>
     public class HysteresisEvaluatorTests
@@ -21,7 +21,7 @@ namespace Framework.Alarm.Tests
             Assert.Equal(FilterDecision.None, decision);
         }
 
-        /// <summary>越限但触发延时未满：静默——寂静也是断言（摘要 §11 警示 19）。响应窗口从越限起算，延时先吃一截（铁律一）。</summary>
+        /// <summary>越限但触发延时未满：静默——不发事件也是正式输出（摘要 §11 警示 19）。响应窗口从越限起算，延时先占一截（铁律一）。</summary>
         [Fact]
         public void 触发_越限未满延时_静默()
         {
@@ -47,7 +47,7 @@ namespace Framework.Alarm.Tests
             Assert.Equal(FilterDecision.Raise, second); // 0→2s 累计满 2s
         }
 
-        /// <summary>毛刺病灶（哲学 §6.2）：短于触发延时的越限不产生任何升级；回到限内累计清零——
+        /// <summary>毛刺场景（哲学 §6.2）：短于触发延时的越限不产生任何升级；回到限内累计清零——
         /// 两段各 1.5s 的毛刺总计 3s，也永远凑不满 2s 的连续延时。</summary>
         [Fact]
         public void 触发_毛刺短于延时_被吞()
@@ -63,10 +63,10 @@ namespace Framework.Alarm.Tests
                 evaluator.Evaluate(new ConditionSample(At: T(6), Value: 210)),    // 限内
             };
 
-            Assert.All(decisions, d => Assert.Equal(FilterDecision.None, d)); // 全程寂静
+            Assert.All(decisions, d => Assert.Equal(FilterDecision.None, d)); // 全程静默
         }
 
-        /// <summary>徘徊病灶（哲学 §6.2）：报警中，噪声在恢复点(248)与限值(250)之间怎么抖都不清除——
+        /// <summary>徘徊场景（哲学 §6.2）：报警中，噪声在恢复点(248)与限值(250)之间怎么抖都不清除——
         /// 「噪声在两线之间怎么抖都不翻转状态」，这是死区治徘徊的原理。</summary>
         [Fact]
         public void 恢复_死区带内徘徊_不清除()
@@ -88,7 +88,7 @@ namespace Framework.Alarm.Tests
             Assert.All(wandering, d => Assert.Equal(FilterDecision.None, d)); // 保持报警，无清除决策
         }
 
-        /// <summary>转换四滤波侧（哲学 §6.2）：深回到恢复点(248)以下持续满恢复延时(1s)，才给清除决策。边界：恰好满即清。</summary>
+        /// <summary>转换四的滤波侧（哲学 §6.2）：回到恢复点(248)以下持续满恢复延时(1s)，才给清除决策。边界：恰好满即清。</summary>
         [Fact]
         public void 恢复_低于恢复点满延时_清除()
         {
@@ -97,14 +97,14 @@ namespace Framework.Alarm.Tests
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 255)));
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 256)));
 
-            var during = evaluator.Evaluate(new ConditionSample(At: T(2.5), Value: 245)); // 深回：新一轮恢复从此起算，但未满 1s
+            var during = evaluator.Evaluate(new ConditionSample(At: T(2.5), Value: 245)); // 回到恢复点以下：新一轮恢复从此起算，但未满 1s
             var cleared = evaluator.Evaluate(new ConditionSample(At: T(3.5), Value: 244)); // 2.5→3.5s 满 1s
 
             Assert.Equal(FilterDecision.None, during);
             Assert.Equal(FilterDecision.Clear, cleared);
         }
 
-        /// <summary>恢复延时为零（大多数报警的组态）：深回到恢复点以下的第一条事实即时清。</summary>
+        /// <summary>恢复延时为零（大多数报警的组态）：回到恢复点以下的第一条事实立即清除。</summary>
         [Fact]
         public void 恢复_无恢复延时_到点即清()
         {
@@ -113,7 +113,7 @@ namespace Framework.Alarm.Tests
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 255)));
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 256)));
 
-            var cleared = evaluator.Evaluate(new ConditionSample(At: T(2.5), Value: 247.9)); // 深回（< 248）
+            var cleared = evaluator.Evaluate(new ConditionSample(At: T(2.5), Value: 247.9)); // 回到恢复点以下（< 248）
 
             Assert.Equal(FilterDecision.Clear, cleared);
         }
@@ -146,7 +146,7 @@ namespace Framework.Alarm.Tests
 
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 255)));
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 256)));
-            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(2.5), Value: 245)));  // 深回起算
+            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(2.5), Value: 245)));  // 回落段起算
             Assert.Equal(FilterDecision.Clear, evaluator.Evaluate(new ConditionSample(At: T(3.5), Value: 244))); // 满 1s 清除
 
             var re1 = evaluator.Evaluate(new ConditionSample(At: T(10), Value: 261));   // 再越限：新一轮起点
@@ -159,15 +159,15 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>铁律二边界（哲学 §6.2「死区 ≥ 信号噪声幅值」）：零延时隔离死区——
-        /// 噪声幅值(3℃)超过死区(2℃)时，值在两线外来回即翻转，死区保不了你：铁律不是白写的。
-        /// 首条事实即越限且零延时：直接升级（#17 修正——零延时本就无「累计」可言，开机盲区不吞它）。</summary>
+        /// 噪声幅值(3℃)超过死区(2℃)时，值在两线外来回即翻转，死区保不住：铁律不是白写的。
+        /// 首条事实即越限且零延时：直接升级（#17 修正——零延时本就没有「累计」可言，开机盲区不吞它）。</summary>
         [Fact]
         public void 死区_噪声幅值超过死区_照翻转()
         {
             var evaluator = Evaluator(onDelay: TimeSpan.Zero, offDelay: TimeSpan.Zero);
 
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 250.5)));   // 首条即越限：零延时立即升
-            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0.5), Value: 250.5))); // 报警中：不重播
+            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0.5), Value: 250.5))); // 报警中：不重复发事件
 
             Assert.Equal(FilterDecision.Clear, evaluator.Evaluate(new ConditionSample(At: T(1), Value: 247.5)));   // 噪声低谷穿出恢复点
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(1.5), Value: 250.5))); // 噪声高峰穿出限值
@@ -177,7 +177,7 @@ namespace Framework.Alarm.Tests
         /// <summary>
         /// 首条事实盲区修正（#17）：OnDelay = 0 的「即时触发」档案，开机时条件已越限——
         /// 首条事实直接升级，不等第二条定界（否则若第二条已回限内，这次越限永远不升，最坏漏报一段）。
-        /// 延时为零没有「累计」可言：单条事实即够格。升级后报警中不重播照旧、深回清除照旧。
+        /// 延时为零没有「累计」可言：单条事实就够格。升级后报警中不重复发事件照旧、回落清除照旧。
         /// </summary>
         [Fact]
         public void 盲区修正_首条事实_零延时且已越限_立即升()
@@ -185,18 +185,18 @@ namespace Framework.Alarm.Tests
             var evaluator = Evaluator(onDelay: TimeSpan.Zero, offDelay: TimeSpan.Zero);
 
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260))); // 开机即越限：立即升
-            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(1), Value: 261)));  // 报警中：不重播
-            Assert.Equal(FilterDecision.Clear, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 245))); // 深回即清（恢复延时 0）
+            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(1), Value: 261)));  // 报警中：不重复发事件
+            Assert.Equal(FilterDecision.Clear, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 245))); // 回落即清（恢复延时 0）
         }
 
-        /// <summary>首条事实的既有契约不变（#17 只动零延时一格）：带触发延时的档案，首条立段不升——
+        /// <summary>首条事实的既有契约不变（#17 只动零延时一格）：带触发延时的档案，首条只记段起点不升级——
         /// 没有前序事实就无从认定「持续」，延时未满照旧静默，满延时照常升级。</summary>
         [Fact]
         public void 首条事实_有延时_照旧立段静默()
         {
             var evaluator = Evaluator(offDelay: TimeSpan.Zero);
 
-            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260))); // 首条立段：延时未满
+            Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260))); // 首条记段起点：延时未满
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(1.9), Value: 261)));
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 262))); // 满延时照常
         }
@@ -209,14 +209,14 @@ namespace Framework.Alarm.Tests
 
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260))); // 越限段起点
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(1), Value: 261))); // 累计 1s
-            var rewind = evaluator.Evaluate(new ConditionSample(At: T(0.5), Value: 200)); // 乱序 + 限内：不许清零进行中的段
+            var rewind = evaluator.Evaluate(new ConditionSample(At: T(0.5), Value: 200)); // 乱序 + 限内：不许清掉进行中的段
             var confirm = evaluator.Evaluate(new ConditionSample(At: T(2), Value: 262));  // 1→2s 补满延时
 
             Assert.Equal(FilterDecision.None, rewind);
             Assert.Equal(FilterDecision.Raise, confirm); // 若乱序被当真，越限段已被清零，这里到不了升级
         }
 
-        /// <summary>示例组态的滤波器（类头注的 250 / 2 / 2s / 1s）：默认档零参即取；延时变体经参数点名——考卷差异即用例前提。</summary>
+        /// <summary>示例组态的滤波器（类头注的 250 / 2 / 2s / 1s）：默认档零参即取；延时要变就按参数给值，参数差异就是用例前提。</summary>
         private static HysteresisEvaluator Evaluator(TimeSpan? onDelay = null, TimeSpan? offDelay = null)
             => new(limit: 250, deadband: 2, onDelay: onDelay ?? TimeSpan.FromSeconds(2), offDelay: offDelay ?? TimeSpan.FromSeconds(1));
 

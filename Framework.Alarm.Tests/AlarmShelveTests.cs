@@ -3,11 +3,12 @@ using Framework.Alarm;
 namespace Framework.Alarm.Tests
 {
     /// <summary>
-    /// 搁置契约测试（摘要 §8.10，报警哲学 §7【强制】）：搁置 = 事件打标（<c>ShelvedUntil</c>），不拦状态机——
-    /// 搁置期间条件照常触发、状态照常流转、事件照常落库（引擎不撒谎）；UI 按标过滤主列表，
-    /// 搁置清单 = <c>Active.Where(ShelvedUntil &gt; now)</c> 单独可见；到期不用定时器解除——时钟一过，标自然失效。
-    /// 测试从接缝进：<see cref="AlarmEngine.Shelve"/>/<see cref="AlarmEngine.Unshelve"/> 模拟操作员动作
-    /// （时刻取时钟接缝当下，操作员全量留痕）、FakeClock 拨表验证到期、<see cref="AlarmFilters"/> 验证两清单过滤。
+    /// 搁置契约测试（摘要 §8.10，报警哲学 §7【强制】）：搁置的实现是附加期限字段（<c>ShelvedUntil</c>），
+    /// 不阻止状态机——搁置期间条件照常触发、状态照常流转、事件照常落库（引擎记录全量事实）；
+    /// UI 按期限过滤主列表，搁置清单 = <c>Active.Where(ShelvedUntil &gt; now)</c> 单独可见；
+    /// 到期不需要定时器解除——时间一过，期限字段自然失效。
+    /// 测试从接口进：<see cref="AlarmEngine.Shelve"/>/<see cref="AlarmEngine.Unshelve"/> 模拟操作员动作
+    /// （时刻取时钟当前值，操作员全量留痕）、FakeClock 控制时间验证到期、<see cref="AlarmFilters"/> 验证两清单过滤。
     /// 示例档案复用 AlarmDefinitionTests.Sample（限值 250 / 死区 2 / 触发延时 2s / 恢复延时 0 / 高优先级）。
     /// </summary>
     public class AlarmShelveTests
@@ -28,9 +29,9 @@ namespace Framework.Alarm.Tests
         };
 
         /// <summary>
-        /// 反面约束钉死（摘要 §11 警示 6）：没有「搁置开关」拦状态机——搁置中条件越限，Raised 照产、
+        /// 反面约束钉死（摘要 §11 警示 6）：不存在「搁置开关」阻止状态机——搁置中条件越限，Raised 照发、
         /// 状态照常流转、确认/恢复照常走，历史库全量记录；唯一的差别是 <see cref="AlarmRaised"/>
-        /// 和活跃列表快照带着 <c>ShelvedUntil</c> 标（摘要 §8.10：引擎不撒谎，UI 按标过滤）。
+        /// 和活跃列表快照带着 <c>ShelvedUntil</c> 期限（摘要 §8.10：引擎记录全量，UI 按期限过滤）。
         /// 搁置在报警未起时主动下（吹扫场景：先把会乱报的搁上）。
         /// </summary>
         [Fact]
@@ -50,34 +51,34 @@ namespace Framework.Alarm.Tests
 
             var shelved = Assert.IsType<AlarmShelved>(events[0]);         // 搁置动作本身全量留痕
             Assert.Equal(AlarmEngineTests.HEAT01, shelved.Tag);
-            Assert.Equal(HysteresisEvaluatorTests.T(1), shelved.At);      // 操作员动作：时刻取时钟当下
+            Assert.Equal(HysteresisEvaluatorTests.T(1), shelved.At);      // 操作员动作：时刻取时钟当前值
             Assert.Equal(HysteresisEvaluatorTests.T(31), shelved.ShelvedUntil); // 期限留痕
             Assert.Equal("李四", shelved.Operator);
 
-            var raised = Assert.IsType<AlarmRaised>(events[1]);           // 状态机照常：Raised 照产，不拦
+            var raised = Assert.IsType<AlarmRaised>(events[1]);           // 状态机照常：Raised 照发，不拦
             Assert.Equal(HysteresisEvaluatorTests.T(12), raised.At);
             Assert.Equal(AlarmPriority.High, raised.Priority);
-            Assert.Equal(HysteresisEvaluatorTests.T(31), raised.ShelvedUntil); // 打标：升级发生在搁置中
+            Assert.Equal(HysteresisEvaluatorTests.T(31), raised.ShelvedUntil); // 附期限：升级发生在搁置中
 
-            var member = Assert.Single(engine.Active);                    // 引擎不撒谎：活跃列表照常收行
+            var member = Assert.Single(engine.Active);                    // 引擎记录全量：活跃列表照常收行
             Assert.Equal(AlarmState.Unacknowledged, member.State);
-            Assert.Equal(HysteresisEvaluatorTests.T(31), member.ShelvedUntil); // 快照带标（主列表该滤掉它，搁置清单该见到它）
+            Assert.Equal(HysteresisEvaluatorTests.T(31), member.ShelvedUntil); // 快照带期限（主列表该滤掉它，搁置清单该见到它）
 
-            clock.Advance(TimeSpan.FromSeconds(12));                      // T(13)：操作员看见（在 Raised@T(12) 之后，履历时间不倒流）
+            clock.Advance(TimeSpan.FromSeconds(12));                      // T(13)：操作员确认（在 Raised@T(12) 之后，事件时间不倒流）
             engine.Acknowledge(AlarmEngineTests.HEAT01, op: "王五");       // 搁置中照常确认（稳红）
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(12.5), Value: 245)); // 照常恢复闭环
 
-            Assert.Equal(HysteresisEvaluatorTests.T(13), Assert.IsType<AlarmAcknowledged>(events[2]).At); // 时钟当下（Raised@T(12) 之后）
+            Assert.Equal(HysteresisEvaluatorTests.T(13), Assert.IsType<AlarmAcknowledged>(events[2]).At); // 时钟当前值（Raised@T(12) 之后）
             Assert.Equal(
                 new[] { nameof(AlarmShelved), nameof(AlarmRaised), nameof(AlarmAcknowledged), nameof(AlarmClosed) },
-                events.Select(e => e.GetType().Name));                    // 全量记录：一拍不缺，KPI 体检不是瞎子
+                events.Select(e => e.GetType().Name));                    // 全量记录：一条不缺，KPI 统计不缺数
         }
 
         /// <summary>
-        /// 到期自动恢复播报（验收「到期后（拨表）自动回到正常播报，无任何解除调用」）：
-        /// 时钟过了期限——活跃行还在（报警没消失）、标没了（回主列表）；不产 <see cref="AlarmUnshelved"/>
-        /// （到期不是动作，无事件）；之后再触发的 <see cref="AlarmRaised"/> 也不带标。
-        /// 到期不用定时器解除——时钟一过，标自然失效（摘要 §8.10）。
+        /// 到期自动恢复显示（验收「到期后（拨表）自动回到正常播报，无任何解除调用」）：
+        /// 时钟过了期限——活跃行还在（报警没消失）、期限字段没了（回主列表）；不产 <see cref="AlarmUnshelved"/>
+        /// （到期不是操作，没有事件）；之后再触发的 <see cref="AlarmRaised"/> 也不带期限。
+        /// 到期不需要定时器解除——时间一过，期限字段自然失效（摘要 §8.10）。
         /// </summary>
         [Fact]
         public void 搁置_到期拨表_标自然失效_无解除调用()
@@ -91,27 +92,27 @@ namespace Framework.Alarm.Tests
             engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // T(0) 下单，期限 T(30)
 
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(10), Value: 265));
-            source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(12), Value: 266)); // 搁置中升级（带标）
+            source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(12), Value: 266)); // 搁置中升级（带期限）
             Assert.Equal(HysteresisEvaluatorTests.T(30), Assert.Single(engine.Active).ShelvedUntil);
 
-            clock.Advance(TimeSpan.FromSeconds(31));                      // T(31)：拨表过期限
+            clock.Advance(TimeSpan.FromSeconds(31));                      // T(31)：时钟拨过期限
 
-            var member = Assert.Single(engine.Active);                    // 报警还挂着：没有谁去「解除」它
-            Assert.Null(member.ShelvedUntil);                             // 标自然失效：回主列表正常播报
+            var member = Assert.Single(engine.Active);                    // 报警还挂着：没有任何人去「解除」它
+            Assert.Null(member.ShelvedUntil);                             // 期限自然失效：回主列表正常显示
             Assert.Equal(2, events.Count);                                // 无 Unshelved：到期不产事件
 
-            source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(13), Value: 245)); // 深回 → RTN
+            source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(13), Value: 245)); // 恢复 → RTN
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(40), Value: 270)); // 期限后再越限
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(42), Value: 271)); // 满延时再激活
 
             var reRaised = Assert.IsType<AlarmRaised>(events[3]);         // RTN 再激活的新一段（Shelved、Raised、AutoReturned 之后）
-            Assert.Null(reRaised.ShelvedUntil);                           // 标已过期：新升级不带标
+            Assert.Null(reRaised.ShelvedUntil);                           // 期限已过期：新升级不带期限
             Assert.Null(Assert.Single(engine.Active).ShelvedUntil);
         }
 
         /// <summary>
-        /// 报警已活跃再搁置：标记落在引擎的搁置登记上，活跃列表快照在读取时对表打标——
-        /// 下一次读取即带标（无须等新事件）；状态、优先级、活跃起点一概不动（搁置不拦状态机）。
+        /// 报警已活跃再搁置：期限落在引擎的搁置登记表上，活跃列表快照在读取时用当前时刻补算——
+        /// 下一次读取就带期限（不用等新事件）；状态、优先级、活跃起点一概不动（搁置不拦状态机）。
         /// </summary>
         [Fact]
         public void 搁置_报警已活跃_快照即带标()
@@ -123,13 +124,13 @@ namespace Framework.Alarm.Tests
             engine.EventRaised += events.Add;
 
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(0), Value: 265));
-            source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266)); // 先升级（未搁置，不带标）
+            source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266)); // 先升级（未搁置，不带期限）
             Assert.Null(Assert.Single(engine.Active).ShelvedUntil);
 
             clock.Advance(TimeSpan.FromSeconds(5));                       // T(5)：操作员下单
             engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // 期限 T(35)
 
-            var member = Assert.Single(engine.Active);                    // 下一次快照即带标
+            var member = Assert.Single(engine.Active);                    // 下一次快照就带期限
             Assert.Equal(HysteresisEvaluatorTests.T(35), member.ShelvedUntil);
             Assert.Equal(AlarmState.Unacknowledged, member.State);        // 状态一概不动
             Assert.Equal(HysteresisEvaluatorTests.T(2), member.Since);
@@ -138,8 +139,8 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>
-        /// 解除搁置（验收「每行带解除搁置按钮」的引擎侧）：撤标——快照立刻回主列表；
-        /// 产 <see cref="AlarmUnshelved"/> 留痕（操作员动作，时刻取时钟当下）。
+        /// 解除搁置（验收「每行带解除搁置按钮」的引擎侧）：取消期限——快照立刻回主列表；
+        /// 产 <see cref="AlarmUnshelved"/> 留痕（操作员动作，时刻取时钟当前值）。
         /// </summary>
         [Fact]
         public void 解除_撤标回主列表_产Unshelved留痕()
@@ -160,18 +161,18 @@ namespace Framework.Alarm.Tests
 
             var unshelved = Assert.IsType<AlarmUnshelved>(events[2]);     // 动作全量留痕
             Assert.Equal(AlarmEngineTests.HEAT01, unshelved.Tag);
-            Assert.Equal(HysteresisEvaluatorTests.T(2), unshelved.At);    // 时钟当下
+            Assert.Equal(HysteresisEvaluatorTests.T(2), unshelved.At);    // 时钟当前值
             Assert.Equal("王五", unshelved.Operator);
 
-            Assert.Null(Assert.Single(engine.Active).ShelvedUntil);       // 撤标：回主列表（报警本身还在）
+            Assert.Null(Assert.Single(engine.Active).ShelvedUntil);       // 期限已取消：回主列表（报警本身还在）
             Assert.Equal(
                 new[] { nameof(AlarmRaised), nameof(AlarmShelved), nameof(AlarmUnshelved) },
                 events.Select(e => e.GetType().Name));
         }
 
         /// <summary>
-        /// 重复搁置以最新下单为准（换班的把期限改短/改长都行），两次下单都各留一行痕
-        /// （全量留痕【强制】：每个动作都是本子上一行）。
+        /// 重复搁置以最后一次为准（换班的人把期限改短、改长都行），两次操作各留一条记录
+        /// （全量留痕【强制】：每个动作都在历史库里有一行）。
         /// </summary>
         [Fact]
         public void 搁置_重复搁置_以新期限为准_两次都留痕()
@@ -182,15 +183,15 @@ namespace Framework.Alarm.Tests
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            SeedAndTrigger(engine, source, at: 0);                        // 先有挂着的报警，快照才有标可看
+            SeedAndTrigger(engine, source, at: 0);                        // 先有一条挂着的报警，快照才有期限可看
 
             engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // 期限 T(30)
             clock.Advance(TimeSpan.FromSeconds(5));                       // T(5)
-            engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(10), op: "王五"); // 期限 T(15)：以新单为准
+            engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(10), op: "王五"); // 期限 T(15)：以最后一次为准
 
             var member = Assert.Single(engine.Active);
             Assert.Equal(HysteresisEvaluatorTests.T(15), member.ShelvedUntil);
-            Assert.Equal(3, events.Count);                                // Raised + 两次动作两行痕
+            Assert.Equal(3, events.Count);                                // Raised + 两次操作两条留痕
             Assert.Equal(HysteresisEvaluatorTests.T(30), Assert.IsType<AlarmShelved>(events[1]).ShelvedUntil);
             Assert.Equal(HysteresisEvaluatorTests.T(15), Assert.IsType<AlarmShelved>(events[2]).ShelvedUntil);
             Assert.Equal("王五", Assert.IsType<AlarmShelved>(events[2]).Operator);
@@ -198,7 +199,7 @@ namespace Framework.Alarm.Tests
 
         /// <summary>
         /// 搁置必须限时（哲学 §7【强制】，摘要 §11 警示 15）：零/负时长 = 无限期搁置的变体
-        /// = 变相删报警——静默拒绝：不登记、不留痕（无效的下单不是动作）。
+        /// = 变相删报警——静默拒绝：不登记、不留痕（无效的下单不算动作）。
         /// </summary>
         [Fact]
         public void 搁置_零负时长_静默拒绝()
@@ -211,11 +212,11 @@ namespace Framework.Alarm.Tests
             engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.Zero, op: "李四");
             engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(-1), op: "李四");
 
-            Assert.Empty(events);      // 无留痕：没登记成功
-            Assert.Null(SeedAndTrigger(engine, source, at: 10).ShelvedUntil); // 升级不带标：标没立上
+            Assert.Empty(events);      // 无留痕：没有登记成功
+            Assert.Null(SeedAndTrigger(engine, source, at: 10).ShelvedUntil); // 升级不带期限：搁置没立上
         }
 
-        /// <summary>无档案的位号搁不上去（与「无档案不报警」同门规）：静默，无留痕、无标。</summary>
+        /// <summary>无档案的位号搁不上去（与「无档案不报警」同一条规矩）：静默，无留痕、无期限。</summary>
         [Fact]
         public void 搁置_无档案位号_静默()
         {
@@ -227,10 +228,10 @@ namespace Framework.Alarm.Tests
             engine.Shelve("NO_MADB_ENTRY", TimeSpan.FromSeconds(30), op: "李四");
 
             Assert.Empty(events);
-            Assert.Null(SeedAndTrigger(engine, source, at: 10).ShelvedUntil); // 搁置登记上什么都没有：HEAT01 升级照常但不带标
+            Assert.Null(SeedAndTrigger(engine, source, at: 10).ShelvedUntil); // 搁置登记表是空的：HEAT01 升级照常但不带期限
         }
 
-        /// <summary>解除一个没搁置过的位号：静默——没有动作就没有痕，本子上不留 Unshelved 假事件。</summary>
+        /// <summary>解除一个已过期的搁置：静默——没有可解除的动作，历史库不留 Unshelved 假事件。</summary>
         [Fact]
         public void 解除_已到期订单_静默()
         {
@@ -241,7 +242,7 @@ namespace Framework.Alarm.Tests
             engine.EventRaised += events.Add;
 
             engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // T(0) 下单，期限 T(30)
-            clock.Advance(TimeSpan.FromSeconds(31));                      // T(31)：订单已自然到期（标失效，早回主列表）
+            clock.Advance(TimeSpan.FromSeconds(31));                      // T(31)：搁置已自然到期（期限失效，早回主列表）
             engine.Unshelve(AlarmEngineTests.HEAT01, op: "王五");          // 迟来的解除：无从解除
 
             Assert.Equal(
@@ -267,9 +268,9 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>
-        /// 搁置清单与主列表过滤各有测试（验收）：两条报警各挂一条，搁置其一——
-        /// <see cref="AlarmFilters.Shelved"/> 只见带标的、<see cref="AlarmFilters.MainList"/> 只见不带标的；
-        /// 拨表过期限后归位：主列表两条、搁置清单空（过滤规则只有一个：标的期限对不对得上现在）。
+        /// 搁置清单与主列表过滤各有测试（验收）：两条报警各挂一条，搁置其中一条——
+        /// <see cref="AlarmFilters.Shelved"/> 只见带期限的、<see cref="AlarmFilters.MainList"/> 只见不带期限的；
+        /// 时钟拨过期限后归位：主列表两条、搁置清单空（过滤规则只有一个：期限和当前时刻比大小）。
         /// </summary>
         [Fact]
         public void 过滤_主列表与搁置清单_各见其份()
@@ -292,17 +293,17 @@ namespace Framework.Alarm.Tests
             var main = AlarmFilters.MainList(engine.Active, now);
             var shelvedList = AlarmFilters.Shelved(engine.Active, now);
             var mainMember = Assert.Single(main);
-            Assert.Equal("PUMP01_STOP", mainMember.Tag);                  // 主列表：只剩没带标的
+            Assert.Equal("PUMP01_STOP", mainMember.Tag);                  // 主列表：只剩没带期限的
             var shelvedMember = Assert.Single(shelvedList);
             Assert.Equal(AlarmEngineTests.HEAT01, shelvedMember.Tag);     // 搁置清单：单独可见
             Assert.Equal(HysteresisEvaluatorTests.T(30), shelvedMember.ShelvedUntil);
 
-            clock.Advance(TimeSpan.FromSeconds(29));                      // T(29)：期限前一拍
+            clock.Advance(TimeSpan.FromSeconds(29));                      // T(29)：期限前一刻
             Assert.Single(AlarmFilters.Shelved(engine.Active, clock.Now)); // 还没到期：仍在搁置清单
 
-            clock.Advance(TimeSpan.FromSeconds(1));                       // T(30)：时钟一过（期限此刻起不再大于现在）
+            clock.Advance(TimeSpan.FromSeconds(1));                       // T(30)：时间一过（期限不再大于当前时刻）
             Assert.Empty(AlarmFilters.Shelved(engine.Active, clock.Now)); // 搁置清单空
-            Assert.Equal(2, AlarmFilters.MainList(engine.Active, clock.Now).Count); // 全员回主列表
+            Assert.Equal(2, AlarmFilters.MainList(engine.Active, clock.Now).Count); // 全部回主列表
         }
 
         /// <summary>喂满触发延时把 HEAT01 升级（辅助：Shelve 契约测试只要一条挂着的报警）。</summary>

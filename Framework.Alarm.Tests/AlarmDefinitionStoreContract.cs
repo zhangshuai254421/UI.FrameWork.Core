@@ -3,12 +3,12 @@ using Framework.Alarm;
 namespace Framework.Alarm.Tests
 {
     /// <summary>
-    /// 档案存储契约：内存 fake 与 SQLite 实现共用同一套行为断言（验收：两套各测一遍）。
-    /// 契约方法只断言、不建存储——存储由各测试套件注入。
+    /// 档案存储契约：内存替身与 SQLite 实现共用同一套行为断言，两套各测一遍。
+    /// 契约方法只断言、不建存储，存储由各测试套件注入。
     /// </summary>
     internal static class AlarmDefinitionStoreContract
     {
-        /// <summary>增→查：存进去的原样读回来（record 值相等）。</summary>
+        /// <summary>增后查：存进去的原样读回来（record 值相等）。</summary>
         public static void 增_新档_查回原档(IAlarmDefinitionStore store)
         {
             var def = AlarmDefinitionTests.Sample();
@@ -26,7 +26,7 @@ namespace Framework.Alarm.Tests
             Assert.Null(store.Find("NOT_EXIST"));
         }
 
-        /// <summary>改：同位号覆盖，读回为新值。</summary>
+        /// <summary>改：同位号整行覆盖，读回为新值。</summary>
         public static void 改_同位号_整行覆盖(IAlarmDefinitionStore store)
         {
             store.Add(AlarmDefinitionTests.Sample());
@@ -50,7 +50,7 @@ namespace Framework.Alarm.Tests
             Assert.False(store.Delete("HEAT01_TEMP_HI")); // 重复删：假，不抛
         }
 
-        /// <summary>全量加载：按位号可乱序增，全量取回条数与内容齐。</summary>
+        /// <summary>全量加载：按任意顺序增三条，全量取回条数与内容都齐。</summary>
         public static void 全量加载_三条档_条目齐全(IAlarmDefinitionStore store)
         {
             store.Add(AlarmDefinitionTests.Sample());
@@ -73,7 +73,7 @@ namespace Framework.Alarm.Tests
             Assert.Throws<ArgumentException>(() => store.Add(AlarmDefinitionTests.Sample()));
         }
 
-        /// <summary>操作动作必填（哲学 §6.1「填不出的候选当庭退回」）：缺动作的档案增不进。</summary>
+        /// <summary>操作动作必填（哲学 §6.1）：缺动作的档案增不进，校验不通过立即抛异常。</summary>
         public static void 增_操作动作缺_当庭退回(IAlarmDefinitionStore store)
         {
             var def = AlarmDefinitionTests.Sample() with { OperatorAction = "" };
@@ -81,7 +81,7 @@ namespace Framework.Alarm.Tests
             Assert.Throws<ArgumentException>(() => store.Add(def));
         }
 
-        /// <summary>铁律一（哲学 §6.2）：触发延时 ≥ MTR 的档案被拒——响应窗口不能被延时吞尽。</summary>
+        /// <summary>铁律一（哲学 §6.2）：触发延时 ≥ MTR 的档案被拒，响应窗口不能被延时吞尽。</summary>
         public static void 增_触发延时逾MTR_被拒(IAlarmDefinitionStore store)
         {
             var def = AlarmDefinitionTests.Sample() with { OnDelay = TimeSpan.FromMinutes(5) }; // 恰等于 MTR，不小于
@@ -89,7 +89,7 @@ namespace Framework.Alarm.Tests
             Assert.Throws<ArgumentException>(() => store.Add(def));
         }
 
-        /// <summary>改档同样过法定校验：非法改档当庭退回，原档不受影响。</summary>
+        /// <summary>改档同样过全套校验：非法改档当场抛异常，原档不受影响。</summary>
         public static void 改_操作动作缺_当庭退回(IAlarmDefinitionStore store)
         {
             store.Add(AlarmDefinitionTests.Sample());

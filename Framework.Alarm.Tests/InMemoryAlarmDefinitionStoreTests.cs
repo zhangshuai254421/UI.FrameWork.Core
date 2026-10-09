@@ -3,7 +3,8 @@ using Framework.Alarm;
 namespace Framework.Alarm.Tests
 {
     /// <summary>
-    /// 内存档案存储（测试替身）过契约——与 SQLite 实现同一套断言（照 FakeCamera 惯例，替身住测试工程）。
+    /// 内存档案存储（测试替身）过契约，与 SQLite 实现同一套断言。
+    /// 照 FakeCamera 惯例，替身住测试工程。
     /// </summary>
     public class InMemoryAlarmDefinitionStoreTests
     {

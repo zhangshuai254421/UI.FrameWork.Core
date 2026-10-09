@@ -4,16 +4,16 @@ using Framework.Alarm.Domain;
 namespace SemiAppliaction.Views.Tests
 {
     /// <summary>
-    /// 演示装置直通联测：真引擎（AlarmDemoRig）→ 真 AlarmListViewModel，中间不经任何替身——
-    /// 单层契约测试各绿不等于接线通（页面「两清单一直空」的排查钉子）：引擎升没升（Active）、
-    /// 呈现接没接住（MainRows）一层一个断言，断点在哪一层当场现形。
-    /// #22 通电后档案/事件史走注入的存储：测试传内存替身（不碰宿主真库），
-    /// 真库链路由 Framework.Alarm.Tests 的契约测试与建库口联测钉住。
+    /// 演示装置直通联测：真引擎（AlarmDemoRig）到真 AlarmListViewModel，中间不经任何替身。
+    /// 单层契约测试各自都绿不等于接线通了（页面「两清单一直空」问题的排查钉子）：
+    /// 引擎升没升（Active）、呈现接没接住（MainRows），一层一个断言，断点在哪一层当场现形。
+    /// #22 起档案和事件史走注入的存储：测试传内存替身（不碰宿主真库），
+    /// 真库链路由 Framework.Alarm.Tests 的契约测试与建库入口联测钉住。
     /// </summary>
     public class AlarmDemoRigTests
     {
-        /// <summary>事件史替身：只记录，供「通电即落库」断言——录音笔不是契约替身（契约双生归
-        /// Framework.Alarm.Tests 的 InMemoryEventStore，本工程够不着也无需同一份）。</summary>
+        /// <summary>事件史替身：只记录，供「接线即落库」断言。它不是契约替身（契约两套实现共测的
+        /// InMemoryEventStore 住在 Framework.Alarm.Tests，本工程够不着也无需同一份）。</summary>
         private sealed class RecordingEventStore : IEventStore
         {
             public List<AlarmEvent> Events { get; } = [];
@@ -27,7 +27,7 @@ namespace SemiAppliaction.Views.Tests
         }
 
         /// <summary>
-        /// 真装置直通：剧本推五拍（憋压即时触发档）——引擎 Active 里得有报警，
+        /// 真装置直通：剧本推五步（憋压即时触发档），引擎 Active 里得有报警，
         /// 主列表里也得有同一行。两清单一直空的病根要么在引擎层（Active 空），要么在直译层（MainRows 空）。
         /// </summary>
         [Fact]
@@ -49,7 +49,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(AlarmDemoRig.PressTag, row.Tag);
         }
 
-        /// <summary>档案就位幂等（#22）：同一档案库二度通电——缺了才补，不撞位号不重播。</summary>
+        /// <summary>档案就位幂等（#22）：同一档案库初始化两回，缺了才补，不撞位号不重播。</summary>
         [Fact]
         public void 二度通电_档案缺了才补_不炸不重复()
         {
@@ -60,8 +60,8 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(3, store.LoadAll().Count);
         }
 
-        /// <summary>通电落库（#22）：接了事件史，演示的每一拍全量进本子——五拍憋压即时档升的那一次，库里就有。
-        /// 落库走后台冲账（#31），断言前经装置冲账：存量清完才对账。</summary>
+        /// <summary>接线即落库（#22）：接了事件史，演示的每一步全量写进库，五步里憋压即时档升级的那一次，库里就有。
+        /// 写库走后台队列（#31），断言前先让装置把存量写完再对账。</summary>
         [Fact]
         public void 接通事件库_剧本五拍_事件全量落本子()
         {
@@ -75,15 +75,15 @@ namespace SemiAppliaction.Views.Tests
                 vm.RefreshFilters();
             }
 
-            rig.History?.Dispose();                              // 冲账：后台写者清完存量再断言（#31）
+            rig.History?.Dispose();                              // 收尾：等后台写者把存量写完再断言（#31）
 
-            var record = Assert.Single(events.Events);           // 引擎升几次，本子记几笔：一笔不缺
+            var record = Assert.Single(events.Events);           // 引擎升几次，库记几笔：一笔不缺
             var raised = Assert.IsType<AlarmRaised>(record);
             Assert.Equal(AlarmDemoRig.PressTag, raised.Tag);     // 憋压即时档（其余两位延时未满）
         }
 
-        /// <summary>装置收口冲账（#31 评审）：Dispose 先冲账再退订采集层——收口那一刻队列里的
-        /// 尾巴要进本子，宿主正常关屏不许丢账（崩溃窗口才是 ADR-0011 认的丢账口）。</summary>
+        /// <summary>装置收尾先写库（#31 评审）：Dispose 先把队列存量写完、再退订采集层。
+        /// 收尾那一刻队列里的尾巴要进库，宿主正常关屏不许丢数据（崩溃窗口才是 ADR-0011 认可的丢失口）。</summary>
         [Fact]
         public void 装置收口_先冲账再退订_本子不欠账()
         {
@@ -97,9 +97,9 @@ namespace SemiAppliaction.Views.Tests
                 vm.RefreshFilters();
             }
 
-            rig.Dispose();                                       // 收口：冲账在前，退订在后
+            rig.Dispose();                                       // 收尾：先写完存量，再退订
 
-            var record = Assert.Single(events.Events);           // 队列尾巴进了本子：一笔不缺
+            var record = Assert.Single(events.Events);           // 队列尾巴进了库：一笔不缺
             Assert.Equal(AlarmDemoRig.PressTag, Assert.IsType<AlarmRaised>(record).Tag);
         }
     }

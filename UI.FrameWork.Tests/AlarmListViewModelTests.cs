@@ -5,10 +5,10 @@ using Framework.Alarm.Domain;
 namespace SemiAppliaction.Views.Tests
 {
     /// <summary>
-    /// AlarmListViewModel 契约测试（摘要 §9.3，哲学 §3.2 呈现纪律【强制】）：Apply 里零判定——
-    /// 事件到集合变更的直译（Raised→Add、Acknowledged/AutoReturned→UpdateState、Closed→Remove、
-    /// Shelved/Unshelved→UpdateMark）；排序按档案 Priority；主列表/搁置清单 = 引擎库 AlarmFilters 的两个视图。
-    /// 测试从接缝进：FakeFeed/同步 SynchronizationContext/注入 now——不依赖真引擎、真线程、真睡等待（#15 验收）。
+    /// AlarmListViewModel 契约测试（摘要 §9.3，哲学 §3.2 呈现纪律【强制】）：Apply 里零判定，
+    /// 事件到集合变更是直译（Raised→Add、Acknowledged/AutoReturned→UpdateState、Closed→Remove、
+    /// Shelved/Unshelved→UpdateMark）；排序按档案 Priority；主列表/搁置清单就是引擎库 AlarmFilters 的两个视图。
+    /// 测试从接缝进去：FakeFeed、同步 SynchronizationContext、注入 now，不依赖真引擎、真线程、真睡等待（#15 验收）。
     /// </summary>
     public class AlarmListViewModelTests
     {
@@ -18,11 +18,11 @@ namespace SemiAppliaction.Views.Tests
         /// <summary>演示位号：泵停运（中优）。</summary>
         private const string PumpTag = "PUMP01_STOP";
 
-        /// <summary>基准时刻：测试用它加秒数拨表。</summary>
+        /// <summary>基准时刻：测试用它加秒数拨时钟。</summary>
         private static DateTimeOffset T(double seconds)
             => new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero).AddSeconds(seconds);
 
-        /// <summary>馈送替身：发事件、记动作留证（确认/搁置/解除的转手证据），Active 快照可设定。</summary>
+        /// <summary>事件流替身：发事件、记动作留证（确认/搁置/解除的转手证据），Active 快照可设定。</summary>
         private sealed class FakeFeed : IAlarmFeed
         {
             public event Action<AlarmEvent>? EventRaised;
@@ -43,12 +43,12 @@ namespace SemiAppliaction.Views.Tests
             {
             }
 
-            /// <summary>模拟引擎吐事件。</summary>
+            /// <summary>模拟引擎发事件。</summary>
             public void Emit(AlarmEvent e) => EventRaised?.Invoke(e);
         }
 
         /// <summary>档案替身：只实现 Find（详情弹窗的数据源），载两条演示档案；
-        /// Find 留了线程号（#31：档案取用不许占选中线程）与炸点开关（故障不炸屏的考官）。</summary>
+        /// Find 记下跑过的线程号（#31：档案取用不许占选中线程），另有故障开关（验「取档失败不炸屏」用）。</summary>
         private sealed class FakeStore : IAlarmDefinitionStore
         {
             private readonly Dictionary<string, AlarmDefinition> _items = new();
@@ -59,7 +59,7 @@ namespace SemiAppliaction.Views.Tests
                 _items[PumpTag] = PumpSample();
             }
 
-            /// <summary>Find 炸点：置真即每次取档都炸（模拟库暂时进不去）。</summary>
+            /// <summary>Find 故障开关：置真即每次取档都抛异常（模拟库暂时进不去）。</summary>
             public bool FindThrows { get; set; }
 
             /// <summary>Find 跑过的线程号（#31：默认接线必须是后台线程）。</summary>
@@ -127,7 +127,7 @@ namespace SemiAppliaction.Views.Tests
             RationalizedOn: T(0),
             PhilosophyVersion: "1.0");
 
-        /// <summary>造一台被测：注入替身馈送、档案库、同步编队与固定 now；取档默认内联（断言同步到位），
+        /// <summary>造一台被测：注入替身事件流、档案库、同步上下文与固定 now；取档默认内联（断言同步到位），
         /// 要验后台取档的测试经 <paramref name="runOffUiThread"/> 换接缝或直造。</summary>
         private static (AlarmListViewModel Vm, FakeFeed Feed, FakeStore Store) NewVm(
             Func<DateTimeOffset>? now = null,
@@ -145,7 +145,7 @@ namespace SemiAppliaction.Views.Tests
 
         /// <summary>
         /// 验收「模拟 feed 发事件 → 列表出现正确」：Raised → 主列表出现一行，
-        /// State=Unacknowledged（闪红）、优先级与活跃起点照单全收引擎产出。
+        /// State=Unacknowledged（闪红），优先级与活跃起点照单全收引擎产出。
         /// </summary>
         [Fact]
         public void 升级_主列表出现一行_未确认()
@@ -162,7 +162,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.Empty(vm.ShelvedRows);
         }
 
-        /// <summary>Raised 带标（搁置中触发）：进搁置清单、不进主列表——UI 按标过滤（摘要 §8.10）。</summary>
+        /// <summary>Raised 带期限（搁置中触发）：进搁置清单、不进主列表，UI 按期限过滤（摘要 §8.10）。</summary>
         [Fact]
         public void 升级_带标_进搁置清单不进主列表()
         {
@@ -178,7 +178,7 @@ namespace SemiAppliaction.Views.Tests
 
         /// <summary>
         /// 验收「变色正确」之一：Acknowledged → 同一行实例 State 变 Acknowledged（稳红），
-        /// 仍留主列表——UI 只换状态，不增删行；「RTN 留列表、Closed 移出」的规矩引擎定，UI 照单全收。
+        /// 仍留主列表。UI 只换状态，不增删行；「RTN 留列表、Closed 移出」的规矩引擎定，UI 照单全收。
         /// </summary>
         [Fact]
         public void 确认_同一行变稳红()
@@ -208,8 +208,8 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(AlarmState.ReturnToNormal, vm.MainRows[0].State);
         }
 
-        /// <summary>RTN 再激活：未确认自愈的行还挂着（RTN 闪绿），条件再越限触发再激活——
-        /// 同一行实例原位刷回未确认、活跃起点照事件刷新，行不换实例（选中与详情弹窗不脱钩）。</summary>
+        /// <summary>RTN 再激活：未确认自愈的行还挂着（RTN 闪绿），条件再越限触发再激活。
+        /// 同一行实例原位刷回未确认，活跃起点照事件刷新，行不换实例（选中与详情弹窗不脱钩）。</summary>
         [Fact]
         public void 再激活_同一行回未确认_起点刷新()
         {
@@ -256,7 +256,7 @@ namespace SemiAppliaction.Views.Tests
         }
 
         /// <summary>操作员闭环事件同规矩移出列表（#26）：AlarmClosedByOperator 派生自 AlarmClosed，
-        /// 呈现层的类型匹配照旧吃它——闭环语义不因分型而变，VM 不认得新事件照样直译。</summary>
+        /// 呈现层的类型匹配照旧认它。闭环语义不因分型而变，VM 不认得新事件照样直译。</summary>
         [Fact]
         public void 操作员闭环_同规矩移出列表()
         {
@@ -270,7 +270,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.Empty(vm.ShelvedRows);
         }
 
-        /// <summary>Shelved/Unshelved 事件 → 行标的直译：搁置退到搁置清单，解除回主列表（事件驱动，无轮询）。</summary>
+        /// <summary>Shelved/Unshelved 事件到行期限的直译：搁置退到搁置清单，解除回主列表（事件驱动，无轮询）。</summary>
         [Fact]
         public void 搁置与解除事件_行在两清单间移动()
         {
@@ -278,7 +278,7 @@ namespace SemiAppliaction.Views.Tests
             feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
 
             feed.Emit(new AlarmShelved(HeatTag, T(3), T(33), "李四"));
-            Assert.Empty(vm.MainRows);                                      // 主列表按标滤出
+            Assert.Empty(vm.MainRows);                                      // 主列表按期限滤出
             Assert.Single(vm.ShelvedRows);
 
             feed.Emit(new AlarmUnshelved(HeatTag, T(4), "王五"));
@@ -287,8 +287,8 @@ namespace SemiAppliaction.Views.Tests
         }
 
         /// <summary>
-        /// 到期不用解除：拨表后 RefreshFilters 重切两清单——标过期自然回主列表（摘要 §8.10
-        /// 「时钟一过标自然失效」在呈现侧的兑现，规则来自引擎库 AlarmFilters，VM 无自定过滤）。
+        /// 到期不用解除：时钟拨过期限后 RefreshFilters 重切两清单，期限过期自然回主列表
+        /// （摘要 §8.10「时钟一过标自然失效」在呈现侧的兑现，规则来自引擎库 AlarmFilters，VM 无自定过滤）。
         /// </summary>
         [Fact]
         public void 到期_拨表刷新_自动回主列表()
@@ -299,7 +299,7 @@ namespace SemiAppliaction.Views.Tests
             feed.Emit(new AlarmShelved(HeatTag, T(3), ShelvedUntil: T(30), "李四"));
             Assert.Single(vm.ShelvedRows);
 
-            now = T(31);                                                    // 拨表过期限
+            now = T(31);                                                    // 时钟拨过期限
             vm.RefreshFilters();
 
             Assert.Single(vm.MainRows);
@@ -307,7 +307,7 @@ namespace SemiAppliaction.Views.Tests
         }
 
         /// <summary>
-        /// 排序按档案 Priority（哲学 §3.2）：低优先升、高优后升——高优永远在顶，
+        /// 排序按档案 Priority（哲学 §3.2）：低优先升、高优后升，高优永远在顶，
         /// 同优先级内按活跃起点先后（次序规则来自档案字段，UI 不定级）。
         /// </summary>
         [Fact]
@@ -323,7 +323,7 @@ namespace SemiAppliaction.Views.Tests
                 vm.MainRows.Select(r => r.Tag));
         }
 
-        /// <summary>还原：从 feed.Active 快照重建两清单（进页对账）——带标成员进搁置清单，其余进主列表。</summary>
+        /// <summary>还原：从 feed.Active 快照重建两清单（进页对账），带期限成员进搁置清单，其余进主列表。</summary>
         [Fact]
         public void 还原_从活跃快照重建两清单()
         {
@@ -344,7 +344,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(T(35), shelved.ShelvedUntil);
         }
 
-        /// <summary>回页对账重锚选中（#25）：Reload 重建行登记后，开着的详情弹窗认领新实例——
+        /// <summary>回页对账重锚选中（#25）：Reload 重建行登记后，开着的详情弹窗认领新实例，
         /// 不绑死被遗弃的旧行（引擎后续事件刷的是新实例，弹窗绑旧行就冻死在旧状态）。</summary>
         [Fact]
         public void 还原_重锚选中行_详情跟随新实例()
@@ -363,7 +363,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.NotNull(vm.Detail);                                      // 弹窗开着：档案重取不脱钩
         }
 
-        /// <summary>回页对账时位号已不在活跃快照：开着的详情收起——不留悬空选中与挡屏弹窗（#25）。</summary>
+        /// <summary>回页对账时位号已不在活跃快照：开着的详情收起，不留悬空选中与挡屏弹窗（#25）。</summary>
         [Fact]
         public void 还原_选中位号已消失_收起弹窗()
         {
@@ -379,8 +379,8 @@ namespace SemiAppliaction.Views.Tests
         }
 
         /// <summary>回页对账不复活旧行（#25 评审）：集合里已有事件喂出的同位号行时，Reload 整体重建
-        /// 必须连旧实例一并清走——Refill 按位号对账只删「快照里没有的」，旧实例不清理就同位号双行，
-        /// 旧行还被 Apply 遗弃冻死在旧状态。</summary>
+        /// 必须连旧实例一并清走。Refill 按位号对账只删「快照里没有的」，旧实例不清理就出现同位号双行，
+        /// 旧行还被 Apply 遗弃、冻死在旧状态。</summary>
         [Fact]
         public void 还原_活页再对账_同位号不双行()
         {
@@ -391,13 +391,13 @@ namespace SemiAppliaction.Views.Tests
             feed.Active = [new ActiveAlarm(HeatTag, AlarmState.Unacknowledged, AlarmPriority.High, T(2))];
             vm.Reload();
 
-            var row = Assert.Single(vm.MainRows);                           // 旧行不能阴魂不散
+            var row = Assert.Single(vm.MainRows);                           // 旧行不能残留
             Assert.NotSame(stale, row);                                     // 留下的必须是重建的新实例
         }
 
         // ══════════════════════ 操作员动作转手 feed（UI 不自改状态） ══════════════════════
 
-        /// <summary>确认命令：转手 feed.Acknowledge(tag, op)——VM 不自己改状态，等引擎的 Acknowledged 事件回弹。</summary>
+        /// <summary>确认命令：转手 feed.Acknowledge(tag, op)。VM 不自己改状态，等引擎的 Acknowledged 事件回弹。</summary>
         [Fact]
         public void 确认命令_转手feed_不自改状态()
         {
@@ -411,7 +411,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(AlarmState.Unacknowledged, vm.MainRows[0].State); // VM 没自改：等引擎事件回弹
         }
 
-        /// <summary>搁置命令：转手 feed.Shelve(tag, ShelveDuration, op)——时长由 UI 供给且必须限时。</summary>
+        /// <summary>搁置命令：转手 feed.Shelve(tag, ShelveDuration, op)。时长由 UI 供给且必须限时。</summary>
         [Fact]
         public void 搁置命令_带时长与署名转手()
         {
@@ -425,7 +425,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal([$"Shelve:{HeatTag}:00:05:00:演示员"], feed.Calls);
         }
 
-        /// <summary>解除命令：转手 feed 接口上的 Unshelve(tag, op)——搁置清单行上的「解除搁置」按钮。</summary>
+        /// <summary>解除命令：转手 feed 接口上的 Unshelve(tag, op)，即搁置清单行上的「解除搁置」按钮。</summary>
         [Fact]
         public void 解除命令_转手feed()
         {
@@ -439,7 +439,7 @@ namespace SemiAppliaction.Views.Tests
         }
 
         /// <summary>
-        /// 详情弹窗 = MADB 档案原样呈现（哲学 §3.2）：选中行的档案整行给出——
+        /// 详情弹窗 = MADB 档案原样呈现（哲学 §3.2）：选中行的档案整行给出，
         /// 原因/后果/操作动作/MTR/优先级坐标/评审留痕一个不缺，第三问在这一屏兑现。
         /// </summary>
         [Fact]
@@ -462,8 +462,8 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal("张三", detail.RationalizedBy);                      // 评审留痕
         }
 
-        /// <summary>慢档不出手（#31 读侧）：取档在后台走，选中已换人时回来的旧档不得闪进弹窗——
-        /// 代数对暗号（同泵线规矩），新档归位旧档作废。</summary>
+        /// <summary>慢档不出手（#31 读侧）：取档在后台走，选中已换行时回来的旧档不得闪进弹窗。
+        /// 凭代数核对（同泵线规矩）：只有最新一代的取档结果才能上屏，旧代作废。</summary>
         [Fact]
         public void 详情_慢档未归_换行选中_旧档不出手()
         {
@@ -479,15 +479,15 @@ namespace SemiAppliaction.Views.Tests
             Assert.Null(vm.Detail);                                      // 档未归：弹窗空着，不许拿空当有档案
 
             pending[0]();                                                // 旧档回来：代数已换代
-            Assert.Null(vm.Detail);                                      // 不出手——库慢也不闪旧账
+            Assert.Null(vm.Detail);                                      // 不出手：库慢也不闪旧账
 
-            pending[1]();                                                // 新档回来：对上暗号
+            pending[1]();                                                // 新档回来：代数对上
             Assert.NotNull(vm.Detail);
             Assert.Equal(PumpTag, vm.Detail?.Tag);                       // 弹窗认的是当下选中那位的档案
         }
 
-        /// <summary>默认接线真走后台（#31）：不注取档接缝时（产品接线），Find 不得跑在选中线程上——
-        /// 库被外部锁住时 busy 等待冻的是后台线程，不是点了行的 UI。</summary>
+        /// <summary>默认接线真走后台（#31）：不注取档接缝时（产品接线），Find 不得跑在选中线程上。
+        /// 库被外部锁住时 busy 等待冻住的是后台线程，不是点了行的 UI。</summary>
         [Fact]
         public void 详情_默认后台取档_不占选中线程()
         {
@@ -509,7 +509,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.NotEqual(selectedOn, Assert.Single(store.FindThreadIds)); // Find 不在选中线程：解耦真发生
         }
 
-        /// <summary>取档炸了不炸屏（#31 读侧）：库暂时进不去（外部锁库的替身）时——故障停在取档处，
+        /// <summary>取档失败不炸屏（#31 读侧）：库暂时进不去（外部锁库的替身）时，故障停在取档处，
         /// 不许炸上 UI 线程；弹窗保持收起，等下一次点行重新下单。</summary>
         [Fact]
         public void 详情_取档炸了_不炸屏()
@@ -518,13 +518,13 @@ namespace SemiAppliaction.Views.Tests
             store.FindThrows = true;
             feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
 
-            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 内联接线：炸点当场现形
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 内联接线：异常当场现形
 
             Assert.Null(vm.Detail);                                      // 档没取到：弹窗保持收起
         }
 
-        /// <summary>取档没归，重按同一行即重新下单（#31 评审）：上次取档炸了弹窗空着，库缓过来后
-        /// 操作员再点同一行——选中引用没变也得重新下单，不许把「换个行再换回来」当唯一出路。</summary>
+        /// <summary>取档没归，重按同一行即重新下单（#31 评审）：上次取档失败弹窗空着，库缓过来后
+        /// 操作员再点同一行。选中引用没变也得重新下单，不许把「换个行再换回来」当唯一出路。</summary>
         [Fact]
         public void 详情_取档炸了_重按同一行_重新下单()
         {
@@ -547,7 +547,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(HeatTag, vm.Detail?.Tag);
         }
 
-        /// <summary>收口作废在途取档（#31 评审）：VM 处置后慢档才归位——不许给废弃的 VM 喂档案。</summary>
+        /// <summary>收尾作废在途取档（#31 评审）：VM 释放后慢档才归位，不许给废弃的 VM 喂档案。</summary>
         [Fact]
         public void 收口_在途取档作废()
         {
@@ -558,7 +558,7 @@ namespace SemiAppliaction.Views.Tests
             feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
 
             vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 下单（档未归）
-            vm.Dispose();                                                // 收口：代数换代
+            vm.Dispose();                                                // 收尾：代数换代
             pending[0]();                                                // 迟到的档案
 
             Assert.Null(vm.Detail);                                      // 废弃的 VM 不接档

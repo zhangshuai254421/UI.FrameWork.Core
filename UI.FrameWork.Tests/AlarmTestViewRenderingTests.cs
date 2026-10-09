@@ -9,9 +9,9 @@ using Framework.Alarm;
 namespace SemiAppliaction.Views.Tests
 {
     /// <summary>
-    /// 报警测试页渲染联测（两清单一直空的排查钉子，第二层）：数据层直通已钉死（AlarmDemoRigTests），
-    /// 这一层把 <see cref="AlarmTestView"/> 真身放进 Window 跑完整布局——
-    /// 绑定送达没有（ItemsSource）、容器生成没有（ItemContainerGenerator）、异常吞没没有（绑定侦听 + 未捕获钩子）
+    /// 报警测试页渲染联测（两清单一直空问题的排查钉子，第二层）：数据层直通已钉死（AlarmDemoRigTests），
+    /// 这一层把 <see cref="AlarmTestView"/> 真身放进 Window 跑完整布局。
+    /// 绑定送达没有（ItemsSource）、容器生成没有（ItemContainerGenerator）、异常吞没没有（绑定侦听 + 未捕获钩子），
     /// 一层一个断言，断点在哪一层当场现形。STA 线程手搭（测试项目没有 STA 包）。
     /// </summary>
     public class AlarmTestViewRenderingTests
@@ -40,7 +40,7 @@ namespace SemiAppliaction.Views.Tests
                     Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(uri, UriKind.RelativeOrAbsolute) });
                 }
 
-                // 数据层先行：与 AlarmDemoRigTests 同款直通——先证明 MainRows 里有货
+                // 数据层先行：与 AlarmDemoRigTests 同款直通，先证明 MainRows 里有货
                 var rig = new AlarmDemoRig(new InMemoryAlarmDefinitionStore());
                 var ui = new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher);
                 var list = new AlarmListViewModel(rig.Engine, rig.Store, ui);
@@ -84,7 +84,7 @@ namespace SemiAppliaction.Views.Tests
                 sb.AppendLine(probeResources);
                 if (DescendantsOfType<ListView>(view).Count() == 0)
                 {
-                    // 可视树快照：ListView 没出世时看树里到底长成了什么样
+                    // 可视树快照：找不到 ListView 时看树里到底长成了什么样
                     sb.AppendLine("可视树：" + Describe(view));
                 }
                 if (unhandled is not null)
@@ -158,7 +158,7 @@ namespace SemiAppliaction.Views.Tests
             });
 
             // 钉子：数据层有货 + 绑定送达 + 容器生成 + 行内见位号文本，四层全绿才算渲染通
-            // （零间隔连打六拍只有憋压即时档升——升温的 2 秒延时靠采样时间戳，连打永不够）
+            // （零间隔连打六拍只有憋压即时档升，升温的 2 秒延时靠采样时间戳，连打永远等不满）
             Assert.Contains("MainRows.Count=1", report);
             Assert.Contains("ItemsSource=ObservableCollection`1 count=1", report);
             Assert.DoesNotContain("ListView ItemsSource=null", report);
@@ -177,7 +177,7 @@ namespace SemiAppliaction.Views.Tests
             public string StatusText => "测试中";
         }
 
-        /// <summary>挂上 WPF 绑定错误侦听（TraceSource「System.Windows.Data」），收走得着的行。</summary>
+        /// <summary>挂上 WPF 绑定错误侦听（TraceSource「System.Windows.Data」），把抓得到的行收进列表。</summary>
         private static List<string> AttachBindingTrace()
         {
             var lines = new List<string>();
@@ -199,7 +199,7 @@ namespace SemiAppliaction.Views.Tests
             public override void WriteLine(string? message) => _lines.Add(message ?? string.Empty);
         }
 
-        /// <summary>STA 线程执行体：装配、跑、掏可视树全在 UI 线程上，结果串回测试线程。</summary>
+        /// <summary>STA 线程执行体：装配、跑、读取可视树全在 UI 线程上，结果串回测试线程。</summary>
         private static string RunOnSta(Func<string> body)
         {
             string? report = null;
