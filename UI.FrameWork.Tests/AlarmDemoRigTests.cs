@@ -12,12 +12,6 @@ namespace SemiAppliaction.Views.Tests
     /// </summary>
     public class AlarmDemoRigTests
     {
-        /// <summary>同步编队替身：Post 即执行（与 AlarmListViewModelTests 同款）。</summary>
-        private sealed class SyncContext : SynchronizationContext
-        {
-            public override void Post(SendOrPostCallback d, object? state) => d(state);
-        }
-
         /// <summary>事件史替身：只记录，供「通电即落库」断言——录音笔不是契约替身（契约双生归
         /// Framework.Alarm.Tests 的 InMemoryEventStore，本工程够不着也无需同一份）。</summary>
         private sealed class RecordingEventStore : IEventStore

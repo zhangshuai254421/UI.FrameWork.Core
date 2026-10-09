@@ -22,12 +22,6 @@ namespace SemiAppliaction.Views.Tests
         private static DateTimeOffset T(double seconds)
             => new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero).AddSeconds(seconds);
 
-        /// <summary>同步编队替身：Post 即执行——跨线程编队用同步路径绕过（摘要 §9.2 测试技巧）。</summary>
-        private sealed class SyncContext : SynchronizationContext
-        {
-            public override void Post(SendOrPostCallback d, object? state) => d(state);
-        }
-
         /// <summary>馈送替身：发事件、记动作留证（确认/搁置/解除的转手证据），Active 快照可设定。</summary>
         private sealed class FakeFeed : IAlarmFeed
         {

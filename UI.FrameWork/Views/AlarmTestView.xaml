@@ -8,6 +8,28 @@
              mc:Ignorable="d"
              d:DesignHeight="800" d:DesignWidth="1200">
 
+    <UserControl.Resources>
+        <!-- 三态状态文字（未确认/已确认/RTN 三态各有其词）：两清单共用一份措辞——呈现措辞单源，改口径只改这一处 -->
+        <Style x:Key="AlarmStateText" TargetType="TextBlock">
+            <Setter Property="Text" Value="已确认"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
+                    <Setter Property="Text" Value="未确认"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
+                    <Setter Property="Text" Value="已恢复"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 闪烁循环：红/绿两触发器共用一份动画——目标无关（不带 TargetName、只打宿主自己的 Opacity）
+             才敢进资源字典冻结共享，两处各自起各自的时钟、互不串；带 TargetName 的共享剧本在冻结后必炸 -->
+        <Storyboard x:Key="BlinkLoop" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="1" To="0.4" Duration="0:0:0.6" AutoReverse="True"/>
+        </Storyboard>
+    </UserControl.Resources>
+
     <!-- 报警测试页（#15）：真引擎演示装置喂报警列表——主列表/搁置清单/详情档案，验证报警模块全链路 -->
     <controls:LayoutPageControl IsRightPanelVisible="False">
 
@@ -54,12 +76,7 @@
                                                         <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
                                                             <Setter Property="Background" Value="#66FF3030"/>
                                                             <DataTrigger.EnterActions>
-                                                                <BeginStoryboard x:Name="BlinkRed">
-                                                                    <Storyboard RepeatBehavior="Forever">
-                                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                                                         From="1" To="0.4" Duration="0:0:0.6" AutoReverse="True"/>
-                                                                    </Storyboard>
-                                                                </BeginStoryboard>
+                                                                <BeginStoryboard x:Name="BlinkRed" Storyboard="{StaticResource BlinkLoop}"/>
                                                             </DataTrigger.EnterActions>
                                                             <DataTrigger.ExitActions>
                                                                 <RemoveStoryboard BeginStoryboardName="BlinkRed"/>
@@ -71,12 +88,7 @@
                                                         <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
                                                             <Setter Property="Background" Value="#6600C853"/>
                                                             <DataTrigger.EnterActions>
-                                                                <BeginStoryboard x:Name="BlinkGreen">
-                                                                    <Storyboard RepeatBehavior="Forever">
-                                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                                                         From="1" To="0.4" Duration="0:0:0.6" AutoReverse="True"/>
-                                                                    </Storyboard>
-                                                                </BeginStoryboard>
+                                                                <BeginStoryboard x:Name="BlinkGreen" Storyboard="{StaticResource BlinkLoop}"/>
                                                             </DataTrigger.EnterActions>
                                                             <DataTrigger.ExitActions>
                                                                 <RemoveStoryboard BeginStoryboardName="BlinkGreen"/>
@@ -97,21 +109,7 @@
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="{Binding Tag}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Tag}"/>
-                                            <TextBlock Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Text" Value="已确认"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
-                                                                <Setter Property="Text" Value="未确认"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
-                                                                <Setter Property="Text" Value="已恢复"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
+                                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource AlarmStateText}"/>
                                             <TextBlock Grid.Column="2" VerticalAlignment="Center">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
@@ -160,21 +158,7 @@
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="{Binding Tag}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Tag}"/>
-                                            <TextBlock Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Text" Value="已确认"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
-                                                                <Setter Property="Text" Value="未确认"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
-                                                                <Setter Property="Text" Value="已恢复"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
+                                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource AlarmStateText}"/>
                                             <TextBlock Grid.Column="2" Text="{Binding ShelvedUntil, StringFormat=HH:mm:ss}" VerticalAlignment="Center" ToolTip="搁置期限"/>
                                             <StackPanel Grid.Column="4" Orientation="Horizontal">
                                                 <Button Content="解除搁置" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.UnshelveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>

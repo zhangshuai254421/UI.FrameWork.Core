@@ -14,7 +14,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 采样_限内_静默()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.FromSeconds(1));
+            var evaluator = Evaluator();
 
             var decision = evaluator.Evaluate(new ConditionSample(At: T(0), Value: 200));
 
@@ -25,7 +25,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 触发_越限未满延时_静默()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.FromSeconds(1));
+            var evaluator = Evaluator();
 
             var first = evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260));
             var second = evaluator.Evaluate(new ConditionSample(At: T(1.9), Value: 261));
@@ -38,7 +38,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 触发_越限满延时_升级()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.FromSeconds(1));
+            var evaluator = Evaluator();
 
             var first = evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260));
             var second = evaluator.Evaluate(new ConditionSample(At: T(2), Value: 261));
@@ -52,7 +52,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 触发_毛刺短于延时_被吞()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.FromSeconds(1));
+            var evaluator = Evaluator();
 
             var decisions = new[]
             {
@@ -71,7 +71,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 恢复_死区带内徘徊_不清除()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.FromSeconds(1));
+            var evaluator = Evaluator();
 
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 255)));
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 256))); // 0→2s 满延时升级
@@ -92,7 +92,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 恢复_低于恢复点满延时_清除()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.FromSeconds(1));
+            var evaluator = Evaluator();
 
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 255)));
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 256)));
@@ -108,7 +108,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 恢复_无恢复延时_到点即清()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.Zero);
+            var evaluator = Evaluator(offDelay: TimeSpan.Zero);
 
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 255)));
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 256)));
@@ -126,7 +126,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 盲区_死区带内真实越限被吞()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.FromSeconds(1));
+            var evaluator = Evaluator();
 
             var decisions = new[]
             {
@@ -142,7 +142,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 恢复_清除后再越限_需重新累计()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.FromSeconds(1));
+            var evaluator = Evaluator();
 
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 255)));
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(2), Value: 256)));
@@ -164,7 +164,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 死区_噪声幅值超过死区_照翻转()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.Zero, offDelay: TimeSpan.Zero);
+            var evaluator = Evaluator(onDelay: TimeSpan.Zero, offDelay: TimeSpan.Zero);
 
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 250.5)));   // 首条即越限：零延时立即升
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0.5), Value: 250.5))); // 报警中：不重播
@@ -182,7 +182,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 盲区修正_首条事实_零延时且已越限_立即升()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.Zero, offDelay: TimeSpan.Zero);
+            var evaluator = Evaluator(onDelay: TimeSpan.Zero, offDelay: TimeSpan.Zero);
 
             Assert.Equal(FilterDecision.Raise, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260))); // 开机即越限：立即升
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(1), Value: 261)));  // 报警中：不重播
@@ -194,7 +194,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 首条事实_有延时_照旧立段静默()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.Zero);
+            var evaluator = Evaluator(offDelay: TimeSpan.Zero);
 
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260))); // 首条立段：延时未满
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(1.9), Value: 261)));
@@ -205,7 +205,7 @@ namespace Framework.Alarm.Tests
         [Fact]
         public void 时间_乱序事实_忽略不计()
         {
-            var evaluator = new HysteresisEvaluator(limit: 250, deadband: 2, onDelay: TimeSpan.FromSeconds(2), offDelay: TimeSpan.FromSeconds(1));
+            var evaluator = Evaluator();
 
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(0), Value: 260))); // 越限段起点
             Assert.Equal(FilterDecision.None, evaluator.Evaluate(new ConditionSample(At: T(1), Value: 261))); // 累计 1s
@@ -215,6 +215,10 @@ namespace Framework.Alarm.Tests
             Assert.Equal(FilterDecision.None, rewind);
             Assert.Equal(FilterDecision.Raise, confirm); // 若乱序被当真，越限段已被清零，这里到不了升级
         }
+
+        /// <summary>示例组态的滤波器（类头注的 250 / 2 / 2s / 1s）：默认档零参即取；延时变体经参数点名——考卷差异即用例前提。</summary>
+        private static HysteresisEvaluator Evaluator(TimeSpan? onDelay = null, TimeSpan? offDelay = null)
+            => new(limit: 250, deadband: 2, onDelay: onDelay ?? TimeSpan.FromSeconds(2), offDelay: offDelay ?? TimeSpan.FromSeconds(1));
 
         /// <summary>测试时基：从 2026-01-01 起的秒表。</summary>
         internal static DateTimeOffset T(double seconds) => new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero).AddSeconds(seconds);
