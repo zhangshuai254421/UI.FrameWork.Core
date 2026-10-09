@@ -7,49 +7,49 @@ using Prism.Mvvm;
 namespace SemiAppliaction.Views
 {
     /// <summary>
-    /// 报警列表 ViewModel（摘要 §9.3，哲学 §3.2 呈现纪律【强制】）：事件 → 集合变更的直译，
-    /// Apply 里零判定——Raised→Upsert、Acknowledged/AutoReturned→UpdateState、Closed→Remove、
-    /// Shelved/Unshelved→UpdateMark。「RTN 留列表、Closed 移出、按标过滤」的规矩都是引擎定的，
-    /// UI 照单全收；排序按档案 Priority（高优永远在顶），过滤调用引擎库的 <see cref="AlarmFilters"/>。
-    /// 跨线程编队（摘要 §9.2 选型定案：SynchronizationContext.Post）：引擎在通讯线程吐事件，
-    /// 本类把每一拍 Post 到注入的上下文再翻译；测试注入同步上下文即同步执行路径（不依赖真线程）。
-    /// 只认 <see cref="IAlarmFeed"/> 接缝——测试 fake 一个 feed 即可红绿灯，不依赖真引擎。
-    /// 行实例终生制：事件只原位刷行、清单原位对账（容器不重建，闪烁不重启、选中不丢）；
-    /// 唯一例外是 <see cref="Reload"/> 整体重建——走完按位号重锚选中（#25），弹窗不绑死旧实例；
-    /// 详情档案走后台预取（#31）：选行只是下单，档案由取档接缝在后台去库里拿，取回编队回 UI——
-    /// 库被外部锁住（#29 场景）时 busy 等待冻的是后台线程，不是点了行的 UI；换行对暗号（代数，
-    /// 同泵线规矩），慢档归位时选中已换人就作废不出手。取档炸了也停在取档处，不炸上 UI。
-    /// <see cref="Dispose"/> 退订事件流——feed 长命（单例引擎）而页面短命时由宿主收口。
+    /// 报警列表 ViewModel（摘要 §9.3，哲学 §3.2 呈现纪律【强制】）：把引擎事件直接翻译成集合变更，
+    /// Apply 里零判定——Raised → Upsert、Acknowledged/AutoReturned → UpdateState、Closed → Remove、
+    /// Shelved/Unshelved → UpdateMark。「RTN 留在列表、Closed 移出、按期限过滤」这些规矩都是引擎定的，
+    /// UI 照单全收；排序按档案 Priority（高优先级永远在顶），过滤调用引擎库的 <see cref="AlarmFilters"/>。
+    /// 跨线程编队（摘要 §9.2 选型定案：SynchronizationContext.Post）：引擎在通讯线程发事件，
+    /// 本类把每条事件 Post 到注入的上下文再翻译；测试注入同步上下文即同步执行（不依赖真线程）。
+    /// 只认 <see cref="IAlarmFeed"/> 接口——测试造一个假 feed 就能跑，不依赖真引擎。
+    /// 行实例终生制：事件只原位刷行、清单原位对账（容器不重建，闪烁动画不重启、选中不丢）；
+    /// 唯一例外是 <see cref="Reload"/> 整体重建——完成后按位号重新锚定选中（#25），弹窗不绑死旧实例。
+    /// 详情档案走后台预取（#31）：选行只是下单，档案由取档接口在后台去库里拿，取回后编队回 UI——
+    /// 库被外部锁住时（#29 场景），busy 等待冻住的是后台线程，不是点了行的 UI。换行核对代数
+    /// （与泵循环同一规矩），慢档案取回时如果选中已经换了人就作废、不更新。取档案抛异常也停在取档处，不上抛到 UI。
+    /// <see cref="Dispose"/> 退订事件流——feed 长命（单例引擎）而页面短命时由宿主调用。
     /// </summary>
     public sealed class AlarmListViewModel : BindableBase, IDisposable
     {
-        /// <summary>馈送接缝：事件流与操作员动作的唯一通道（UI 不认得引擎具体类）。</summary>
+        /// <summary>馈送接口：事件流与操作员动作的唯一通道（UI 不认识引擎的具体类）。</summary>
         private readonly IAlarmFeed _feed;
 
-        /// <summary>档案接缝：详情弹窗的 MADB 数据源（档案原样呈现，UI 不加工）。</summary>
+        /// <summary>档案接口：详情弹窗的 MADB 数据源（档案原样呈现，UI 不加工）。</summary>
         private readonly IAlarmDefinitionStore _store;
 
         /// <summary>UI 上下文：事件编队到 UI 线程（摘要 §9.2）。</summary>
         private readonly SynchronizationContext _ui;
 
-        /// <summary>读取时刻：喂给 AlarmFilters 对表（测试注入固定值拨表）。</summary>
+        /// <summary>读取时刻：喂给 AlarmFilters 比较（测试注入固定值控制时间）。</summary>
         private readonly Func<DateTimeOffset> _now;
 
-        /// <summary>取档接缝（#31）：下单在后台跑——产品默认 Task.Run（线程池），测试注入内联即同步路径。</summary>
+        /// <summary>取档接口（#31）：下单在后台跑——产品默认 Task.Run（线程池），测试注入内联委托即同步执行。</summary>
         private readonly Action<Action> _runOffUiThread;
 
-        /// <summary>取档代数（#31）：每回下单自增——慢档归位对暗号，选中已换人就作废不出手。</summary>
+        /// <summary>取档代数（#31）：每次下单自增——慢档案取回时核对代数，选中已换人就作废、不更新。</summary>
         private int _detailGen;
 
-        /// <summary>行登记：位号 → 行（事件只更行，两清单由 Refill 重切）。</summary>
+        /// <summary>行登记表：位号 → 行（事件只更新行，两个清单由 Refill 重切）。</summary>
         private readonly Dictionary<string, AlarmRow> _rows = new();
 
-        /// <summary>构造：订上馈送事件流（Post 编队到 UI 线程），初始对一次表。</summary>
-        /// <param name="feed">馈送接缝：事件流与操作员动作的通道。</param>
-        /// <param name="store">档案接缝：详情弹窗的数据源（只经取档接缝在后台碰）。</param>
+        /// <summary>构造：订阅馈送事件流（Post 编队到 UI 线程），初始重切一次清单。</summary>
+        /// <param name="feed">馈送接口：事件流与操作员动作的通道。</param>
+        /// <param name="store">档案接口：详情弹窗的数据源（只在取档接口里于后台访问）。</param>
         /// <param name="ui">UI 上下文：事件与取回的档案都编队回这里。</param>
-        /// <param name="now">读取时刻：测试拨表用。</param>
-        /// <param name="runOffUiThread">取档接缝（#31）：默认 Task.Run 后台线程；测试注内联即同步路径。</param>
+        /// <param name="now">读取时刻：测试控制时间用。</param>
+        /// <param name="runOffUiThread">取档接口（#31）：默认 Task.Run 后台线程；测试注入内联委托即同步执行。</param>
         public AlarmListViewModel(IAlarmFeed feed, IAlarmDefinitionStore store, SynchronizationContext ui,
             Func<DateTimeOffset>? now = null, Action<Action>? runOffUiThread = null)
         {
@@ -68,22 +68,22 @@ namespace SemiAppliaction.Views
             RefreshFilters();
         }
 
-        /// <summary>订阅随页面生命周期：本 VM 随页面存亡；引擎 Dispose 后事件流自然哑火。</summary>
+        /// <summary>订阅随页面生命周期：本 VM 随页面存亡；引擎 Dispose 后事件流自然停止。</summary>
         private void OnEventRaised(AlarmEvent e) => _ui.Post(_ => Apply(e), null);
 
         #region 绑定集合与选中
 
-        /// <summary>主列表：不带有效标（或标已过期）的成员——搁置中的报警按标滤出，正常播报。</summary>
+        /// <summary>主列表：没有搁置期限、或期限已过的成员——搁置中的报警被滤出，其余正常显示。</summary>
         public ObservableCollection<AlarmRow> MainRows { get; } = [];
 
-        /// <summary>搁置清单：带标且期限未过的成员——「搁置清单单独可见」在这一列兑现（哲学 §7）。</summary>
+        /// <summary>搁置清单：有搁置期限且还没到期的成员——「搁置清单单独可见」由这一列兑现（哲学 §7）。</summary>
         public ObservableCollection<AlarmRow> ShelvedRows { get; } = [];
 
         /// <summary>选中行的后端字段。</summary>
         private AlarmRow? _selectedRow;
 
-        /// <summary>选中行：详情弹窗的数据锚点；置行即下单取档案（后台，#31），置空即收起弹窗；
-        /// 重按同一行也下单——上次取档没归（库忙/炸了）时，再点一次就是重新下单。</summary>
+        /// <summary>选中行：详情弹窗的数据锚点。设置即下单取档案（后台，#31），置空即收起弹窗；
+        /// 重按同一行也下单——上次取档没回来（库忙/抛异常）时，再点一次就是重新下单。</summary>
         public AlarmRow? SelectedRow
         {
             get => _selectedRow;
@@ -117,7 +117,7 @@ namespace SemiAppliaction.Views
 
         #region 命令（操作员动作只转手 feed，不自改状态）
 
-        /// <summary>确认命令：转手确认，状态等引擎的 Acknowledged 事件回弹。</summary>
+        /// <summary>确认命令：转手确认，状态等引擎的 Acknowledged 事件回来再更新。</summary>
         public DelegateCommand<AlarmRow> AcknowledgeCommand { get; }
 
         /// <summary>搁置命令：转手搁置，时长取 ShelveDuration（UI 供给且必须限时）。</summary>
@@ -168,9 +168,9 @@ namespace SemiAppliaction.Views
 
         #region 详情档案后台预取（#31）
 
-        /// <summary>下单取档（#31）：UI 线程只下单——档案由取档接缝在后台去库里拿，取回编队回 UI；
-        /// 换行对暗号（代数自增），慢档归位时选中已换人就作废不出手。置空选中即收弹窗，
-        /// 在途的旧单作废；取档炸了停在取档处（故障不炸上 UI），弹窗空着——重按同一行即重新下单。</summary>
+        /// <summary>下单取档（#31）：UI 线程只下单——档案由取档接口在后台去库里拿，取回后编队回 UI；
+        /// 换行时代数自增，慢档案归位时核对代数，选中已换人就作废、不更新。置空选中即收弹窗，
+        /// 在途的旧单随换代作废；取档抛异常停在取档处（故障不上抛 UI），弹窗空着——重按同一行即重新下单。</summary>
         private void FetchDetail(string? tag)
         {
             var gen = ++_detailGen;
@@ -189,13 +189,13 @@ namespace SemiAppliaction.Views
                 }
                 catch
                 {
-                    // 库暂时进不去（busy 超时/磁盘抖动）：档没取到就当没取到，故障停在取档处——
-                    // 不许炸上 UI 线程；弹窗空着，操作员重按同一行即重新下单
+                    // 库暂时进不去（busy 超时、磁盘抖动）：档没取到就当没取到，故障停在取档处——
+                    // 不许上抛到 UI 线程；弹窗空着，操作员重按同一行即重新下单
                 }
 
                 _ui.Post(_ =>
                 {
-                    if (gen == _detailGen)                  // 对暗号：中间没换过选中，这份档案才配归位
+                    if (gen == _detailGen)                  // 核对代数：中间没换过选中，这份档案才配归位
                     {
                         Detail = definition;
                     }
@@ -207,10 +207,10 @@ namespace SemiAppliaction.Views
 
         #region 事件直译与清单重切
 
-        /// <summary>活跃快照对账：行登记整体重建自 feed.Active（进页/回页对账，事件流断档的兜底）。
-        /// 整体重建是行实例终生制的唯一例外，两清单一并清空重填——Refill 的原位对账只认位号，
-        /// 留着上一代的行会跟新实例同位号双行（#25 评审），所以这里不走 Refill 的留旧路径。
-        /// 走完按位号重锚选中（#25）。</summary>
+        /// <summary>活跃快照对账：行登记表整体重建自 feed.Active（进页/回页时核对，事件流断档的兜底）。
+        /// 整体重建是行实例终生制的唯一例外，两个清单一并清空重填——Refill 的原位对账只认位号，
+        /// 留着上一代的行会和新建的同位号行形成双行（#25 评审），所以这里不走 Refill 的留旧路径。
+        /// 完成后按位号重新锚定选中（#25）。</summary>
         public void Reload()
         {
             _rows.Clear();
@@ -223,16 +223,17 @@ namespace SemiAppliaction.Views
 
             RefreshFilters();
 
-            // 重锚选中（#25）：行登记重建后旧实例已死，开着的详情弹窗不能绑死旧行——
-            // 按位号认领新行（setter 顺带重取档案，详情拿到新库态）；位号不在了就置 null 收弹窗。
+            // 重锚选中（#25）：行登记表重建后旧实例已不在，开着的详情弹窗不能绑死旧行——
+            // 按位号认领新行（setter 顺带重新取档案，详情拿到新的库内状态）；位号不在了就置 null 收弹窗。
             if (SelectedRow is not null)
             {
                 SelectedRow = _rows.GetValueOrDefault(SelectedRow.Tag);
             }
         }
 
-        /// <summary>重切两清单：主列表/搁置清单 = AlarmFilters 对同一份行的两个视图（到期标自然失效在呈现侧的重算入口）。
-        /// 排序按档案 Priority（高优永远在顶），同优先级内按活跃起点先后；清单原位对账（见 <see cref="Refill"/>）。</summary>
+        /// <summary>重切两个清单：主列表/搁置清单 = AlarmFilters 对同一批行的两个视图
+        /// （搁置到期在显示侧自然失效，这里是重算入口）。排序按档案 Priority（高优先级永远在顶），
+        /// 同优先级内按活跃起点先后；清单原位对账（见 <see cref="Refill"/>）。</summary>
         public void RefreshFilters()
         {
             var now = _now();
@@ -245,7 +246,7 @@ namespace SemiAppliaction.Views
             Refill(ShelvedRows, AlarmFilters.Shelved(snapshot, now));
         }
 
-        /// <summary>优先级排序权重（呈现层排序，不定级）：高 0 / 中 1 / 低 2——高优永远在顶。</summary>
+        /// <summary>优先级排序权重（呈现层排序，不定级）：高 0 / 中 1 / 低 2——高优先级永远在顶。</summary>
         private static int Rank(AlarmPriority priority) => priority switch
         {
             AlarmPriority.High => 0,
@@ -259,8 +260,8 @@ namespace SemiAppliaction.Views
             switch (e)
             {
                 case AlarmRaised raised:
-                    // 升级（含 RTN 再激活）：行存在则原位刷（状态回未确认、起点/标照事件刷新），
-                    // 行实例不换——选中与详情弹窗不脱钩；首升才造行。
+                    // 升级（含 RTN 再激活）：行存在则原位刷新（状态回未确认、起点和期限照事件刷新），
+                    // 行实例不换——选中与详情弹窗不脱钩；首次升级才造新行。
                     if (_rows.TryGetValue(raised.Tag, out var existing))
                     {
                         existing.Reraise(raised.At, raised.ShelvedUntil);
@@ -275,7 +276,7 @@ namespace SemiAppliaction.Views
                     UpdateState(e.Tag, AlarmState.Acknowledged);                // 稳红：责任接管
                     break;
                 case AlarmAutoReturned:
-                    UpdateState(e.Tag, AlarmState.ReturnToNormal);              // 闪绿：留列表等确认
+                    UpdateState(e.Tag, AlarmState.ReturnToNormal);              // 闪绿：留在列表等确认
                     break;
                 case AlarmClosed:
                     _rows.Remove(e.Tag);                                        // Closed 移出：引擎定的规矩
@@ -286,17 +287,17 @@ namespace SemiAppliaction.Views
 
                     break;
                 case AlarmShelved shelved:
-                    UpdateMark(shelved.Tag, shelved.ShelvedUntil);              // 带标：退到搁置清单
+                    UpdateMark(shelved.Tag, shelved.ShelvedUntil);              // 带期限：退到搁置清单
                     break;
                 case AlarmUnshelved:
-                    UpdateMark(e.Tag, null);                                    // 撤标：回主列表
+                    UpdateMark(e.Tag, null);                                    // 取消期限：回主列表
                     break;
             }
 
             RefreshFilters();
         }
 
-        /// <summary>状态事件的原位修正（行不存在则忽略——引擎不会为缺席的行发状态事件；确认不动搁置标）。</summary>
+        /// <summary>状态事件的原位修正（行不存在则忽略——引擎不会为缺席的行发状态事件；确认不影响搁置期限）。</summary>
         private void UpdateState(string tag, AlarmState state)
         {
             if (_rows.TryGetValue(tag, out var row))
@@ -305,7 +306,7 @@ namespace SemiAppliaction.Views
             }
         }
 
-        /// <summary>搁置事件的原位修正（行不存在则忽略——升级事件的标随后会带出来）。</summary>
+        /// <summary>搁置事件的原位修正（行不存在则忽略——升级事件随后会带上期限）。</summary>
         private void UpdateMark(string tag, DateTimeOffset? until)
         {
             if (_rows.TryGetValue(tag, out var row))
@@ -314,8 +315,8 @@ namespace SemiAppliaction.Views
             }
         }
 
-        /// <summary>清单原位对账：移除不在名单里的行、按快照次序插入/搬移——不 Clear 重填
-        /// （容器不重建：闪烁动画不重启、ListView 选中不丢）。成员都来自行登记，按位号直取。</summary>
+        /// <summary>清单原位对账：移除不在名单里的行、按快照次序插入或搬移——不 Clear 重填
+        /// （容器不重建：闪烁动画不重启、ListView 选中不丢）。成员都来自行登记表，按位号直取。</summary>
         private void Refill(ObservableCollection<AlarmRow> target, IReadOnlyList<ActiveAlarm> source)
         {
             for (var i = target.Count - 1; i >= 0; i--)
@@ -343,8 +344,8 @@ namespace SemiAppliaction.Views
 
         #endregion
 
-        /// <summary>收口：作废在途取档（代数换代，慢档归位不出手）再退订事件流——
-        /// feed 长命而页面短命时由宿主收口，废弃的 VM 不再被引擎喂养、也不被旧单复活。</summary>
+        /// <summary>收尾：作废在途取档（代数换代，慢档案归位不再更新）再退订事件流——
+        /// feed 长命而页面短命时由宿主调用，废弃的 VM 不再被引擎喂数据、也不被旧单复活。</summary>
         public void Dispose()
         {
             _detailGen++;

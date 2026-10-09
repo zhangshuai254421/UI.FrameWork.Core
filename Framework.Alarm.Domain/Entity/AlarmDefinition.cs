@@ -2,30 +2,30 @@ namespace Framework.Alarm.Domain
 {
     /// <summary>
     /// 主报警数据库（MADB）一行的代码投影——每条报警的出生档案（哲学 §6.1【强制】，摘要 §5.5）。
-    /// 合理化评审的法定产出；引擎两条契约都以它为前提：无档案不报警、组态参数来自档案（档案驱动，
-    /// 不在 <c>if</c> 里长报警）。位号全系统唯一；操作动作必填——填不出的候选当庭退回。
+    /// 它是合理化评审的法定产出；引擎的两条契约都以它为前提：无档案不报警、组态参数来自档案
+    /// （档案驱动，不在 <c>if</c> 里长报警）。位号全系统唯一；操作动作必填，填不出的候选直接拒绝入库。
     /// #20 实体转正：档案住家族模型中心（ADR-0008 家族形态）。保持 record 不可变不是没转正——
-    /// 评审法定产出本不该被就地改写（改档 = 出新档案），值相等契约是存储往返「原样读回」的断言依据；
-    /// EF 映射（#21）走构造绑定，业务键即位号，int 代理主键由持久化层配置。
+    /// 评审法定产出本来就不该被就地修改（改档案等于出一份新档案）；值相等契约是存储往返「原样读回」的断言依据。
+    /// EF 映射（#21）走构造绑定，业务键就是位号，int 代理主键由持久化层配置。
     /// </summary>
     /// <param name="Tag">位号：全系统唯一 ID（如 HEAT01_TEMP_HI）。</param>
     /// <param name="Description">描述：发生了什么，一句话含方向（如「加热板温度高于工艺上限」）。</param>
     /// <param name="Class">分类：安全 / 环境 / 设备 / 工艺。</param>
     /// <param name="Consequence">不处理后果：放着不管会怎样。</param>
     /// <param name="Cause">最可能原因：排查起点。</param>
-    /// <param name="OperatorAction">操作动作：第三问的答案，第一步干什么（必填）。</param>
+    /// <param name="OperatorAction">操作动作：发生报警后第一步干什么（必填）。</param>
     /// <param name="MaxResponseTime">MTR：后果发生前的行动窗口；触发延时应 &lt; 它（铁律一）。</param>
-    /// <param name="Severity">严重度档 S1/S2/S3：矩阵输入。</param>
-    /// <param name="MtrTier">矩阵坐标 T 轴（响应时间分档）：与 <paramref name="Severity"/> 组成坐标 (S × T)。</param>
+    /// <param name="Severity">严重度档 S1/S2/S3：优先级矩阵的输入。</param>
+    /// <param name="MtrTier">响应时间分档（矩阵 T 轴坐标）：与 <paramref name="Severity"/> 组成坐标 (S × T)。</param>
     /// <param name="Priority">优先级：查矩阵的输出，固定三级。</param>
-    /// <param name="Limit">组态参数：限值（触发点，来自合理化，非出厂默认）。</param>
+    /// <param name="Limit">组态参数：限值（触发点，来自合理化评审，非出厂默认）。</param>
     /// <param name="Deadband">组态参数：死区（恢复点 = 限值 − 死区，≥ 信号噪声幅值，铁律二）。</param>
     /// <param name="OnDelay">组态参数：触发延时（略长于毛刺时长，且 &lt; <paramref name="MaxResponseTime"/>）。</param>
-    /// <param name="OffDelay">组态参数：恢复延时（条件在限附近抖动时才需要，可为零）。</param>
+    /// <param name="OffDelay">组态参数：恢复延时（条件在限值附近抖动时才需要，可为零）。</param>
     /// <param name="Group">组态参数：分组（区域/工段/模式），支撑画面过滤与停机态批量抑制。</param>
     /// <param name="RationalizedBy">评审留痕：评审人。</param>
     /// <param name="RationalizedOn">评审留痕：评审日期。</param>
-    /// <param name="PhilosophyVersion">评审留痕：评审所依据的报警哲学版本（哲学改版，档案回炉的线索）。</param>
+    /// <param name="PhilosophyVersion">评审留痕：评审所依据的报警哲学版本（哲学改版后，档案要回炉重审的线索）。</param>
     public sealed record AlarmDefinition(
         string Tag,
         string Description,
@@ -47,12 +47,12 @@ namespace Framework.Alarm.Domain
         string PhilosophyVersion)
     {
         /// <summary>
-        /// 当庭退回：档案入 MADB 前的法定校验（哲学 §6.1「填不出的候选当庭退回」），存储增/改前调用。
+        /// 入库前校验：档案进 MADB 前的法定检查（哲学 §6.1「填不出的候选当庭退回」），存储增/改前调用。
         /// 操作动作必填；触发延时必须小于 MTR（铁律一，哲学 §6.2——响应窗口从越限起算，
-        /// 延时 ≥ MTR 等于把行动窗口吃尽，报警时已无从响应）。
-        /// 组态参数数学合法性：限值/死区必须是有限数（NaN/Infinity 让滤波器永不报警或乱报，
-        /// NaN 落 SQLite 还会变 NULL 读不回来）；死区非负（负死区把恢复点抬到限上，报警中途就清，
-        /// 永久颤抖——正是死区要治的病灶）；延时非负（负延时等于没有延时，触发延时整定失效）。
+        /// 延时 ≥ MTR 等于把行动窗口吃光，报警响时已经来不及响应了）。
+        /// 组态参数的数学合法性：限值和死区必须是有限数（NaN/Infinity 会让滤波器永不报警或乱报，
+        /// NaN 存进 SQLite 还会变成 NULL 读不回来）；死区非负（负死区把恢复点抬到限值之上，
+        /// 报警中途就清、永久颤抖，这正是死区要治的毛病）；延时非负（负延时等于没有延时，整定失效）。
         /// 铁律二（死区 ≥ 噪声幅值）不在此校验：噪声幅值是信号属性，档案里没有，由合理化评审把关。
         /// </summary>
         public void EnsureValid()

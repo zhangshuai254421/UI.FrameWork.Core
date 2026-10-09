@@ -9,7 +9,7 @@
              d:DesignHeight="800" d:DesignWidth="1200">
 
     <UserControl.Resources>
-        <!-- 三态状态文字（未确认/已确认/RTN 三态各有其词）：两清单共用一份措辞——呈现措辞单源，改口径只改这一处 -->
+        <!-- 三态状态文字（未确认/已确认/RTN 各有各的词）：两个清单共用这一份样式，改措辞只改这一处 -->
         <Style x:Key="AlarmStateText" TargetType="TextBlock">
             <Setter Property="Text" Value="已确认"/>
             <Style.Triggers>
@@ -22,15 +22,15 @@
             </Style.Triggers>
         </Style>
 
-        <!-- 闪烁循环：红/绿两触发器共用一份动画——目标无关（不带 TargetName、只打宿主自己的 Opacity）
-             才敢进资源字典冻结共享，两处各自起各自的时钟、互不串；带 TargetName 的共享剧本在冻结后必炸 -->
+        <!-- 闪烁循环：红/绿两个触发器共用这一份动画。动画不写 TargetName、只作用于宿主自己的 Opacity，
+             才能进资源字典冻结共享，两处各自计时、互不干扰；写了 TargetName 的共享动画在冻结后会直接抛异常 -->
         <Storyboard x:Key="BlinkLoop" RepeatBehavior="Forever">
             <DoubleAnimation Storyboard.TargetProperty="Opacity"
                              From="1" To="0.4" Duration="0:0:0.6" AutoReverse="True"/>
         </Storyboard>
     </UserControl.Resources>
 
-    <!-- 报警测试页（#15）：真引擎演示装置喂报警列表——主列表/搁置清单/详情档案，验证报警模块全链路 -->
+    <!-- 报警测试页（#15）：真引擎演示装置喂报警列表（主列表/搁置清单/详情档案），验证报警模块全链路 -->
     <controls:LayoutPageControl IsRightPanelVisible="False">
 
         <controls:LayoutPageControl.MainContent>
@@ -40,14 +40,14 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- 操作条：开演/暂停 + 状态 -->
+                <!-- 操作条：开始/停止模拟 + 状态文字 -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,4">
                     <Button Content="开始模拟" Padding="16,4" Margin="0,0,8,0" Command="{Binding StartCommand}"/>
                     <Button Content="停止模拟" Padding="16,4" Margin="0,0,16,0" Command="{Binding StopCommand}"/>
                     <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- 两清单：主列表（宽）与搁置清单（窄）——同一份活跃投影的两个视图，过滤规矩在 AlarmFilters -->
+                <!-- 两个清单：主列表（宽）与搁置清单（窄）。它们是同一份活跃快照的两个视图，过滤规则在 AlarmFilters -->
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*"/>
@@ -65,9 +65,9 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid x:Name="RowRoot" Margin="0,1">
-                                        <!-- 行卡底色层：样式挂在自己身上（Style 触发器 Setter 不许 TargetName——MC4011）；
-                                             闪烁打 Opacity（普通属性动画），不碰背景刷——样式 Setter 里的刷子随样式密封被冻结，
-                                             ColorAnimation 走 (Border.Background).(SolidColorBrush.Color) 路径会当场炸 XamlParseException -->
+                                        <!-- 行卡底色层：样式挂在自己身上（Style 触发器的 Setter 不允许 TargetName，报 MC4011）。
+                                             闪烁动画作用于 Opacity（普通属性），不碰背景刷——样式 Setter 里的刷子随样式一起被冻结，
+                                             ColorAnimation 走 (Border.Background).(SolidColorBrush.Color) 路径会当场抛 XamlParseException -->
                                         <Border x:Name="RowBg" CornerRadius="2">
                                             <Border.Style>
                                                 <Style TargetType="Border">
@@ -139,7 +139,7 @@
                         </ListView>
                     </DockPanel>
 
-                    <!-- 搁置清单：带标且期限未过的成员（到期拨表自然回主列表），解除搁置在这里点 -->
+                    <!-- 搁置清单：有搁置期限且还没到期的成员（到期后自然回主列表），解除搁置在这里点 -->
                     <DockPanel Grid.Column="2">
                         <TextBlock DockPanel.Dock="Top" Text="搁置清单" FontWeight="Bold" Margin="0,0,0,4"/>
                         <ListView ItemsSource="{Binding List.ShelvedRows}"
@@ -172,7 +172,7 @@
                     </DockPanel>
                 </Grid>
 
-                <!-- 详情浮层 = MADB 档案原样呈现（哲学 §3.2）：操作动作最显眼——第三问的答案在这一屏第一个看到 -->
+                <!-- 详情浮层 = MADB 档案原样呈现（哲学 §3.2）：操作动作放在最显眼的位置，打开这一屏第一个看到的就是它 -->
                 <Border Grid.RowSpan="2" Background="#88000000" Padding="40">
                     <Border.Style>
                         <Style TargetType="Border">
@@ -194,7 +194,7 @@
                                 </DockPanel>
                                 <TextBlock Text="{Binding Description}" FontSize="14" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
-                                <!-- 操作动作：现在干什么——档案里最要紧的一行，框起来放大 -->
+                                <!-- 操作动作：现在该干什么。档案里最要紧的一行，框起来放大 -->
                                 <Border Background="#33FF3030" CornerRadius="4" Padding="10,8" Margin="0,0,0,10">
                                     <StackPanel>
                                         <TextBlock Text="现在做什么（操作动作）" FontWeight="Bold" FontSize="12"/>
@@ -218,7 +218,7 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <!-- 优先级坐标与响应窗口：S × T 查矩阵的输入与输出 -->
+                                <!-- 优先级坐标与响应窗口：严重度 S 和响应分档 T 是查矩阵的输入，MTR 是查矩阵的输出 -->
                                 <Grid Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -242,7 +242,7 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <!-- 组态参数：整定依据来自合理化（档案驱动，不在 if 里长报警） -->
+                                <!-- 组态参数：整定依据来自合理化评审（档案驱动，不在 if 里长报警） -->
                                 <Grid Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -287,7 +287,7 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <!-- 评审留痕：档案的出生证 -->
+                                <!-- 评审留痕：这份档案是谁、什么时候、依据哪版哲学评审的 -->
                                 <StackPanel Margin="0,0,0,10">
                                     <TextBlock Text="评审留痕" FontWeight="Bold" FontSize="12"/>
                                     <TextBlock Text="{Binding RationalizedBy, StringFormat=评审人：{0}}" Margin="0,2,0,0"/>
