@@ -2,7 +2,7 @@ using Framework.Alarm;
 using Framework.Alarm.Domain;
 using Prism.Mvvm;
 
-namespace SemiAppliaction.Views
+namespace Framework.Alarm.UI
 {
     /// <summary>
     /// 报警行（摘要 §9.3）：<see cref="ActiveAlarm"/> 的可绑定包装——引擎产出的字段原样持有

@@ -1,4 +1,5 @@
-﻿using Log.UI;
+﻿using Framework.Alarm.UI;
+using Log.UI;
 using Microsoft.Extensions.DependencyInjection;
 using PrismUI.Core;
 using Recipe.UI.RecipeUI;
@@ -25,6 +26,7 @@ namespace SemiAppliaction.Core
             moduleCatalog.AddModule<FrameworkModule>();
             moduleCatalog.AddModule<UIModule>();
             moduleCatalog.AddModule<RecipeUIModule>();
+            moduleCatalog.AddModule<AlarmUIModule>();
             moduleCatalog.AddModule<PrismUIModule>();
             moduleCatalog.AddModule<LogUIModule>();
             base.ConfigureModuleCatalog(moduleCatalog);

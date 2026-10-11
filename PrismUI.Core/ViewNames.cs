@@ -31,6 +31,9 @@
 
         /// <summary>配方上下文视图。</summary>
         public const string RecipeContextView = nameof(RecipeContextView);
+
+        /// <summary>报警列表页（报警家族注册同名视图；壳只认名字，不引用家族程序集）。</summary>
+        public const string AlarmListView = nameof(AlarmListView);
     }
 
 }

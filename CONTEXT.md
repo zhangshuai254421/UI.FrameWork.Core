@@ -97,12 +97,20 @@ _Avoid_: OBB 缩写裸用、带角度框
 _Avoid_: 模块、程序集（泛称时）
 
 **模型中心 (Domain)**:
-一个家族的纯模型层：实体与实体服务接口，只准引用共享内核（`EFCore.Repository` 工程）。不含 `DbContext`、EF 实体配置与迁移——出现即违约（ADR-0008）。
+一个家族的纯模型层：实体与契约接口（持久化契约用 Store，业务编排契约才用 Service），只准引用共享内核（`EFCore.Repository` 工程）。不含 `DbContext`、EF 实体配置与迁移——出现即违约（ADR-0008）。
 _Avoid_: 把 Domain 当持久化层用、领域层（含存储的旧用法）
 
 **持久化层 (Infrastructure)**:
 家族内唯一知道数据库的一层：`DbContext`、EF 实体配置、Migrations。实体归属用 `DefaultDbContext` 特性声明在**实体所在程序集**上，分层禁引用时用字符串指名上下文（ADR-0008）。
 _Avoid_: DAL、数据访问层
+
+**存储契约 (Store)**:
+持久化读写契约的后缀：增删改查加全量加载，进门前可拒不合法数据，此外不含业务（ADR-0012）。报警家族的 `IAlarmDefinitionStore`、`IEventStore` 是样板，新家族的持久化契约照此命名。
+_Avoid_: Repository、Dao、用 Service 命名持久化契约
+
+**服务契约 (Service)**:
+业务编排契约的后缀，命名门槛是真有编排：跨实体协调、流程规则，而不是替数据库跑腿（ADR-0012）。Recipe 家族旧有的 XxxService 是纯 CRUD 却叫 Service 的历史遗留，不追溯改名，新代码别学；容器注册辅助类（ServiceExtensions）与日志等能力类不归这条边界管。
+_Avoid_: 用 Service 命名纯持久化契约、Manager
 
 ## 报警管理（Alarm Management）
 
@@ -195,3 +203,7 @@ _Avoid_: 报警缓存、当前报警表
 **事件历史库 (Event History)**:
 append-only 的报警事件存储，只进不改——改历史 = 毁证据；KPI 七项指标全部从它算出。
 _Avoid_: 可改写的报警日志表
+
+**顶栏汇总状态 (Header Summary Status)**:
+活跃快照浓缩成顶栏按钮的三件套（级别/计数/文本）：搁置中的成员不参与；有未确认按优先级分红闪/黄闪，已确认还挂着稳红，只剩 RTN 橙稳，全无灰显；计数是活账行数，文本是最高优先级那条的位号。壳只认中性三件套，翻译规则在报警家族（AlarmHeaderStatus）。
+_Avoid_: 旧Infos.AlarmStatus 直接绑引擎内部状态、顶栏自算规则

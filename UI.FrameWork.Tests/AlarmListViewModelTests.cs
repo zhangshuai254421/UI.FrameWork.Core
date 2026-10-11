@@ -1,6 +1,7 @@
 using System.IO;
 using Framework.Alarm;
 using Framework.Alarm.Domain;
+using Framework.Alarm.UI;
 
 namespace SemiAppliaction.Views.Tests
 {
@@ -407,7 +408,7 @@ namespace SemiAppliaction.Views.Tests
 
             vm.AcknowledgeCommand.Execute(row);
 
-            Assert.Equal([$"Ack:{HeatTag}:演示员"], feed.Calls);             // 署名随动作转手
+            Assert.Equal([$"Ack:{HeatTag}:操作员"], feed.Calls);             // 署名随动作转手（家族 VM 默认署名）
             Assert.Equal(AlarmState.Unacknowledged, vm.MainRows[0].State); // VM 没自改：等引擎事件回弹
         }
 
@@ -422,7 +423,7 @@ namespace SemiAppliaction.Views.Tests
 
             vm.ShelveCommand.Execute(row);
 
-            Assert.Equal([$"Shelve:{HeatTag}:00:05:00:演示员"], feed.Calls);
+            Assert.Equal([$"Shelve:{HeatTag}:00:05:00:操作员"], feed.Calls);
         }
 
         /// <summary>解除命令：转手 feed 接口上的 Unshelve(tag, op)，即搁置清单行上的「解除搁置」按钮。</summary>
@@ -435,7 +436,7 @@ namespace SemiAppliaction.Views.Tests
 
             vm.UnshelveCommand.Execute(vm.ShelvedRows[0]);
 
-            Assert.Equal([$"Unshelve:{HeatTag}:演示员"], feed.Calls);        // 只转手动作，等引擎事件回弹
+            Assert.Equal([$"Unshelve:{HeatTag}:操作员"], feed.Calls);        // 只转手动作，等引擎事件回弹
         }
 
         /// <summary>

@@ -35,6 +35,9 @@ public class FrameworkModule(IRegionManager regionManager  )  : IModule
         // 注册导航
        containerRegistry.RegisterViewsFromAssembly(GetType().Assembly);
 
+        // 页头 VM 注册成单例且放在批量注册之后：视图定位器按名字约定解析会自己 new 一个，
+        // 这条覆盖它，页头桥与视图绑定才拿到同一个实例
+        containerRegistry.RegisterSingleton<HeaderViewModel>();
 
     }
 }

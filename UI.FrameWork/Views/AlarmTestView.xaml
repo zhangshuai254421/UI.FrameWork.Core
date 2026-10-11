@@ -3,34 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:SemiAppliaction.Views"
+             xmlns:alarmUI="clr-namespace:Framework.Alarm.UI;assembly=Framework.Alarm.UI"
              xmlns:controls="https://github.io/semicontrol"
              mc:Ignorable="d"
              d:DesignHeight="800" d:DesignWidth="1200">
 
-    <UserControl.Resources>
-        <!-- 三态状态文字（未确认/已确认/RTN 各有各的词）：两个清单共用这一份样式，改措辞只改这一处 -->
-        <Style x:Key="AlarmStateText" TargetType="TextBlock">
-            <Setter Property="Text" Value="已确认"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
-                    <Setter Property="Text" Value="未确认"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
-                    <Setter Property="Text" Value="已恢复"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- 闪烁循环：红/绿两个触发器共用这一份动画。动画不写 TargetName、只作用于宿主自己的 Opacity，
-             才能进资源字典冻结共享，两处各自计时、互不干扰；写了 TargetName 的共享动画在冻结后会直接抛异常 -->
-        <Storyboard x:Key="BlinkLoop" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                             From="1" To="0.4" Duration="0:0:0.6" AutoReverse="True"/>
-        </Storyboard>
-    </UserControl.Resources>
-
-    <!-- 报警测试页（#15）：真引擎演示装置喂报警列表（主列表/搁置清单/详情档案），验证报警模块全链路 -->
+    <!-- 报警测试页：宿主的演示装置页。家族正式视图（AlarmListView）原样嵌入，
+         本页只叠一层模拟操作条（开始/停止剧本）。报警的呈现与判定全在家族里，
+         宿主不复制一份列表模板——这正是家族封装要防的（仿 Recipe.UI 的可选家族） -->
     <controls:LayoutPageControl IsRightPanelVisible="False">
 
         <controls:LayoutPageControl.MainContent>
@@ -40,267 +20,15 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- 操作条：开始/停止模拟 + 状态文字 -->
+                <!-- 模拟操作条：演示装置（AlarmDemoRig）每秒推一步剧本投喂真引擎 -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,4">
                     <Button Content="开始模拟" Padding="16,4" Margin="0,0,8,0" Command="{Binding StartCommand}"/>
                     <Button Content="停止模拟" Padding="16,4" Margin="0,0,16,0" Command="{Binding StopCommand}"/>
                     <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- 两个清单：主列表（宽）与搁置清单（窄）。它们是同一份活跃快照的两个视图，过滤规则在 AlarmFilters -->
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="8"/>
-                        <ColumnDefinition Width="2*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- 主列表：闪红（未确认）/ 稳红（已确认）/ 闪绿（RTN） -->
-                    <DockPanel Grid.Column="0">
-                        <TextBlock DockPanel.Dock="Top" Text="报警列表" FontWeight="Bold" Margin="0,0,0,4"/>
-                        <ListView ItemsSource="{Binding List.MainRows}"
-                                  HorizontalContentAlignment="Stretch"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                  BorderThickness="1" BorderBrush="{DynamicResource PrimaryControlToolBrush}">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid x:Name="RowRoot" Margin="0,1">
-                                        <!-- 行卡底色层：样式挂在自己身上（Style 触发器的 Setter 不允许 TargetName，报 MC4011）。
-                                             闪烁动画作用于 Opacity（普通属性），不碰背景刷——样式 Setter 里的刷子随样式一起被冻结，
-                                             ColorAnimation 走 (Border.Background).(SolidColorBrush.Color) 路径会当场抛 XamlParseException -->
-                                        <Border x:Name="RowBg" CornerRadius="2">
-                                            <Border.Style>
-                                                <Style TargetType="Border">
-                                                    <Setter Property="Background" Value="Transparent"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding State}" Value="Unacknowledged">
-                                                            <Setter Property="Background" Value="#66FF3030"/>
-                                                            <DataTrigger.EnterActions>
-                                                                <BeginStoryboard x:Name="BlinkRed" Storyboard="{StaticResource BlinkLoop}"/>
-                                                            </DataTrigger.EnterActions>
-                                                            <DataTrigger.ExitActions>
-                                                                <RemoveStoryboard BeginStoryboardName="BlinkRed"/>
-                                                            </DataTrigger.ExitActions>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding State}" Value="Acknowledged">
-                                                            <Setter Property="Background" Value="#B4FF3030"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding State}" Value="ReturnToNormal">
-                                                            <Setter Property="Background" Value="#6600C853"/>
-                                                            <DataTrigger.EnterActions>
-                                                                <BeginStoryboard x:Name="BlinkGreen" Storyboard="{StaticResource BlinkLoop}"/>
-                                                            </DataTrigger.EnterActions>
-                                                            <DataTrigger.ExitActions>
-                                                                <RemoveStoryboard BeginStoryboardName="BlinkGreen"/>
-                                                            </DataTrigger.ExitActions>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Border.Style>
-                                        </Border>
-                                        <Border Padding="6,4">
-                                            <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="150"/>
-                                                <ColumnDefinition Width="64"/>
-                                                <ColumnDefinition Width="48"/>
-                                                <ColumnDefinition Width="84"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="{Binding Tag}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Tag}"/>
-                                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource AlarmStateText}"/>
-                                            <TextBlock Grid.Column="2" VerticalAlignment="Center">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Text" Value="中"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Priority}" Value="High">
-                                                                <Setter Property="Text" Value="高"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Priority}" Value="Low">
-                                                                <Setter Property="Text" Value="低"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-                                            <TextBlock Grid.Column="3" Text="{Binding Since, StringFormat=HH:mm:ss}" VerticalAlignment="Center"/>
-                                            <StackPanel Grid.Column="5" Orientation="Horizontal">
-                                                <Button Content="确认" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.AcknowledgeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                                                <Button Content="搁置" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.ShelveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                                                <Button Content="详情" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                                            </StackPanel>
-                                        </Grid>
-                                        </Border>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </DockPanel>
-
-                    <!-- 搁置清单：有搁置期限且还没到期的成员（到期后自然回主列表），解除搁置在这里点 -->
-                    <DockPanel Grid.Column="2">
-                        <TextBlock DockPanel.Dock="Top" Text="搁置清单" FontWeight="Bold" Margin="0,0,0,4"/>
-                        <ListView ItemsSource="{Binding List.ShelvedRows}"
-                                  HorizontalContentAlignment="Stretch"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                  BorderThickness="1" BorderBrush="{DynamicResource PrimaryControlToolBrush}">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Background="#33808080" CornerRadius="2" Padding="6,4" Margin="0,1">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="150"/>
-                                                <ColumnDefinition Width="64"/>
-                                                <ColumnDefinition Width="84"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="{Binding Tag}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Tag}"/>
-                                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource AlarmStateText}"/>
-                                            <TextBlock Grid.Column="2" Text="{Binding ShelvedUntil, StringFormat=HH:mm:ss}" VerticalAlignment="Center" ToolTip="搁置期限"/>
-                                            <StackPanel Grid.Column="4" Orientation="Horizontal">
-                                                <Button Content="解除搁置" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.UnshelveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                                                <Button Content="详情" Padding="8,2" Margin="2,0" Command="{Binding DataContext.List.ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </DockPanel>
-                </Grid>
-
-                <!-- 详情浮层 = MADB 档案原样呈现（哲学 §3.2）：操作动作放在最显眼的位置，打开这一屏第一个看到的就是它 -->
-                <Border Grid.RowSpan="2" Background="#88000000" Padding="40">
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding List.Detail}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                    <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="6" Padding="16"
-                            MaxWidth="680" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <ScrollViewer MaxHeight="600" VerticalScrollBarVisibility="Auto">
-                            <StackPanel DataContext="{Binding List.Detail}">
-                                <DockPanel Margin="0,0,0,8">
-                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Priority}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                    <TextBlock Text="{Binding Tag, StringFormat=【{0}】}" FontSize="18" FontWeight="Bold"/>
-                                </DockPanel>
-                                <TextBlock Text="{Binding Description}" FontSize="14" TextWrapping="Wrap" Margin="0,0,0,10"/>
-
-                                <!-- 操作动作：现在该干什么。档案里最要紧的一行，框起来放大 -->
-                                <Border Background="#33FF3030" CornerRadius="4" Padding="10,8" Margin="0,0,0,10">
-                                    <StackPanel>
-                                        <TextBlock Text="现在做什么（操作动作）" FontWeight="Bold" FontSize="12"/>
-                                        <TextBlock Text="{Binding OperatorAction}" FontSize="16" FontWeight="Bold" TextWrapping="Wrap" Margin="0,4,0,0"/>
-                                    </StackPanel>
-                                </Border>
-
-                                <Grid Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="12"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="最可能原因（排查起点）" FontWeight="Bold" FontSize="12"/>
-                                        <TextBlock Text="{Binding Cause}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2">
-                                        <TextBlock Text="不处理的后果" FontWeight="Bold" FontSize="12"/>
-                                        <TextBlock Text="{Binding Consequence}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                                    </StackPanel>
-                                </Grid>
-
-                                <!-- 优先级坐标与响应窗口：严重度 S 和响应分档 T 是查矩阵的输入，MTR 是查矩阵的输出 -->
-                                <Grid Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                                        <TextBlock Text="严重度" FontWeight="Bold" FontSize="12"/>
-                                        <TextBlock Text="{Binding Severity}" Margin="0,2,0,0"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2" Margin="0,0,12,0">
-                                        <TextBlock Text="响应分档" FontWeight="Bold" FontSize="12"/>
-                                        <TextBlock Text="{Binding MtrTier}" Margin="0,2,0,0"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="4" Margin="0,0,12,0">
-                                        <TextBlock Text="最大响应时间 MTR" FontWeight="Bold" FontSize="12"/>
-                                        <TextBlock Text="{Binding MaxResponseTime}" Margin="0,2,0,0"/>
-                                    </StackPanel>
-                                </Grid>
-
-                                <!-- 组态参数：整定依据来自合理化评审（档案驱动，不在 if 里长报警） -->
-                                <Grid Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                                        <TextBlock Text="分类 / 分组" FontWeight="Bold" FontSize="12"/>
-                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                            <TextBlock>
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Text" Value="{Binding Class}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Class}" Value="Process">
-                                                                <Setter Property="Text" Value="工艺"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Class}" Value="Equipment">
-                                                                <Setter Property="Text" Value="设备"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Class}" Value="Environment">
-                                                                <Setter Property="Text" Value="环境"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Class}" Value="Safety">
-                                                                <Setter Property="Text" Value="安全"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-                                            <TextBlock Text="{Binding Group, StringFormat=  /  {0}}"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2" Margin="0,0,12,0">
-                                        <TextBlock Text="限值 / 死区" FontWeight="Bold" FontSize="12"/>
-                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                            <TextBlock Text="{Binding Limit}"/>
-                                            <TextBlock Text="  /  "/>
-                                            <TextBlock Text="{Binding Deadband}"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Grid>
-
-                                <!-- 评审留痕：这份档案是谁、什么时候、依据哪版哲学评审的 -->
-                                <StackPanel Margin="0,0,0,10">
-                                    <TextBlock Text="评审留痕" FontWeight="Bold" FontSize="12"/>
-                                    <TextBlock Text="{Binding RationalizedBy, StringFormat=评审人：{0}}" Margin="0,2,0,0"/>
-                                    <TextBlock Text="{Binding RationalizedOn, StringFormat=评审日期：{0:yyyy-MM-dd}}"/>
-                                    <TextBlock Text="{Binding PhilosophyVersion, StringFormat=报警哲学版本：{0}}"/>
-                                </StackPanel>
-
-                                <Button Content="收起" Padding="20,6" HorizontalAlignment="Right"
-                                        Command="{Binding DataContext.List.CloseDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Border>
-                </Border>
+                <!-- 家族正式视图：DataContext 直接给列表 VM（导航路径下由 Prism 配对，嵌入路径下在这里注入） -->
+                <alarmUI:AlarmListView Grid.Row="1" DataContext="{Binding List}"/>
             </Grid>
         </controls:LayoutPageControl.MainContent>
 

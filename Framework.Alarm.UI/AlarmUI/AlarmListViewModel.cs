@@ -4,7 +4,7 @@ using Framework.Alarm.Domain;
 using Prism.Commands;
 using Prism.Mvvm;
 
-namespace SemiAppliaction.Views
+namespace Framework.Alarm.UI
 {
     /// <summary>
     /// 报警列表 ViewModel（摘要 §9.3，哲学 §3.2 呈现纪律【强制】）：把引擎事件直接翻译成集合变更，
@@ -107,8 +107,8 @@ namespace SemiAppliaction.Views
             private set => SetProperty(ref _detail, value);
         }
 
-        /// <summary>操作员署名：动作转手 feed 时随行（演示页默认，宿主接登录态）。</summary>
-        public string Operator { get; set; } = "演示员";
+        /// <summary>操作员署名：动作转手 feed 时随行（宿主接登录态时覆盖）。</summary>
+        public string Operator { get; set; } = "操作员";
 
         /// <summary>搁置时长：UI 供给、必须限时（无限期搁置 = 变相删报警，哲学 §7）。</summary>
         public TimeSpan ShelveDuration { get; set; } = TimeSpan.FromSeconds(30);

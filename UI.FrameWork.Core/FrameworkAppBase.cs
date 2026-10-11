@@ -3,6 +3,7 @@ using DryIoc.Microsoft.DependencyInjection;
 using EFCore.Infrastructure;
 using EFCore.Repository;
 using Example;
+using Framework.Alarm;
 using Framework.Alarm.Infrastructure;
 using Framework.Core.Common;
 using Framework.Device.Domain;
@@ -75,6 +76,9 @@ namespace UI.FrameWork.Core
             services.AddRecipeServices();
             services.AddDeviceServices();
             services.AddAlarmServices();
+            // 报警引擎随壳注册（家族 UI 与演示装置都从容器里拿 IAlarmFeed）；
+            // 家族 UI 模块装不装由宿主的模块目录决定，引擎本身属于框架底座
+            services.AddAlarmEngine();
 
             
             services.AddSingleton<INavigationService, PrismUI.Core.NavigationService>();

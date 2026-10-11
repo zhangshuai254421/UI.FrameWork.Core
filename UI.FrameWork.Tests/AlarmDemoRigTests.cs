@@ -1,5 +1,6 @@
 using Framework.Alarm;
 using Framework.Alarm.Domain;
+using Framework.Alarm.UI;
 
 namespace SemiAppliaction.Views.Tests
 {

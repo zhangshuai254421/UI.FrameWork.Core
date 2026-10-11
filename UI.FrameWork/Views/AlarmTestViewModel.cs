@@ -1,6 +1,7 @@
 using System.Threading;
 using Framework.Alarm;
 using Framework.Alarm.Domain;
+using Framework.Alarm.UI;
 using Prism.Commands;
 using Prism.Navigation.Regions;
 using PrismUI.Core;
