@@ -47,12 +47,14 @@ namespace SemiAppliaction.Views
         public DelegateCommand StopCommand { get; }
 
         /// <summary>
-        /// 构造（#22 接入真库）：两个存储由容器注入（宿主 AddAlarmServices 的单例，库由宿主建好），
-        /// 装置走真库；把真引擎接上列表 VM（编队到 UI 线程），泵循环跑在后台（#29）。
+        /// 构造（#22 接入真库）：两个存储与引擎、采集层都由容器注入（宿主 AddAlarmServices/AddAlarmEngine 的单例，库由宿主建好）。
+        /// 引擎用容器的这份：顶栏桥（AlarmUIModule）听的也是它，演示报警才点得亮顶栏；装置不再自建引擎。
+        /// 采集层同理用容器单例：引擎构造时订的就是它，剧本推它才推得进引擎。
+        /// 列表 VM 接同一引擎（编队到 UI 线程），泵循环跑在后台（#29）。
         /// </summary>
-        public AlarmTestViewModel(IAlarmDefinitionStore definitions, IEventStore events)
+        public AlarmTestViewModel(IAlarmDefinitionStore definitions, IEventStore events, AlarmEngine engine, SimulatedConditionSource source)
         {
-            _rig = new AlarmDemoRig(definitions, events);
+            _rig = new AlarmDemoRig(definitions, events, engine, source);
             // 事件编队接 UI 线程（摘要 §9.2 选型定案：SynchronizationContext.Post）——
             // VM 由 Prism 在 UI 线程创建，Current 即派发器上下文；取不到时再造一个（设计器等无上下文场合）。
             _ui = SynchronizationContext.Current

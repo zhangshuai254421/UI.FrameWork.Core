@@ -1,4 +1,5 @@
-﻿using Framework.Core.Common;
+﻿using Framework.Alarm;
+using Framework.Core.Common;
 using PrismUI.Core;
 using SemiAppliaction.Core;
 using SemiAppliaction.Views;
@@ -25,7 +26,9 @@ namespace SemiAppliaction
 
         }
 
-        /// <summary>模块类型注册：把主视图与各测试页连同其 ViewModel 注册为可导航视图。</summary>
+        /// <summary>模块类型注册：把主视图与各测试页连同其 ViewModel 注册为可导航视图；
+        /// 另把演示采集层注册为条件源——引擎由壳的 AddAlarmEngine 构造，条件源是宿主的事，
+        /// 本宿主还没有真采集层，注册剧本源让演示报警点得亮顶栏（真宿主换成自己的采集层）。</summary>
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             //throw new NotImplementedException();
@@ -34,6 +37,9 @@ namespace SemiAppliaction
             containerRegistry.RegisterForNavigation<CameraTestView, CameraTestViewModel>();
             containerRegistry.RegisterForNavigation<DetectionTestView, DetectionTestViewModel>();
             containerRegistry.RegisterForNavigation<AlarmTestView, AlarmTestViewModel>();
+            // 条件源先注册具体单例再映射接口：引擎（IConditionSource）与演示装置（剧本推数）必须拿到同一个实例
+            containerRegistry.RegisterSingleton<SimulatedConditionSource>();
+            containerRegistry.RegisterSingleton(typeof(IConditionSource), sp => sp.Resolve<SimulatedConditionSource>());
         }
     }
 }

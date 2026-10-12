@@ -55,8 +55,8 @@ namespace SemiAppliaction.Views
             (200, 0.4, 50), // 停留观察，然后循环
         ];
 
-        /// <summary>模拟采集层：剧本的事实出口。</summary>
-        public SimulatedConditionSource Source { get; } = new();
+        /// <summary>模拟采集层：剧本的事实出口。外部注入时用容器单例（引擎订的同一份，剧本推它才有效），默认自建。</summary>
+        public SimulatedConditionSource Source { get; }
 
         /// <summary>档案库：三条演示档案随装置就位（#22 起走宿主建的真库，测试传内存替身）。</summary>
         public IAlarmDefinitionStore Store { get; }
@@ -67,11 +67,14 @@ namespace SemiAppliaction.Views
         /// <summary>事件库接线：随装置存亡（#31 落库改后台，写完存量/关闭经此——null = 没接事件库）。</summary>
         public EventHistory? History { get; }
 
-        /// <summary>真引擎：档案装好、采集层接好、时钟接好——页面拿它当 IAlarmFeed 用。</summary>
+        /// <summary>真引擎：档案装好、采集层接好、时钟接好。默认自建；外部注入时用容器引擎（顶栏桥听的同一个，演示才能点亮顶栏）。</summary>
         public AlarmEngine Engine { get; }
 
         /// <summary>剧本游标：循环推进。</summary>
         private int _step;
+
+        /// <summary>引擎归属：自己造的随装置处置；容器注入的是应用级单例，装置无权 Dispose。</summary>
+        private readonly bool _ownsEngine;
 
         /// <summary>
         /// 初始化（#22）：演示档案缺了才补（评审法定产出不改写——库里已有的档案不动，缺的位号补建档），
@@ -80,8 +83,12 @@ namespace SemiAppliaction.Views
         /// </summary>
         /// <param name="store">档案库：宿主注入真库存储，测试传内存替身。</param>
         /// <param name="events">事件库：宿主注入真库存储；null = 不接事件库（测试的内存直通）。</param>
-        public AlarmDemoRig(IAlarmDefinitionStore store, IEventStore? events = null)
+        /// <param name="engine">外部引擎：传容器里的单例（演示页用容器引擎，顶栏桥与列表听同一份）；
+        /// null = 自建（测试直通用）。</param>
+        /// <param name="source">模拟采集层：传容器单例（引擎构造时订的就是它），null = 自建。</param>
+        public AlarmDemoRig(IAlarmDefinitionStore store, IEventStore? events = null, AlarmEngine? engine = null, SimulatedConditionSource? source = null)
         {
+            Source = source ?? new SimulatedConditionSource();
             Store = store;
             Events = events;
             foreach (var definition in DemoDefinitions().Where(d => store.Find(d.Tag) is null))
@@ -89,7 +96,8 @@ namespace SemiAppliaction.Views
                 store.Add(definition); // 缺了才补；位号冲突会立即抛异常（法定校验 + 唯一约束都在）
             }
 
-            Engine = new AlarmEngine(Source, store, new SystemClock(), events);
+            _ownsEngine = engine is null;
+            Engine = engine ?? new AlarmEngine(Source, store, new SystemClock(), events);
             if (events is not null)
             {
                 History = new EventHistory(events, Engine); // 订阅即入队，后台写库（摘要 §8.11、#31）：接线随装置存亡
@@ -107,11 +115,15 @@ namespace SemiAppliaction.Views
         }
 
         /// <summary>关闭（#31）：先写完队列存量（事件不随进程丢）再退订采集层——
-        /// 接线随装置存亡，关闭也是；页面随应用存亡，规范起见随宿主一起处置。</summary>
+        /// 接线随装置存亡，关闭也是；页面随应用存亡，规范起见随宿主一起处置。
+        /// 容器注入的引擎是应用级单例，装置只退自己的 History，不动引擎。</summary>
         public void Dispose()
         {
             History?.Dispose();
-            Engine.Dispose();
+            if (_ownsEngine)
+            {
+                Engine.Dispose();
+            }
         }
 
         /// <summary>三条演示档案（哲学 §6.1：操作动作必填——填不出的候选直接拒绝入库）。</summary>

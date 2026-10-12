@@ -22,15 +22,17 @@ namespace Framework.Alarm.UI
         /// <summary>UI 上下文：快照重算与页头写入都编队回这里。</summary>
         private readonly SynchronizationContext _ui;
 
-        /// <summary>读取时刻：剔除搁置到期成员用（测试注入固定值控制时间）。</summary>
+        /// <summary>读取时刻：剔除搁置到期成员用（墙钟）。</summary>
         private readonly Func<DateTimeOffset> _now;
 
-        /// <summary>构造即订阅事件流；Connect 补初始快照。</summary>
-        public AlarmHeaderBridge(IAlarmFeed feed, HeaderViewModel header, Func<DateTimeOffset>? now = null)
+        /// <summary>构造即订阅事件流；Connect 补初始快照。时刻用墙钟写死，不走可选参数：
+        /// DryIoc 会把 Func 类型的可省参数当可解析依赖自动接管，注入出容器工厂，
+        /// 一调用就炸（模块装载 NRE 的根因）。</summary>
+        public AlarmHeaderBridge(IAlarmFeed feed, HeaderViewModel header)
         {
             _feed = feed;
             _header = header;
-            _now = now ?? (() => DateTimeOffset.Now);
+            _now = () => DateTimeOffset.Now;
             _ui = SynchronizationContext.Current ?? new SynchronizationContext();
             _feed.EventRaised += OnEventRaised;
         }
