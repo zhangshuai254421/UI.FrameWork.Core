@@ -31,15 +31,13 @@ namespace EFCore.IRepository
         /// <summary>按条件批量删除并立即提交；返回是否实际删除了数据行。</summary>
         Task<bool> DeleteRangeAsync(Expression<Func<TEntity, bool>> predicate,CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// 要传入跟踪实体  才能更新成功
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <summary>更新单条实体并立即提交；返回是否有数据行被写入。
+        /// 整实体更新：传入实体的全部字段都按当前值写库。实体必须带主键值，主键为空会被当作新增插入。
+        /// 未跟踪的实体也能更新，不必先查一遍找回跟踪。</summary>
         Task<bool> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-        /// <summary>批量更新传入的跟踪实体并立即提交；返回是否实际修改了数据。</summary>
+        /// <summary>批量更新传入的实体并立即提交；返回是否实际修改了数据。
+        /// 更新前会清空变更跟踪，跟踪缓存里未提交的其他改动会一起被丢掉。</summary>
         Task<bool> UpdateRangeAsync(
             IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
         /// <summary>按条件查出实体、对每条执行更新委托后立即提交；返回是否有数据被修改。</summary>

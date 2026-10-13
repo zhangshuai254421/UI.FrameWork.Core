@@ -115,7 +115,7 @@ namespace Framework.Alarm.Tests
 
         /// <summary>队列封顶，丢新保旧（ADR-0011 的取舍）：容量 1 的队列，写者拿着第一条卡住，
         /// 后续两条只有一条能进队——满了再来的新事件出局，队里已在的旧事件活着；放行写完后
-        /// 库里头两条俱在、次序不乱、绝没有第三条——库长时间进不去时，先发生的事件优先存活。</summary>
+        /// 库里头两条都在、次序不乱、绝没有第三条——库长时间进不去时，先发生的事件优先存活。</summary>
         [Fact]
         public void 队列满_丢新保旧_历史库不缺号()
         {
@@ -133,7 +133,7 @@ namespace Framework.Alarm.Tests
 
             Assert.Equal(
                 [HysteresisEvaluatorTests.T(1), HysteresisEvaluatorTests.T(2)],
-                store.Landed.Select(e => e.At));                         // 头两条俱在、次序不乱
+                store.Landed.Select(e => e.At));                         // 头两条都在、次序不乱
         }
 
         /// <summary>落库失败按间隔重试到成功（#31）：前两次失败（busy 超时的替身），后台写者等一个间隔再试——

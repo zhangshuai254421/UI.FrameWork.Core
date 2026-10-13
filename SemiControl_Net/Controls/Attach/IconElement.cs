@@ -37,14 +37,14 @@ namespace SemiControl.Controls
         /// </summary>
         /// <param name="element">目标元素</param>
         /// <returns>图像资源</returns>
-        public static ImageSource GetSource(DependencyObject element) => (ImageSource)element.GetValue(GeometryProperty);
+        public static ImageSource GetSource(DependencyObject element) => (ImageSource)element.GetValue(SourceProperty);
 
         /// <summary>
         /// 设置图像资源
         /// </summary>
         /// <param name="element">目标元素</param>
         /// <param name="value">图像资源</param>
-        public static void SetSource(DependencyObject element, ImageSource value) => element.SetValue(GeometryProperty, value);
+        public static void SetSource(DependencyObject element, ImageSource value) => element.SetValue(SourceProperty, value);
 
         /// <summary>
         /// 图像资源

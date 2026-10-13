@@ -56,7 +56,7 @@ namespace SemiControl_Net.Tests
         [Fact]
         public void Constructor_WithExtraData_Accepts()
         {
-            // 允许富余（泵方可能整块复用池化缓冲），只需不少于所需。
+            // 允许富余（提供方可能整块复用池化缓冲），只需不少于所需。
             var frame = new ImageFrame(2, 2, ImagePixelFormat.Mono8, new byte[100]);
             Assert.Equal(100, frame.Data.Length);
         }

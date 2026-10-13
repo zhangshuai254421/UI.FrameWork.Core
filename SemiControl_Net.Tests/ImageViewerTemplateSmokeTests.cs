@@ -80,7 +80,7 @@ namespace SemiControl_Net.Tests
                                     + $"presenter={presenter?.GetType().Name ?? "null"}, "
                                     + $"infoZoom={infoZoom?.GetType().Name ?? "null"}";
 
-                                // 模拟泵线程：从非 UI 线程送帧（跨线程契约）
+                                // 模拟采集线程：从非 UI 线程送帧（跨线程契约）
                                 var feeder = new Thread(() => viewer.Show(
                                     new ImageFrame(4, 4, ImagePixelFormat.Mono8, new byte[16])));
                                 feeder.Start();
