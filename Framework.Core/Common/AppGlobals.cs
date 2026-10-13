@@ -12,19 +12,17 @@ namespace Framework.Core.Common
     /// </summary>
     public static class AppGlobals
     {
-        /// <summary>
-        /// D:\\CodeSource\\01-UI框架\\UI.FrameWork\\bin\\Debug\\net8.0-windows\\logs\\log.db
-        /// </summary>
+        /// <summary>日志数据库文件绝对路径：应用基目录拼上相对路径。</summary>
         private static string LogDbConnectionStr
         {
             get
             {
-                return Path.Combine(AppDebug, LogDbFilePathNoDebug);
+                return Path.Combine(AppBaseDirectory, LogDbRelativePath);
             }
         }
 
         /// <summary>日志数据库相对应用基目录的文件路径。</summary>
-        public static string LogDbFilePathNoDebug
+        public static string LogDbRelativePath
         {
             get
             {
@@ -33,7 +31,7 @@ namespace Framework.Core.Common
         }
 
         /// <summary>配方数据库相对应用基目录的文件路径。</summary>
-        private static string RecipeDbFilePathNoDebug
+        private static string RecipeDbRelativePath
         {
             get
             {
@@ -41,10 +39,8 @@ namespace Framework.Core.Common
             }
         }
 
-        /// <summary>
-        /// Data Source=D:\\CodeSource\\01-UI框架\\UI.FrameWork\\bin\\Debug\\net8.0-windows\\logs\\log.db
-        /// </summary>
-        public static string LogDFliePath
+        /// <summary>日志数据库连接字符串（Data Source 形式）。</summary>
+        public static string LogDbFilePath
         {
             get
             {
@@ -53,18 +49,18 @@ namespace Framework.Core.Common
         }
 
         /// <summary>配方数据库连接字符串（Data Source 形式）。</summary>
-        public static string RecipeDbFliePath { 
+        public static string RecipeDbFilePath { 
             get
             {
-                return $"Data Source={Path.Combine(AppDebug, RecipeDbFilePathNoDebug)}";
+                return $"Data Source={Path.Combine(AppBaseDirectory, RecipeDbRelativePath)}";
             }
         }
 
         /// <summary>应用基目录，默认为当前应用域基目录；可重定向便于调试。</summary>
-        public static string AppDebug { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
+        public static string AppBaseDirectory { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
         /// <summary>设备数据库相对应用基目录的文件路径。</summary>
-        private static string DeviceDbFilePathNoDebug
+        private static string DeviceDbRelativePath
         {
             get
             {
@@ -73,16 +69,16 @@ namespace Framework.Core.Common
         }
 
         /// <summary>设备数据库连接字符串（Data Source 形式）。</summary>
-        public static string DeviceDbFliePath
+        public static string DeviceDbFilePath
         {
             get
             {
-                return $"Data Source={Path.Combine(AppDebug, DeviceDbFilePathNoDebug)}";
+                return $"Data Source={Path.Combine(AppBaseDirectory, DeviceDbRelativePath)}";
             }
         }
 
         /// <summary>报警数据库相对应用基目录的文件路径。</summary>
-        private static string AlarmDbFilePathNoDebug
+        private static string AlarmDbRelativePath
         {
             get
             {
@@ -91,11 +87,11 @@ namespace Framework.Core.Common
         }
 
         /// <summary>报警数据库连接字符串（Data Source 形式）。</summary>
-        public static string AlarmDbFliePath
+        public static string AlarmDbFilePath
         {
             get
             {
-                return $"Data Source={Path.Combine(AppDebug, AlarmDbFilePathNoDebug)}";
+                return $"Data Source={Path.Combine(AppBaseDirectory, AlarmDbRelativePath)}";
             }
         }
 
@@ -103,7 +99,7 @@ namespace Framework.Core.Common
         public static string MachineName = "ZS1A";
 
         /// <summary>目标检测模型相对应用基目录的文件路径。</summary>
-        private static string YoloModelFilePathNoDebug
+        private static string YoloModelRelativePath
         {
             get
             {
@@ -118,12 +114,12 @@ namespace Framework.Core.Common
         {
             get
             {
-                return Path.Combine(AppDebug, YoloModelFilePathNoDebug);
+                return Path.Combine(AppBaseDirectory, YoloModelRelativePath);
             }
         }
 
         /// <summary>姿态估计模型相对应用基目录的文件路径。</summary>
-        private static string YoloPoseModelFilePathNoDebug
+        private static string YoloPoseModelRelativePath
         {
             get
             {
@@ -138,12 +134,12 @@ namespace Framework.Core.Common
         {
             get
             {
-                return Path.Combine(AppDebug, YoloPoseModelFilePathNoDebug);
+                return Path.Combine(AppBaseDirectory, YoloPoseModelRelativePath);
             }
         }
 
         /// <summary>实例分割模型相对应用基目录的文件路径。</summary>
-        private static string YoloSegmentModelFilePathNoDebug
+        private static string YoloSegmentModelRelativePath
         {
             get
             {
@@ -158,12 +154,12 @@ namespace Framework.Core.Common
         {
             get
             {
-                return Path.Combine(AppDebug, YoloSegmentModelFilePathNoDebug);
+                return Path.Combine(AppBaseDirectory, YoloSegmentModelRelativePath);
             }
         }
 
         /// <summary>图像分类模型相对应用基目录的文件路径。</summary>
-        private static string YoloClassifyModelFilePathNoDebug
+        private static string YoloClassifyModelRelativePath
         {
             get
             {
@@ -178,12 +174,12 @@ namespace Framework.Core.Common
         {
             get
             {
-                return Path.Combine(AppDebug, YoloClassifyModelFilePathNoDebug);
+                return Path.Combine(AppBaseDirectory, YoloClassifyModelRelativePath);
             }
         }
 
         /// <summary>旋转框检测模型相对应用基目录的文件路径。</summary>
-        private static string YoloObbModelFilePathNoDebug
+        private static string YoloObbModelRelativePath
         {
             get
             {
@@ -198,7 +194,7 @@ namespace Framework.Core.Common
         {
             get
             {
-                return Path.Combine(AppDebug, YoloObbModelFilePathNoDebug);
+                return Path.Combine(AppBaseDirectory, YoloObbModelRelativePath);
             }
         }
     }

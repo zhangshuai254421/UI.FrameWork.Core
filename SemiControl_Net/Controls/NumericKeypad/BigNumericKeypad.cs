@@ -29,7 +29,7 @@ namespace SemiControl.Controls
             {"LeftArrow", 37 },
             {"UpArrow", 38 },
             {"RightArrow", 39 },
-            {"DwArrow", 40 },
+            {"DownArrow", 40 },
             {"Del", 46 },
             {"0", 48 },
             {"1", 49 },

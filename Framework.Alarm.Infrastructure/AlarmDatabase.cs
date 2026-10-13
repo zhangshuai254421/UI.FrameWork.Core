@@ -24,7 +24,7 @@ namespace Framework.Alarm.Infrastructure
         /// <param name="connectionString">库连接串；缺省用应用全局路径（Alarm\AlarmDomain.db）。</param>
         public static void Initialize(string? connectionString = null)
         {
-            connectionString ??= AppGlobals.AlarmDbFliePath;
+            connectionString ??= AppGlobals.AlarmDbFilePath;
 
             var dataSource = new SqliteConnectionStringBuilder(connectionString).DataSource;
             var fullPath = Path.GetFullPath(dataSource); // 相对路径按当前目录展开，目录才建得准

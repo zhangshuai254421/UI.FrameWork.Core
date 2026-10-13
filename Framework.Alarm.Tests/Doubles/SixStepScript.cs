@@ -3,10 +3,10 @@ namespace Framework.Alarm.Tests
     /// <summary>
     /// 数据流走查六步剧本（摘要 §8.6，#12 引擎总装联测同款）：步 1 报值 → 步 2–3 满延时 →
     /// 步 4 Raised 发出 → 步 5 确认后降温闭环 → 步 6 没人确认自行恢复。两个分支一条流跑完，
-    /// 期望事件五条、先后不乱。引擎总装测试（AlarmEngineTests.集成_数据流走查六拍_两分支）
+    /// 期望事件五条、先后不乱。引擎总装测试（AlarmEngineTests.集成_数据流走查六步_两分支）
     /// 因为每步内嵌断言（步 4 事件发出、列表清空等）不适合抽出，保持原样。
     /// </summary>
-    internal static class SixBeatScript
+    internal static class SixStepScript
     {
         /// <summary>剧本全程的期望事件序列（事件类型名，按发生先后）。</summary>
         public static readonly string[] ExpectedEventTypes =

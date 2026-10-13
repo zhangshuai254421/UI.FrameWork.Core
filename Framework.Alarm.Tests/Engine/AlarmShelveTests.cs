@@ -14,7 +14,7 @@ namespace Framework.Alarm.Tests
     public class AlarmShelveTests
     {
         /// <summary>第二条档案：泵停运报警（限值 1 / 死区 0.1 / 触发延时 1s / 恢复延时 0 / 中优先级）。</summary>
-        internal static AlarmDefinition Pump() => AlarmDefinitionTests.Sample() with
+        internal static AlarmDefinition PumpStopDefinition() => AlarmDefinitionTests.Sample() with
         {
             Tag = "PUMP01_STOP",
             Description = "进料泵停运",
@@ -43,7 +43,7 @@ namespace Framework.Alarm.Tests
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            clock.Advance(TimeSpan.FromSeconds(1));                       // T(1)：操作员下单
+            clock.Advance(TimeSpan.FromSeconds(1));                       // T(1)：操作员登记
             engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // 期限 T(31)
 
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(10), Value: 265)); // 越限段起点
@@ -75,13 +75,13 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>
-        /// 到期自动恢复显示（验收「到期后（拨表）自动回到正常播报，无任何解除调用」）：
+        /// 到期自动恢复显示（验收「到期后自动回到正常播报，无任何解除调用」）：
         /// 时钟过了期限——活跃行还在（报警没消失）、期限字段没了（回主列表）；不产 <see cref="AlarmUnshelved"/>
         /// （到期不是操作，没有事件）；之后再触发的 <see cref="AlarmRaised"/> 也不带期限。
         /// 到期不需要定时器解除——时间一过，期限字段自然失效（摘要 §8.10）。
         /// </summary>
         [Fact]
-        public void 搁置_到期拨表_标自然失效_无解除调用()
+        public void 搁置_到期_期限自然失效_无解除调用()
         {
             var source = new FakeConditionSource();
             var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
@@ -89,7 +89,7 @@ namespace Framework.Alarm.Tests
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // T(0) 下单，期限 T(30)
+            engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // T(0) 登记，期限 T(30)
 
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(10), Value: 265));
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(12), Value: 266)); // 搁置中升级（带期限）
@@ -115,7 +115,7 @@ namespace Framework.Alarm.Tests
         /// 下一次读取就带期限（不用等新事件）；状态、优先级、活跃起点一概不动（搁置不拦状态机）。
         /// </summary>
         [Fact]
-        public void 搁置_报警已活跃_快照即带标()
+        public void 搁置_报警已活跃_快照即带期限()
         {
             var source = new FakeConditionSource();
             var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
@@ -127,7 +127,7 @@ namespace Framework.Alarm.Tests
             source.Feed(AlarmEngineTests.HEAT01, new ConditionSample(At: HysteresisEvaluatorTests.T(2), Value: 266)); // 先升级（未搁置，不带期限）
             Assert.Null(Assert.Single(engine.Active).ShelvedUntil);
 
-            clock.Advance(TimeSpan.FromSeconds(5));                       // T(5)：操作员下单
+            clock.Advance(TimeSpan.FromSeconds(5));                       // T(5)：操作员登记
             engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // 期限 T(35)
 
             var member = Assert.Single(engine.Active);                    // 下一次快照就带期限
@@ -143,7 +143,7 @@ namespace Framework.Alarm.Tests
         /// 产 <see cref="AlarmUnshelved"/> 留痕（操作员动作，时刻取时钟当前值）。
         /// </summary>
         [Fact]
-        public void 解除_撤标回主列表_产Unshelved留痕()
+        public void 解除_取消期限回主列表_产Unshelved留痕()
         {
             var source = new FakeConditionSource();
             var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
@@ -199,7 +199,7 @@ namespace Framework.Alarm.Tests
 
         /// <summary>
         /// 搁置必须限时（哲学 §7【强制】，摘要 §11 警示 15）：零/负时长 = 无限期搁置的变体
-        /// = 变相删报警——静默拒绝：不登记、不留痕（无效的下单不算动作）。
+        /// = 变相删报警——静默拒绝：不登记、不留痕（无效的登记不算动作）。
         /// </summary>
         [Fact]
         public void 搁置_零负时长_静默拒绝()
@@ -233,7 +233,7 @@ namespace Framework.Alarm.Tests
 
         /// <summary>解除一个已过期的搁置：静默——没有可解除的动作，历史库不留 Unshelved 假事件。</summary>
         [Fact]
-        public void 解除_已到期订单_静默()
+        public void 解除_已到期搁置单_静默()
         {
             var source = new FakeConditionSource();
             var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
@@ -241,7 +241,7 @@ namespace Framework.Alarm.Tests
             var events = new List<AlarmEvent>();
             engine.EventRaised += events.Add;
 
-            engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // T(0) 下单，期限 T(30)
+            engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // T(0) 登记，期限 T(30)
             clock.Advance(TimeSpan.FromSeconds(31));                      // T(31)：搁置已自然到期（期限失效，早回主列表）
             engine.Unshelve(AlarmEngineTests.HEAT01, op: "王五");          // 迟来的解除：无从解除
 
@@ -276,7 +276,7 @@ namespace Framework.Alarm.Tests
         public void 过滤_主列表与搁置清单_各见其份()
         {
             var store = AlarmEngineTests.StoreWithSample();
-            store.Add(Pump());
+            store.Add(PumpStopDefinition());
             var source = new FakeConditionSource();
             var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
             var engine = new AlarmEngine(source, store, clock);
@@ -287,7 +287,7 @@ namespace Framework.Alarm.Tests
             source.Feed("PUMP01_STOP", new ConditionSample(At: HysteresisEvaluatorTests.T(1), Value: 5));              // PUMP01 升级（满 1s 延时）
             Assert.Equal(2, engine.Active.Count);
 
-            engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // 搁置 HEAT01（T(0) 下单，期限 T(30)）
+            engine.Shelve(AlarmEngineTests.HEAT01, TimeSpan.FromSeconds(30), op: "李四"); // 搁置 HEAT01（T(0) 登记，期限 T(30)）
             var now = clock.Now;
 
             var main = AlarmFilters.MainList(engine.Active, now);

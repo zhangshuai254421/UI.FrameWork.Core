@@ -18,7 +18,7 @@ namespace Framework.Device.Infrastructure
         public DeviceDataContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DeviceDataContext>();
-            var connectionString = AppGlobals.DeviceDbFliePath;
+            var connectionString = AppGlobals.DeviceDbFilePath;
 
             // 2. 根据你使用的数据库提供程序配置 (此处以 SQL Server 为例)
             optionsBuilder.UseSqlite(connectionString);
@@ -52,7 +52,7 @@ namespace Framework.Device.Infrastructure
             // 仅当未显式传入选项（如测试传入内存库）时才落到磁盘库。
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlite(AppGlobals.DeviceDbFliePath);
+                optionsBuilder.UseSqlite(AppGlobals.DeviceDbFilePath);
             }
 
             base.OnConfiguring(optionsBuilder);

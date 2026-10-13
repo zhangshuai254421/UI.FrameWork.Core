@@ -101,8 +101,8 @@ namespace Framework.Device.HikVision
             // 回调取流必须在 StartGrabbing 前注册；先退订再订阅，避免重复 Start 导致回调叠加。
             if (GrabMode == CameraGrabMode.Callback)
             {
-                camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabed;
-                camera.StreamGrabber.FrameGrabedEvent += OnFrameGrabed;
+                camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabbed;
+                camera.StreamGrabber.FrameGrabedEvent += OnFrameGrabbed;
             }
 
             int ret = camera.StreamGrabber.StartGrabbing();
@@ -111,7 +111,7 @@ namespace Framework.Device.HikVision
                 if (GrabMode == CameraGrabMode.Callback)
                 {
                     // 启动失败要退订，避免残留回调。
-                    camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabed;
+                    camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabbed;
                 }
                 RecordError(ret, nameof(StartAcquisition));
             }
@@ -127,7 +127,7 @@ namespace Framework.Device.HikVision
             }
 
             int ret = camera.StreamGrabber.StopGrabbing();
-            camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabed;
+            camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabbed;
             if (ret != MvError.MV_OK)
             {
                 RecordError(ret, nameof(StopAcquisition));
@@ -405,7 +405,7 @@ namespace Framework.Device.HikVision
             }
 
             camera.StreamGrabber.StopGrabbing();
-            camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabed;
+            camera.StreamGrabber.FrameGrabedEvent -= OnFrameGrabbed;
             camera.Close();
             camera.Dispose();
         }
@@ -430,7 +430,7 @@ namespace Framework.Device.HikVision
         /// SDK 帧回调（FrameGrabedEvent 非 Ex 版本：SDK 在回调返回后自动归还帧缓冲，这里只需拷贝）。
         /// 运行在 SDK 回调线程上：只做拷贝与入队，绝不能阻塞或让异常逃逸。
         /// </summary>
-        private void OnFrameGrabed(object? sender, FrameGrabbedEventArgs e)
+        private void OnFrameGrabbed(object? sender, FrameGrabbedEventArgs e)
         {
             try
             {

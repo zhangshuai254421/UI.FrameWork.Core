@@ -140,7 +140,7 @@
 
                             <StackPanel Grid.Row="2" Grid.Column="2"  Style="{StaticResource keyrow}" >
                                 <Button Content="back&#x0a;space" Tag="BackSpace" Width="80"  FontSize="18"/>
-                                <Button controls:ButtonAttach.IconGeometory="{DynamicResource DownArrowGeometry}" Tag="DwArrow" Width="80"/>
+                                <Button controls:ButtonAttach.IconGeometory="{DynamicResource DownArrowGeometry}" Tag="DownArrow" Width="80"/>
                                 <Button Content="del" Tag="Del" Width="80" FontSize="18"/>
                             </StackPanel>
                         </Grid>

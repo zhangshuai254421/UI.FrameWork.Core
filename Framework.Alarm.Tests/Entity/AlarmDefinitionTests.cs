@@ -57,7 +57,7 @@ namespace Framework.Alarm.Tests
         /// <summary>负死区会把恢复点抬到限值上，报警中途就清、清完又升，永久颤抖，
         /// 这正是死区要治的毛病（哲学 §6.2），档案校验不该放它进来。</summary>
         [Fact]
-        public void 校验_负死区_当庭退回()
+        public void 校验_负死区_校验即抛()
         {
             var def = (Sample() with { Deadband = -5 });
 
@@ -68,7 +68,7 @@ namespace Framework.Alarm.Tests
         /// <summary>NaN/Infinity 限值让滤波器永不报警（NaN 与谁比较都是假），
         /// 写进 SQLite 还会变成 NULL 读不回来，所以校验要求限值必须是有限数。</summary>
         [Fact]
-        public void 校验_限值非有限数_当庭退回()
+        public void 校验_限值非有限数_校验即抛()
         {
             Assert.Throws<ArgumentException>(() => (Sample() with { Limit = double.NaN }).EnsureValid());
             Assert.Throws<ArgumentException>(() => (Sample() with { Deadband = double.PositiveInfinity }).EnsureValid());
@@ -76,7 +76,7 @@ namespace Framework.Alarm.Tests
 
         /// <summary>负延时等于没有延时，触发延时和恢复延时的整定都失效（毛刺照报），校验直接拒绝。</summary>
         [Fact]
-        public void 校验_负延时_当庭退回()
+        public void 校验_负延时_校验即抛()
         {
             Assert.Throws<ArgumentException>(() => (Sample() with { OnDelay = TimeSpan.FromSeconds(-1) }).EnsureValid());
             Assert.Throws<ArgumentException>(() => (Sample() with { OffDelay = TimeSpan.FromSeconds(-1) }).EnsureValid());

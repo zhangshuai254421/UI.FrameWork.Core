@@ -6,7 +6,7 @@
     <SharedGUID>49b5f67a-91cd-4a0c-b0de-43c01beb8d60</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>SemiControl_Shard</Import_RootNamespace>
+    <Import_RootNamespace>SemiControl_Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\IconButton.cs" />

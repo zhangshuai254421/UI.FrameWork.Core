@@ -7,7 +7,7 @@ namespace SemiAppliaction.Views
     /// 模拟采集层（#15 演示装置）：<see cref="IConditionSource"/> 的剧本实现——
     /// 只报条件事实，不懂「报警」二字；有没有越限由真引擎对照档案判定（判定逻辑只在引擎层）。
     /// 页面 VM 用后台循环每秒调一次 <see cref="Report"/> 推进剧本（#29：循环跑在后台线程，
-    /// 事件由列表 VM 编队回 UI）——真宿主的采集层也从采集线程报数，演示页同一规矩。
+    /// 事件由列表 VM 投递回 UI）——真宿主的采集层也从采集线程报数，演示页同一规矩。
     /// </summary>
     public sealed class SimulatedConditionSource : IConditionSource
     {
@@ -28,7 +28,7 @@ namespace SemiAppliaction.Views
     /// （确认/搁置在页面上点）→ 第 7 步（下标 6）全体恢复：恢复延时全是零，一恢复就 Clear——
     /// 未确认的转闪绿留在列表，已确认的当场闭环移出列表；最后两步停留观察，然后循环再升级。
     /// </summary>
-    public sealed class AlarmDemoRig : IDisposable
+    public sealed class AlarmDemo : IDisposable
     {
         /// <summary>演示位号：加热板温度高限（高优先级，触发延时 2 秒）。</summary>
         public const string HeatTag = "HEAT01_TEMP_HI";
@@ -86,7 +86,7 @@ namespace SemiAppliaction.Views
         /// <param name="engine">外部引擎：传容器里的单例（演示页用容器引擎，顶栏桥与列表听同一份）；
         /// null = 自建（测试直通用）。</param>
         /// <param name="source">模拟采集层：传容器单例（引擎构造时订的就是它），null = 自建。</param>
-        public AlarmDemoRig(IAlarmDefinitionStore store, IEventStore? events = null, AlarmEngine? engine = null, SimulatedConditionSource? source = null)
+        public AlarmDemo(IAlarmDefinitionStore store, IEventStore? events = null, AlarmEngine? engine = null, SimulatedConditionSource? source = null)
         {
             Source = source ?? new SimulatedConditionSource();
             Store = store;
@@ -105,7 +105,7 @@ namespace SemiAppliaction.Views
         }
 
         /// <summary>剧本下一步：三条条件事实同一时刻报进引擎（采集层一步报全部点位）。</summary>
-        public void PumpNext()
+        public void AdvanceStep()
         {
             var now = DateTimeOffset.Now;
             var (heat, press, liquid) = Script[_step++ % Script.Length];

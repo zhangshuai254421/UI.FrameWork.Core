@@ -30,7 +30,7 @@ namespace Log.Infrastructure
          // 仅当未显式传入选项（如测试传入内存库）时才落到磁盘库。
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlite(AppGlobals.LogDFliePath);
+                optionsBuilder.UseSqlite(AppGlobals.LogDbFilePath);
             }
 
             base.OnConfiguring(optionsBuilder);

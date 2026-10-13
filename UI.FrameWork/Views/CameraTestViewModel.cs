@@ -30,12 +30,12 @@ namespace SemiAppliaction.Views
 
         /// <summary>当前取流的相机；未取流时为空。</summary>
         private CameraBase? _camera;
-        /// <summary>泵帧任务的取消源。</summary>
+        /// <summary>推帧任务的取消源。</summary>
         private CancellationTokenSource? _streamCts;
-        /// <summary>后台泵帧任务。</summary>
-        private Task? _pumpTask;
+        /// <summary>后台推帧任务。</summary>
+        private Task? _forwardTask;
 
-        // 帧率统计：泵帧线程只做 Interlocked.Increment，定时器每秒读取并归零。
+        // 帧率统计：推帧线程只做 Interlocked.Increment，定时器每秒读取并归零。
         private long _frameCounter;
         /// <summary>每秒读取帧计数并刷新 Fps 的 UI 定时器。</summary>
         private readonly DispatcherTimer _fpsTimer;
@@ -137,7 +137,7 @@ namespace SemiAppliaction.Views
         /// <summary>清空检测结果命令：仅在有结果时可用。</summary>
         public DelegateCommand ClearResultsCommand { get; }
 
-        /// <summary>开始取流：按 ID 找相机、切回调模式并启动泵帧与帧率统计；相机不存在时仅更新状态文本。</summary>
+        /// <summary>开始取流：按 ID 找相机、切回调模式并启动推帧与帧率统计；相机不存在时仅更新状态文本。</summary>
         private void Start()
         {
             if (IsStreaming)
@@ -159,7 +159,7 @@ namespace SemiAppliaction.Views
             camera.StartAcquisition();
 
             _streamCts = new CancellationTokenSource();
-            _pumpTask = PumpFramesAsync(camera.ChannelCameraData, _streamCts.Token);
+            _forwardTask = ForwardFramesAsync(camera.ChannelCameraData, _streamCts.Token);
 
             Fps = 0;
             IsStreaming = true;
@@ -167,7 +167,7 @@ namespace SemiAppliaction.Views
             _fpsTimer.Start();
         }
 
-        /// <summary>停止取流：停帧率定时器、取消并等待泵帧退出，再停止相机采集并复位状态。</summary>
+        /// <summary>停止取流：停帧率定时器、取消并等待推帧退出，再停止相机采集并复位状态。</summary>
         private void Stop()
         {
             if (!IsStreaming)
@@ -179,15 +179,15 @@ namespace SemiAppliaction.Views
             _streamCts?.Cancel();
             try
             {
-                _pumpTask?.Wait(TimeSpan.FromSeconds(2));
+                _forwardTask?.Wait(TimeSpan.FromSeconds(2));
             }
             catch (AggregateException)
             {
-                // 泵帧循环内部已记录异常，这里只等它退出。
+                // 推帧循环内部已记录异常，这里只等它退出。
             }
             _streamCts?.Dispose();
             _streamCts = null;
-            _pumpTask = null;
+            _forwardTask = null;
 
             _camera?.StopAcquisition();
             _camera = null;
@@ -222,10 +222,10 @@ namespace SemiAppliaction.Views
 
         #endregion
 
-        #region 泵帧
+        #region 推帧
 
-        /// <summary>泵帧循环：读取相机通道帧并转成图像帧，切回 UI 线程更新显示；取消即正常退出，异常仅记录。</summary>
-        private async Task PumpFramesAsync(Channel<CameraData> channel, CancellationToken ct)
+        /// <summary>推帧循环：读取相机通道帧并转成图像帧，切回 UI 线程更新显示；取消即正常退出，异常仅记录。</summary>
+        private async Task ForwardFramesAsync(Channel<CameraData> channel, CancellationToken ct)
         {
             try
             {
@@ -248,8 +248,8 @@ namespace SemiAppliaction.Views
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "相机测试：泵帧循环异常退出");
-                _dispatcher.Invoke(() => StatusText = "泵帧异常，已停止");
+                Logger.LogError(ex, "相机测试：推帧循环异常退出");
+                _dispatcher.Invoke(() => StatusText = "推帧异常，已停止");
             }
         }
 
@@ -268,10 +268,10 @@ namespace SemiAppliaction.Views
             return true;
         }
 
-        /// <summary>离开页面：立即停止取流，避免后台泵帧空转。</summary>
+        /// <summary>离开页面：立即停止取流，避免后台推帧空转。</summary>
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            // 离开页面即停止取流，避免后台泵帧空转。
+            // 离开页面即停止取流，避免后台推帧空转。
             Stop();
         }
 

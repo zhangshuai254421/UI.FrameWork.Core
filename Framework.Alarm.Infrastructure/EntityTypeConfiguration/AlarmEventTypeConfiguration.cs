@@ -7,7 +7,7 @@ namespace Framework.Alarm.Infrastructure.EntityTypeConfiguration
     /// <summary>
     /// 事件族实体的数据库映射：表 AlarmEvent，TPH 一表收七种事件（判别列 Kind = 类型名，
     /// 与退役的裸 SQLite 实现同口径——Raised/Acknowledged 直接可读，审计友好）。
-    /// 自增影子主键 Id 即落库先后（append-only 本子的书写次序 = 履历次序，查询按它排）；
+    /// 自增影子主键 Id 即落库先后（append-only 历史库的写入次序 = 履历次序，查询按它排）；
     /// 影子列 UtcTicks 承接时间窗过滤（时刻各带各的时区，TEXT 排序会错位，整数列才敢进 WHERE）。
     /// 子类专属列按语义并同名同列（期限并 ShelvedUntil、操作员并 Operator），异类行该列 NULL 落库即空缺；
     /// 派生型必填列（Priority/搁置期限）EF 对 TPH 自动放列可空（显式 IsRequired(false) 不被允许，默认即达意）。
@@ -36,7 +36,7 @@ namespace Framework.Alarm.Infrastructure.EntityTypeConfiguration
                                                                 // 90 天履历无索引即全表扫、成本随履历线性涨
 
             // 判别名 = 类型名（与退役的裸 SQLite 同口径，Raised/Acknowledged 直接可读）；
-            // 映射表是单一真相：判别配置在此消费，查询点名的 CLR 类型→判别名走 KindOf（#18：判别名不出存储接口）
+            // 映射表是单一真相：判别配置在此消费，按类型筛选的 CLR 类型→判别名走 KindOf（#18：判别名不出存储接口）
             var discriminator = builder.HasDiscriminator<string>("Kind");
             foreach (var (type, name) in KindNames)
             {
@@ -46,7 +46,7 @@ namespace Framework.Alarm.Infrastructure.EntityTypeConfiguration
             builder.Property(e => e.At).HasConversion(StorageConverters.DateTimeOffsetO);
         }
 
-        /// <summary>CLR 事件类型 → 判别名，全家族唯一一份：判别配置与查询点名都吃它。</summary>
+        /// <summary>CLR 事件类型 → 判别名，全家族唯一一份：判别配置与按类型筛选都吃它。</summary>
         internal static readonly IReadOnlyDictionary<Type, string> KindNames = new Dictionary<Type, string>
         {
             [typeof(AlarmRaised)] = nameof(AlarmRaised),
@@ -58,7 +58,7 @@ namespace Framework.Alarm.Infrastructure.EntityTypeConfiguration
             [typeof(AlarmUnshelved)] = nameof(AlarmUnshelved),
         };
 
-        /// <summary>查询点名用的映射入口：点名簿外的类型退回（与追加未知事件同口径）。</summary>
+        /// <summary>按类型筛选用的映射入口：映射外的类型退回（与追加未知事件同口径）。</summary>
         internal static string KindOf(Type type) =>
             KindNames.TryGetValue(type, out var name) ? name : throw new NotSupportedException($"未知事件类型：{type.Name}");
 

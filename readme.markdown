@@ -43,7 +43,7 @@
 │  ShellWindow / LoginView / HeaderView / FooterView        │
 │  PrismRegionNavigator                                     │
 ├────────────────────────────┬────────────────────────────┤
-│     SemiControl_Net        │   SemiControl_Shard         │  ← 控件库层
+│     SemiControl_Net        │   SemiControl_Shared         │  ← 控件库层
 │  (自定义 WPF 控件库)        │  (共享项目, 当前未启用)      │
 │  IconButton / Toggle-      │  IconButton / Panel         │
 │  IconButton / BigNum-      │                              │
@@ -61,7 +61,7 @@
 | **应用层** | `UI.FrameWork` (SemiAppliaction) | 业务应用入口、注册业务模块和视图 |
 | **框架核心层** | `UI.FrameWork.Core` | Prism 应用基类、模块化、IoC 工具、Region 导航、Shell/Login 窗口 |
 | **控件库层** | `SemiControl_Net` | 自定义 WPF 控件、附加属性、值转换器、主题资源 |
-| **共享层** | `SemiControl_Shard` | 跨项目共享代码（当前未启用，已被 csproj 注释） |
+| **共享层** | `SemiControl_Shared` | 跨项目共享代码（当前未启用，已被 csproj 注释） |
 | **Demo 层** | `SemiControlDemo_Net` | 控件库独立演示程序 |
 
 ---

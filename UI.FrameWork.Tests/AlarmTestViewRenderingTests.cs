@@ -10,7 +10,7 @@ using Framework.Alarm.UI;
 namespace SemiAppliaction.Views.Tests
 {
     /// <summary>
-    /// 报警测试页渲染联测（两清单一直空问题的排查钉子，第二层）：数据层直通已钉死（AlarmDemoRigTests），
+    /// 报警测试页渲染联测（两清单一直空问题的排查钉子，第二层）：数据层直通已钉死（AlarmDemoTests），
     /// 这一层把 <see cref="AlarmTestView"/> 真身放进 Window 跑完整布局。
     /// 绑定送达没有（ItemsSource）、容器生成没有（ItemContainerGenerator）、异常吞没没有（绑定侦听 + 未捕获钩子），
     /// 一层一个断言，断点在哪一层当场现形。STA 线程手搭（测试项目没有 STA 包）。
@@ -19,7 +19,7 @@ namespace SemiAppliaction.Views.Tests
     {
         /// <summary>真装置直通渲染：引擎升了、VM 接住了、ListView 也得把行渲染出来。</summary>
         [Fact]
-        public void 页面真身_剧本六拍_主列表渲染三行()
+        public void 页面真身_演示六步_主列表渲染三行()
         {
             var report = RunOnSta(() =>
             {
@@ -41,14 +41,14 @@ namespace SemiAppliaction.Views.Tests
                     Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(uri, UriKind.RelativeOrAbsolute) });
                 }
 
-                // 数据层先行：与 AlarmDemoRigTests 同款直通，先证明 MainRows 里有货
-                var rig = new AlarmDemoRig(new InMemoryAlarmDefinitionStore());
+                // 数据层先行：与 AlarmDemoTests 同款直通，先证明 MainRows 里有货
+                var demo = new AlarmDemo(new InMemoryAlarmDefinitionStore());
                 var ui = new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher);
-                var list = new AlarmListViewModel(rig.Engine, rig.Store, ui);
+                var list = new AlarmListViewModel(demo.Engine, demo.Store, ui);
                 var dc = new PageStub(list);
                 for (var beat = 0; beat < 6; beat++)
                 {
-                    rig.PumpNext();
+                    demo.AdvanceStep();
                     list.RefreshFilters();
                 }
 
@@ -78,7 +78,7 @@ namespace SemiAppliaction.Views.Tests
                     },
                 };
                 win.Show();
-                Pump(5); // 布局 + 渲染队列：容器生成发生在 ItemsPresenter 的 Measure 里
+                RunLayoutFrames(5); // 布局 + 渲染队列：容器生成发生在 ItemsPresenter 的 Measure 里
 
                 var sb = new System.Text.StringBuilder();
                 sb.AppendLine($"MainRows.Count={list.MainRows.Count}");
@@ -159,12 +159,12 @@ namespace SemiAppliaction.Views.Tests
             });
 
             // 钉子：数据层有货 + 绑定送达 + 容器生成 + 行内见位号文本，四层全绿才算渲染通
-            // （零间隔连打六拍只有憋压即时档升，升温的 2 秒延时靠采样时间戳，连打永远等不满）
+            // （零间隔连推六步只有憋压即时档升，升温的 2 秒延时靠采样时间戳，连打永远等不满）
             Assert.Contains("MainRows.Count=1", report);
             Assert.Contains("ItemsSource=ObservableCollection`1 count=1", report);
             Assert.DoesNotContain("ListView ItemsSource=null", report);
             Assert.Contains("容器[0]=ListViewItem", report);
-            Assert.Contains(AlarmDemoRig.PressTag, report);
+            Assert.Contains(AlarmDemo.PressTag, report);
             Assert.DoesNotContain("未捕获异常", report);
         }
 
@@ -227,8 +227,8 @@ namespace SemiAppliaction.Views.Tests
             return report ?? string.Empty;
         }
 
-        /// <summary>泵几帧：后台优先级空转一帧，布局/渲染队列随之走完。</summary>
-        private static void Pump(int frames)
+        /// <summary>空转几帧：后台优先级空转一帧，布局/渲染队列随之走完。</summary>
+        private static void RunLayoutFrames(int frames)
         {
             var dispatcher = Dispatcher.CurrentDispatcher;
             for (var i = 0; i < frames; i++)

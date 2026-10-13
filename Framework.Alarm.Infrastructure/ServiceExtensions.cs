@@ -19,7 +19,7 @@ namespace Framework.Alarm.Infrastructure
         {
             services.AddSingleton(_ =>
                 new DbContextOptionsBuilder<DataContext>()
-                    .UseSqlite(AppGlobals.AlarmDbFliePath)
+                    .UseSqlite(AppGlobals.AlarmDbFilePath)
                     .Options);
             services.AddSingleton<IAlarmDefinitionStore, AlarmDefinitionStore>();
             services.AddSingleton<IEventStore, EventStore>();

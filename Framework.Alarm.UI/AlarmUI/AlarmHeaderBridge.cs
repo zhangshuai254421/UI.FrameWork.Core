@@ -8,8 +8,8 @@ namespace Framework.Alarm.UI
     /// 顶栏桥：订阅报警事件流，把活跃快照的汇总状态搬进页头（规则见词汇表「顶栏汇总状态」）。
     /// 壳（UI.FrameWork.Core）不认识报警，家族认识壳的中性顶栏模型（HeaderAlarmLevel 三件套）——
     /// 翻译活在家族里，接线随模块装即通（AlarmUIModule.OnInitialized），宿主不用写一行报警代码。
-    /// 事件在引擎线程上到达，读快照与写页头都编队回 UI 线程（摘要 §9.2 的同一规矩：引擎锁内同步播报，
-    /// 订阅方自己编队）。<see cref="Connect"/> 补一次初始快照，模块装载时页头不空窗。
+    /// 事件在引擎线程上到达，读快照与写页头都投递回 UI 线程（摘要 §9.2 的同一规矩：引擎锁内同步播报，
+    /// 订阅方自己投递）。<see cref="Connect"/> 补一次初始快照，模块装载时页头不空窗。
     /// </summary>
     public sealed class AlarmHeaderBridge : IDisposable
     {
@@ -19,7 +19,7 @@ namespace Framework.Alarm.UI
         /// <summary>页头 VM：三件套的落点（容器单例，与视图绑定同实例）。</summary>
         private readonly HeaderViewModel _header;
 
-        /// <summary>UI 上下文：快照重算与页头写入都编队回这里。</summary>
+        /// <summary>UI 上下文：快照重算与页头写入都投递回这里。</summary>
         private readonly SynchronizationContext _ui;
 
         /// <summary>读取时刻：剔除搁置到期成员用（墙钟）。</summary>

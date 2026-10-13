@@ -23,7 +23,7 @@ namespace UI.FrameWork.Core.Main
         private readonly INavigationService _navigationService;
         /// <summary>页头标题，初始为默认占位文本。</summary>
         private string _title = "Default Title";
-        /// <summary>顶栏报警级别（默认无活账）。</summary>
+        /// <summary>顶栏报警级别（默认无未闭环报警）。</summary>
         private HeaderAlarmLevel _alarmLevel = HeaderAlarmLevel.Normal;
         /// <summary>顶栏报警计数：未搁置的活跃报警行数。</summary>
         private int _alarmCount;

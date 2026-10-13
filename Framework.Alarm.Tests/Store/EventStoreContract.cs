@@ -71,7 +71,7 @@ namespace Framework.Alarm.Tests
 
         /// <summary>搁置动作与带期限事件都留痕（摘要 §8.10、哲学 §7 全量留痕【强制】）：
         /// 搁置（带期限和操作员）、搁置中触发的带期限升级、解除。三条原样读回，期限一个不丢。</summary>
-        public static void 搁置事件与带标升级_往返保真(IEventStore store)
+        public static void 搁置事件与带期限升级_往返保真(IEventStore store)
         {
             var shelved = new AlarmShelved(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(1), HysteresisEvaluatorTests.T(31), "李四");
             var raised = new AlarmRaised(AlarmEngineTests.HEAT01, HysteresisEvaluatorTests.T(2), AlarmPriority.High, ShelvedUntil: HysteresisEvaluatorTests.T(31));
@@ -138,7 +138,7 @@ namespace Framework.Alarm.Tests
 
         // ══════════════ #18：种类过滤（回放按类型筛，不把整窗数据搬进内存） ══════════════
 
-        /// <summary>种类过滤（#18）：混合存放的事件里按类型点名，只返回点名的，写入先后照旧。
+        /// <summary>种类过滤（#18）：混合存放的事件里按类型筛选，只返回指定的，写入先后照旧。
         /// 回放扫描（#16）靠它在库里筛，避免把百万行全部搬进内存。</summary>
         public static void 查询_按种类过滤(IEventStore store)
         {
@@ -178,7 +178,7 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>名单外的类型直接抛异常：宁可失败得响亮，也不悄悄返回一份空结果（与 Append 收到未知事件同口径）。</summary>
-        public static void 查询_未知种类_当庭退回(IEventStore store)
+        public static void 查询_未知种类_校验即抛(IEventStore store)
         {
             Assert.Throws<NotSupportedException>(
                 () => store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(10), kinds: [typeof(string)]));

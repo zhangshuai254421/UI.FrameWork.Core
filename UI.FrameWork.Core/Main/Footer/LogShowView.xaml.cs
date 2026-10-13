@@ -163,7 +163,7 @@ public partial class LogShowView : UserControl
                          .Enrich.WithThreadId()                // 添加 ThreadId
                          .Enrich.WithEnvironmentUserName()     // 添加当前用户名
                         .MinimumLevel.Debug()
-                        .WriteTo.SQLite(AppGlobals.LogDbFilePathNoDebug, tableName: "SerilogHistory")  // 指定数据库文件路径
+                        .WriteTo.SQLite(AppGlobals.LogDbRelativePath, tableName: "SerilogHistory")  // 指定数据库文件路径
                         .WriteTo.File(
                             "logs/log-.txt",
                             rollingInterval: RollingInterval.Day,   // 按天分文件

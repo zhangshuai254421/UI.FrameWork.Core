@@ -47,7 +47,7 @@ namespace Framework.Alarm.Domain
         string PhilosophyVersion)
     {
         /// <summary>
-        /// 入库前校验：档案进 MADB 前的法定检查（哲学 §6.1「填不出的候选当庭退回」），存储增/改前调用。
+        /// 入库前校验：档案进 MADB 前的法定检查（哲学 §6.1「填不出的候选直接拒绝入库」），存储增/改前调用。
         /// 操作动作必填；触发延时必须小于 MTR（铁律一，哲学 §6.2——响应窗口从越限起算，
         /// 延时 ≥ MTR 等于把行动窗口吃光，报警响时已经来不及响应了）。
         /// 组态参数的数学合法性：限值和死区必须是有限数（NaN/Infinity 会让滤波器永不报警或乱报，
@@ -59,7 +59,7 @@ namespace Framework.Alarm.Domain
         {
             if (string.IsNullOrWhiteSpace(OperatorAction))
             {
-                throw new ArgumentException("操作动作必填：填不出的候选当庭退回（哲学 §6.1）", nameof(OperatorAction));
+                throw new ArgumentException("操作动作必填：填不出的候选直接拒绝入库（哲学 §6.1）", nameof(OperatorAction));
             }
 
             if (OnDelay >= MaxResponseTime)

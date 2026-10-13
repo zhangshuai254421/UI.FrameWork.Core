@@ -30,16 +30,16 @@ namespace Framework.Alarm.Tests
         public void 增_重复位号_被拒() => AlarmDefinitionStoreContract.增_重复位号_被拒(NewStore());
 
         [Fact]
-        public void 增_操作动作缺_当庭退回() => AlarmDefinitionStoreContract.增_操作动作缺_当庭退回(NewStore());
+        public void 增_操作动作缺_校验即抛() => AlarmDefinitionStoreContract.增_操作动作缺_校验即抛(NewStore());
 
         [Fact]
         public void 增_触发延时逾MTR_被拒() => AlarmDefinitionStoreContract.增_触发延时逾MTR_被拒(NewStore());
 
         [Fact]
-        public void 改_操作动作缺_当庭退回() => AlarmDefinitionStoreContract.改_操作动作缺_当庭退回(NewStore());
+        public void 改_操作动作缺_校验即抛() => AlarmDefinitionStoreContract.改_操作动作缺_校验即抛(NewStore());
 
         [Fact]
-        public void 改_写失败_残留不毒化后续操作()
+        public void 改_写失败_残留不影响后续操作()
         {
             var options = EfTestDb.MigratedOptions();
             var store = new AlarmDefinitionStore(options);
@@ -69,7 +69,7 @@ namespace Framework.Alarm.Tests
         }
 
         [Fact]
-        public void 删_写失败_残留不毒化后续操作()
+        public void 删_写失败_残留不影响后续操作()
         {
             var options = EfTestDb.MigratedOptions();
             var store = new AlarmDefinitionStore(options);

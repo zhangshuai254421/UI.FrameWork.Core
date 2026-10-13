@@ -5,13 +5,13 @@ using Framework.Alarm.UI;
 namespace SemiAppliaction.Views.Tests
 {
     /// <summary>
-    /// 演示装置直通联测：真引擎（AlarmDemoRig）到真 AlarmListViewModel，中间不经任何替身。
+    /// 演示装置直通联测：真引擎（AlarmDemo）到真 AlarmListViewModel，中间不经任何替身。
     /// 单层契约测试各自都绿不等于接线通了（页面「两清单一直空」问题的排查钉子）：
     /// 引擎升没升（Active）、呈现接没接住（MainRows），一层一个断言，断点在哪一层当场现形。
     /// #22 起档案和事件史走注入的存储：测试传内存替身（不碰宿主真库），
     /// 真库链路由 Framework.Alarm.Tests 的契约测试与建库入口联测钉住。
     /// </summary>
-    public class AlarmDemoRigTests
+    public class AlarmDemoTests
     {
         /// <summary>事件史替身：只记录，供「接线即落库」断言。它不是契约替身（契约两套实现共测的
         /// InMemoryEventStore 住在 Framework.Alarm.Tests，本工程够不着也无需同一份）。</summary>
@@ -34,20 +34,20 @@ namespace SemiAppliaction.Views.Tests
         [Fact]
         public void 真装置直通_剧本五拍_引擎升了主列表接住()
         {
-            var rig = new AlarmDemoRig(new InMemoryAlarmDefinitionStore());
-            var vm = new AlarmListViewModel(rig.Engine, rig.Store, new SyncContext());
+            var demo = new AlarmDemo(new InMemoryAlarmDefinitionStore());
+            var vm = new AlarmListViewModel(demo.Engine, demo.Store, new SyncContext());
 
             for (var beat = 0; beat < 5; beat++)
             {
-                rig.PumpNext();
+                demo.AdvanceStep();
                 vm.RefreshFilters();
             }
 
-            var active = Assert.Single(rig.Engine.Active);       // 引擎层：憋压报警已升（PRESS02 即时档）
-            Assert.Equal(AlarmDemoRig.PressTag, active.Tag);
+            var active = Assert.Single(demo.Engine.Active);       // 引擎层：憋压报警已升（PRESS02 即时档）
+            Assert.Equal(AlarmDemo.PressTag, active.Tag);
 
             var row = Assert.Single(vm.MainRows);                // 呈现层：同一行直译进主列表
-            Assert.Equal(AlarmDemoRig.PressTag, row.Tag);
+            Assert.Equal(AlarmDemo.PressTag, row.Tag);
         }
 
         /// <summary>档案就位幂等（#22）：同一档案库初始化两回，缺了才补，不撞位号不重播。</summary>
@@ -55,53 +55,53 @@ namespace SemiAppliaction.Views.Tests
         public void 二度通电_档案缺了才补_不炸不重复()
         {
             var store = new InMemoryAlarmDefinitionStore();
-            _ = new AlarmDemoRig(store);
-            _ = new AlarmDemoRig(store); // 第二台装置同一档案库：档案已有的位号不再补证
+            _ = new AlarmDemo(store);
+            _ = new AlarmDemo(store); // 第二台装置同一档案库：档案已有的位号不再补证
 
             Assert.Equal(3, store.LoadAll().Count);
         }
 
         /// <summary>接线即落库（#22）：接了事件史，演示的每一步全量写进库，五步里憋压即时档升级的那一次，库里就有。
-        /// 写库走后台队列（#31），断言前先让装置把存量写完再对账。</summary>
+        /// 写库走后台队列（#31），断言前先让装置把存量写完再核对。</summary>
         [Fact]
-        public void 接通事件库_剧本五拍_事件全量落本子()
+        public void 接通事件库_演示五步_事件全量进历史库()
         {
             var events = new RecordingEventStore();
-            var rig = new AlarmDemoRig(new InMemoryAlarmDefinitionStore(), events);
-            var vm = new AlarmListViewModel(rig.Engine, rig.Store, new SyncContext());
+            var demo = new AlarmDemo(new InMemoryAlarmDefinitionStore(), events);
+            var vm = new AlarmListViewModel(demo.Engine, demo.Store, new SyncContext());
 
             for (var beat = 0; beat < 5; beat++)
             {
-                rig.PumpNext();
+                demo.AdvanceStep();
                 vm.RefreshFilters();
             }
 
-            rig.History?.Dispose();                              // 收尾：等后台写者把存量写完再断言（#31）
+            demo.History?.Dispose();                              // 收尾：等后台写者把存量写完再断言（#31）
 
             var record = Assert.Single(events.Events);           // 引擎升几次，库记几笔：一笔不缺
             var raised = Assert.IsType<AlarmRaised>(record);
-            Assert.Equal(AlarmDemoRig.PressTag, raised.Tag);     // 憋压即时档（其余两位延时未满）
+            Assert.Equal(AlarmDemo.PressTag, raised.Tag);     // 憋压即时档（其余两位延时未满）
         }
 
         /// <summary>装置收尾先写库（#31 评审）：Dispose 先把队列存量写完、再退订采集层。
         /// 收尾那一刻队列里的尾巴要进库，宿主正常关屏不许丢数据（崩溃窗口才是 ADR-0011 认可的丢失口）。</summary>
         [Fact]
-        public void 装置收口_先冲账再退订_本子不欠账()
+        public void 装置收尾_先写完存量再退订_历史库不丢事件()
         {
             var events = new RecordingEventStore();
-            var rig = new AlarmDemoRig(new InMemoryAlarmDefinitionStore(), events);
-            var vm = new AlarmListViewModel(rig.Engine, rig.Store, new SyncContext());
+            var demo = new AlarmDemo(new InMemoryAlarmDefinitionStore(), events);
+            var vm = new AlarmListViewModel(demo.Engine, demo.Store, new SyncContext());
 
             for (var beat = 0; beat < 5; beat++)
             {
-                rig.PumpNext();
+                demo.AdvanceStep();
                 vm.RefreshFilters();
             }
 
-            rig.Dispose();                                       // 收尾：先写完存量，再退订
+            demo.Dispose();                                       // 收尾：先写完存量，再退订
 
             var record = Assert.Single(events.Events);           // 队列尾巴进了库：一笔不缺
-            Assert.Equal(AlarmDemoRig.PressTag, Assert.IsType<AlarmRaised>(record).Tag);
+            Assert.Equal(AlarmDemo.PressTag, Assert.IsType<AlarmRaised>(record).Tag);
         }
     }
 }

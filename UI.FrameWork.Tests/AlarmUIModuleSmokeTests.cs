@@ -64,7 +64,7 @@ namespace UI.FrameWork.Tests
 
         /// <summary>模块装载全流程（RegisterTypes → OnInitialized）不炸，页头报警按钮亮出。</summary>
         [Fact]
-        public void ModuleLoad_connects_bridge_and_lights_header()
+        public void 模块装载_顶栏桥接线_按钮亮出()
         {
             var (registry, provider) = BuildHostLikeContainer();
 

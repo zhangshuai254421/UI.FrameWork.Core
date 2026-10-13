@@ -26,7 +26,7 @@ namespace Framework.Alarm.Tests
         public void 查询_两种闭环_判别分立() => EventStoreContract.查询_两种闭环_判别分立(NewStore());
 
         [Fact]
-        public void 搁置事件与带标升级_往返保真() => EventStoreContract.搁置事件与带标升级_往返保真(NewStore());
+        public void 搁置事件与带期限升级_往返保真() => EventStoreContract.搁置事件与带期限升级_往返保真(NewStore());
 
         [Fact]
         public void 查询_窗口外不可见() => EventStoreContract.查询_窗口外不可见(NewStore());
@@ -47,7 +47,7 @@ namespace Framework.Alarm.Tests
         public void 查询_空种类_全类照旧() => EventStoreContract.查询_空种类_全类照旧(NewStore());
 
         [Fact]
-        public void 查询_未知种类_当庭退回() => EventStoreContract.查询_未知种类_当庭退回(NewStore());
+        public void 查询_未知种类_校验即抛() => EventStoreContract.查询_未知种类_校验即抛(NewStore());
 
         [Fact]
         public void 只进不改_重复追加_两条都留() => EventStoreContract.只进不改_重复追加_两条都留(NewStore());
@@ -57,11 +57,11 @@ namespace Framework.Alarm.Tests
 
         /// <summary>
         /// 端到端联测，验收「接线后每条事件都在库」，走真存储：引擎 → EventHistory → EF 库 → 查询。
-        /// 六拍剧本的五条事件全部要能查到。:memory: 库在连接关闭后就没了，落盘持久性是宿主选库文件的事，
+        /// 六步剧本的五条事件全部要能查到。:memory: 库在连接关闭后就没了，落盘持久性是宿主选库文件的事，
         /// 本测要钉住的是「真库也吃得下引擎的事件流」。写库走后台队列（#31），断言前先等它写完。
         /// </summary>
         [Fact]
-        public void 端到端_引擎流经接线进真库_六拍全在()
+        public void 端到端_引擎流经接线进真库_六步全在()
         {
             var store = NewStore();
 
@@ -70,11 +70,11 @@ namespace Framework.Alarm.Tests
             var engine = new AlarmEngine(source, AlarmEngineTests.StoreWithSample(), clock);
             var history = new EventHistory(store, engine);
 
-            SixBeatScript.Run(source, engine, clock);
+            SixStepScript.Run(source, engine, clock);
             history.Dispose();                               // 收尾：等后台写者把存量写完再断言（#31）
 
             Assert.Equal(
-                SixBeatScript.ExpectedEventTypes,
+                SixStepScript.ExpectedEventTypes,
                 store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(13)).Select(e => e.GetType().Name));
         }
 

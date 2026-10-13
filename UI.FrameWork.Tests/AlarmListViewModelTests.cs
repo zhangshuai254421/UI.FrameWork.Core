@@ -8,7 +8,7 @@ namespace SemiAppliaction.Views.Tests
     /// <summary>
     /// AlarmListViewModel 契约测试（摘要 §9.3，哲学 §3.2 呈现纪律【强制】）：Apply 里零判定，
     /// 事件到集合变更是直译（Raised→Add、Acknowledged/AutoReturned→UpdateState、Closed→Remove、
-    /// Shelved/Unshelved→UpdateMark）；排序按档案 Priority；主列表/搁置清单就是引擎库 AlarmFilters 的两个视图。
+    /// Shelved/Unshelved→UpdateShelvedUntil）；排序按档案 Priority；主列表/搁置清单就是引擎库 AlarmFilters 的两个视图。
     /// 测试从接缝进去：FakeFeed、同步 SynchronizationContext、注入 now，不依赖真引擎、真线程、真睡等待（#15 验收）。
     /// </summary>
     public class AlarmListViewModelTests
@@ -165,7 +165,7 @@ namespace SemiAppliaction.Views.Tests
 
         /// <summary>Raised 带期限（搁置中触发）：进搁置清单、不进主列表，UI 按期限过滤（摘要 §8.10）。</summary>
         [Fact]
-        public void 升级_带标_进搁置清单不进主列表()
+        public void 升级_带期限_进搁置清单不进主列表()
         {
             var (vm, feed, _) = NewVm();
 
@@ -292,7 +292,7 @@ namespace SemiAppliaction.Views.Tests
         /// （摘要 §8.10「时钟一过标自然失效」在呈现侧的兑现，规则来自引擎库 AlarmFilters，VM 无自定过滤）。
         /// </summary>
         [Fact]
-        public void 到期_拨表刷新_自动回主列表()
+        public void 到期_时钟推进刷新_自动回主列表()
         {
             DateTimeOffset now = T(0);
             var (vm, feed, _) = NewVm(now: () => now);
@@ -324,7 +324,7 @@ namespace SemiAppliaction.Views.Tests
                 vm.MainRows.Select(r => r.Tag));
         }
 
-        /// <summary>还原：从 feed.Active 快照重建两清单（进页对账），带期限成员进搁置清单，其余进主列表。</summary>
+        /// <summary>还原：从 feed.Active 快照重建两清单（进页核对），带期限成员进搁置清单，其余进主列表。</summary>
         [Fact]
         public void 还原_从活跃快照重建两清单()
         {
@@ -345,7 +345,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.Equal(T(35), shelved.ShelvedUntil);
         }
 
-        /// <summary>回页对账重锚选中（#25）：Reload 重建行登记后，开着的详情弹窗认领新实例，
+        /// <summary>回页核对重锚选中（#25）：Reload 重建行登记后，开着的详情弹窗认领新实例，
         /// 不绑死被遗弃的旧行（引擎后续事件刷的是新实例，弹窗绑旧行就冻死在旧状态）。</summary>
         [Fact]
         public void 还原_重锚选中行_详情跟随新实例()
@@ -364,7 +364,7 @@ namespace SemiAppliaction.Views.Tests
             Assert.NotNull(vm.Detail);                                      // 弹窗开着：档案重取不脱钩
         }
 
-        /// <summary>回页对账时位号已不在活跃快照：开着的详情收起，不留悬空选中与挡屏弹窗（#25）。</summary>
+        /// <summary>回页核对时位号已不在活跃快照：开着的详情收起，不留悬空选中与挡屏弹窗（#25）。</summary>
         [Fact]
         public void 还原_选中位号已消失_收起弹窗()
         {
@@ -372,21 +372,21 @@ namespace SemiAppliaction.Views.Tests
             feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
             vm.ShowDetailCommand.Execute(vm.MainRows[0]);
 
-            feed.Active = [];                                               // 对账快照里没了（已闭环/被摘）
+            feed.Active = [];                                               // 核对快照里没了（已闭环/被摘）
             vm.Reload();
 
             Assert.Null(vm.SelectedRow);
             Assert.Null(vm.Detail);
         }
 
-        /// <summary>回页对账不复活旧行（#25 评审）：集合里已有事件喂出的同位号行时，Reload 整体重建
-        /// 必须连旧实例一并清走。Refill 按位号对账只删「快照里没有的」，旧实例不清理就出现同位号双行，
+        /// <summary>回页核对不留旧行（#25 评审）：集合里已有事件喂出的同位号行时，Reload 整体重建
+        /// 必须连旧实例一并清走。Refill 按位号核对只删「快照里没有的」，旧实例不清理就出现同位号双行，
         /// 旧行还被 Apply 遗弃、冻死在旧状态。</summary>
         [Fact]
-        public void 还原_活页再对账_同位号不双行()
+        public void 还原_已有行再核对_同位号不双行()
         {
             var (vm, feed, _) = NewVm();
-            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));  // 事件已喂出一行（活页）
+            feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));  // 事件已喂出一行（旧实例）
             var stale = vm.MainRows[0];
 
             feed.Active = [new ActiveAlarm(HeatTag, AlarmState.Unacknowledged, AlarmPriority.High, T(2))];
@@ -464,23 +464,23 @@ namespace SemiAppliaction.Views.Tests
         }
 
         /// <summary>慢档不出手（#31 读侧）：取档在后台走，选中已换行时回来的旧档不得闪进弹窗。
-        /// 凭代数核对（同泵线规矩）：只有最新一代的取档结果才能上屏，旧代作废。</summary>
+        /// 凭代数核对（与演示循环同一规矩）：只有最新一代的取档结果才能上屏，旧代作废。</summary>
         [Fact]
         public void 详情_慢档未归_换行选中_旧档不出手()
         {
-            var pending = new List<Action>();                            // 手动泵：取档下单压着不放
+            var pending = new List<Action>();                            // 手动放行：取档请求压着不放
             var feed = new FakeFeed();
             var store = new FakeStore();
             var vm = new AlarmListViewModel(feed, store, new SyncContext(), runOffUiThread: a => pending.Add(a));
             feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
             feed.Emit(new AlarmRaised(PumpTag, T(3), AlarmPriority.Medium));
 
-            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 选中热板：取档下单（档未归）
-            vm.ShowDetailCommand.Execute(vm.MainRows[1]);                // 换选泵：又一单
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 选中热板：发起取档（档未归）
+            vm.ShowDetailCommand.Execute(vm.MainRows[1]);                // 换选泵行：又发起一次取档
             Assert.Null(vm.Detail);                                      // 档未归：弹窗空着，不许拿空当有档案
 
             pending[0]();                                                // 旧档回来：代数已换代
-            Assert.Null(vm.Detail);                                      // 不出手：库慢也不闪旧账
+            Assert.Null(vm.Detail);                                      // 不出手：库慢也不闪旧档
 
             pending[1]();                                                // 新档回来：代数对上
             Assert.NotNull(vm.Detail);
@@ -511,7 +511,7 @@ namespace SemiAppliaction.Views.Tests
         }
 
         /// <summary>取档失败不炸屏（#31 读侧）：库暂时进不去（外部锁库的替身）时，故障停在取档处，
-        /// 不许炸上 UI 线程；弹窗保持收起，等下一次点行重新下单。</summary>
+        /// 不许炸上 UI 线程；弹窗保持收起，等下一次点行重新发起。</summary>
         [Fact]
         public void 详情_取档炸了_不炸屏()
         {
@@ -524,12 +524,12 @@ namespace SemiAppliaction.Views.Tests
             Assert.Null(vm.Detail);                                      // 档没取到：弹窗保持收起
         }
 
-        /// <summary>取档没归，重按同一行即重新下单（#31 评审）：上次取档失败弹窗空着，库缓过来后
-        /// 操作员再点同一行。选中引用没变也得重新下单，不许把「换个行再换回来」当唯一出路。</summary>
+        /// <summary>取档没归，重按同一行即重新发起（#31 评审）：上次取档失败弹窗空着，库缓过来后
+        /// 操作员再点同一行。选中引用没变也得重新发起，不许把「换个行再换回来」当唯一出路。</summary>
         [Fact]
-        public void 详情_取档炸了_重按同一行_重新下单()
+        public void 详情_取档炸了_重按同一行_重新发起()
         {
-            var pending = new List<Action>();                            // 手动泵：下单压着不放
+            var pending = new List<Action>();                            // 手动放行：取档请求压着不放
             var feed = new FakeFeed();
             var store = new FakeStore();
             var vm = new AlarmListViewModel(feed, store, new SyncContext(), runOffUiThread: a => pending.Add(a));
@@ -544,7 +544,7 @@ namespace SemiAppliaction.Views.Tests
             vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 重按同一行（引用没变）
             pending[1]();                                                // 第二单真下了、也真归位
 
-            Assert.NotNull(vm.Detail);                                   // 重新下单兑现
+            Assert.NotNull(vm.Detail);                                   // 重新发起兑现
             Assert.Equal(HeatTag, vm.Detail?.Tag);
         }
 
@@ -558,7 +558,7 @@ namespace SemiAppliaction.Views.Tests
             var vm = new AlarmListViewModel(feed, store, new SyncContext(), runOffUiThread: a => pending.Add(a));
             feed.Emit(new AlarmRaised(HeatTag, T(2), AlarmPriority.High));
 
-            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 下单（档未归）
+            vm.ShowDetailCommand.Execute(vm.MainRows[0]);                // 发起取档（档未归）
             vm.Dispose();                                                // 收尾：代数换代
             pending[0]();                                                // 迟到的档案
 

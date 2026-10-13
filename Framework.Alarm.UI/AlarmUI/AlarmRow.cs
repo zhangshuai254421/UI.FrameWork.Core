@@ -58,7 +58,7 @@ namespace Framework.Alarm.UI
         public void SetState(AlarmState state) => State = state;
 
         /// <summary>搁置事件的原位修正（Shelved 带新期限 / Unshelved 传 null 表示取消）。</summary>
-        public void SetMark(DateTimeOffset? shelvedUntil) => ShelvedUntil = shelvedUntil;
+        public void SetShelvedUntil(DateTimeOffset? shelvedUntil) => ShelvedUntil = shelvedUntil;
 
         /// <summary>升级事件的原位修正（首次升级造新行，RTN 再激活走这里）：状态回未确认、
         /// 起点和搁置期限照事件刷新——行实例不换（列表不闪，选中与详情弹窗不脱钩）。</summary>

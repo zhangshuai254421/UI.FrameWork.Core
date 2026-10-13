@@ -27,7 +27,7 @@ namespace Recipe.Infrastructure
         public DataContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-            var connectionString = AppGlobals.RecipeDbFliePath;
+            var connectionString = AppGlobals.RecipeDbFilePath;
 
             // 2. 根据你使用的数据库提供程序配置 (此处以 SQL Server 为例)
             optionsBuilder.UseSqlite(connectionString);
@@ -65,7 +65,7 @@ namespace Recipe.Infrastructure
             // 仅当未显式传入选项（如测试传入内存库）时才落到磁盘库。
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlite(AppGlobals.RecipeDbFliePath);
+                optionsBuilder.UseSqlite(AppGlobals.RecipeDbFilePath);
             }
 
             base.OnConfiguring(optionsBuilder);

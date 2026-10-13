@@ -32,7 +32,7 @@ namespace Framework.Alarm.Tests
         /// 库里恰好五条、先后不乱、内容无损——两个分支（确认闭环/没人看见自行恢复）的每条事件都有记录。
         /// </summary>
         [Fact]
-        public void 接线_六拍剧本_每一拍在库()
+        public void 接线_六步剧本_每一步在库()
         {
             var source = new FakeConditionSource();
             var clock = new FakeClock(HysteresisEvaluatorTests.T(0));
@@ -40,11 +40,11 @@ namespace Framework.Alarm.Tests
             var store = new InMemoryEventStore();
             var history = new EventHistory(store, engine);
 
-            SixBeatScript.Run(source, engine, clock);
-            history.Dispose();                              // 写完存量：库的顺序就是事件顺序，写完再对账
+            SixStepScript.Run(source, engine, clock);
+            history.Dispose();                              // 写完存量：库的顺序就是事件顺序，写完再核对
 
             var history6 = store.Query(HysteresisEvaluatorTests.T(0), HysteresisEvaluatorTests.T(13));
-            Assert.Equal(SixBeatScript.ExpectedEventTypes, history6.Select(e => e.GetType().Name)); // 每条在库：记录完整，两个分支分开
+            Assert.Equal(SixStepScript.ExpectedEventTypes, history6.Select(e => e.GetType().Name)); // 每条在库：记录完整，两个分支分开
 
             var first = Assert.IsType<AlarmRaised>(history6[0]);
             Assert.Equal(HysteresisEvaluatorTests.T(2), first.At);       // 条件驱动：带事实时间戳
@@ -55,9 +55,9 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>引擎静默，库里也干净（不发事件也是正式输出，§11 警示 19）：无档案位号、Normal 时确认、
-        /// 重复确认——历史库里一条假事件都没有；KPI 统计不能被非法时序的幽灵事件污染。</summary>
+        /// 重复确认——历史库里一条假事件都没有；KPI 统计不能被非法时序的假事件污染。</summary>
         [Fact]
-        public void 接线_静默拍_库里无假事件()
+        public void 接线_静默步_库里无假事件()
         {
             var source = new FakeConditionSource();
             var engine = new AlarmEngine(source, AlarmEngineTests.StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
@@ -82,7 +82,7 @@ namespace Framework.Alarm.Tests
         /// 引擎产事件的线程照常走完——落库在后台写者手里，busy 等待不再传回引擎关键区冻 UI；
         /// 解锁写完存量后那条事件仍在库里，一条不缺。</summary>
         [Fact]
-        public async Task 库被锁住_事件流不等落库_冲账后进本子()
+        public async Task 库被锁住_事件流不等落库_解锁后写进历史库()
         {
             var source = new FakeConditionSource();
             var engine = new AlarmEngine(source, AlarmEngineTests.StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));
@@ -117,7 +117,7 @@ namespace Framework.Alarm.Tests
         /// 后续两条只有一条能进队——满了再来的新事件出局，队里已在的旧事件活着；放行写完后
         /// 库里头两条俱在、次序不乱、绝没有第三条——库长时间进不去时，先发生的事件优先存活。</summary>
         [Fact]
-        public void 队列满_丢新保旧_本子头上不缺页()
+        public void 队列满_丢新保旧_历史库不缺号()
         {
             var store = new BlockedEventStore();
             var feed = new FakeFeed();
@@ -136,10 +136,10 @@ namespace Framework.Alarm.Tests
                 store.Landed.Select(e => e.At));                         // 头两条俱在、次序不乱
         }
 
-        /// <summary>落库失败按间隔重试到成功（#31）：前两次失败（busy 超时的替身），后台写者等一拍再试——
+        /// <summary>落库失败按间隔重试到成功（#31）：前两次失败（busy 超时的替身），后台写者等一个间隔再试——
         /// 等到写成功再收工：那条事件落库一次且只一次，失败的尝试不留假记录；顺序不跳位。</summary>
         [Fact]
-        public void 落库失败_重试到成功_不重复不缺账()
+        public void 落库失败_重试到成功_不重复不丢事件()
         {
             var store = new FlakyEventStore(failures: 2);
             var feed = new FakeFeed();
@@ -190,7 +190,7 @@ namespace Framework.Alarm.Tests
         /// <summary>关闭后不再接收：<see cref="EventHistory.Dispose"/> 退订馈送——关闭之后的事件
         /// 不再进队列（宿主关闭后引擎万一还有尾事件，也不写入）。</summary>
         [Fact]
-        public void 收工后_不再进水()
+        public void 收工后_不再接收事件()
         {
             var store = new InMemoryEventStore();
             var feed = new FakeFeed();

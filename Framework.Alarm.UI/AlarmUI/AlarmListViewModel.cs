@@ -9,16 +9,16 @@ namespace Framework.Alarm.UI
     /// <summary>
     /// 报警列表 ViewModel（摘要 §9.3，哲学 §3.2 呈现纪律【强制】）：把引擎事件直接翻译成集合变更，
     /// Apply 里零判定——Raised → Upsert、Acknowledged/AutoReturned → UpdateState、Closed → Remove、
-    /// Shelved/Unshelved → UpdateMark。「RTN 留在列表、Closed 移出、按期限过滤」这些规矩都是引擎定的，
+    /// Shelved/Unshelved → UpdateShelvedUntil。「RTN 留在列表、Closed 移出、按期限过滤」这些规矩都是引擎定的，
     /// UI 照单全收；排序按档案 Priority（高优先级永远在顶），过滤调用引擎库的 <see cref="AlarmFilters"/>。
-    /// 跨线程编队（摘要 §9.2 选型定案：SynchronizationContext.Post）：引擎在通讯线程发事件，
+    /// 跨线程投递（摘要 §9.2 选型定案：SynchronizationContext.Post）：引擎在通讯线程发事件，
     /// 本类把每条事件 Post 到注入的上下文再翻译；测试注入同步上下文即同步执行（不依赖真线程）。
     /// 只认 <see cref="IAlarmFeed"/> 接口——测试造一个假 feed 就能跑，不依赖真引擎。
-    /// 行实例终生制：事件只原位刷行、清单原位对账（容器不重建，闪烁动画不重启、选中不丢）；
+    /// 行实例终生制：事件只原位刷行、清单原位核对（容器不重建，闪烁动画不重启、选中不丢）；
     /// 唯一例外是 <see cref="Reload"/> 整体重建——完成后按位号重新锚定选中（#25），弹窗不绑死旧实例。
-    /// 详情档案走后台预取（#31）：选行只是下单，档案由取档接口在后台去库里拿，取回后编队回 UI——
+    /// 详情档案走后台预取（#31）：选行只是发起，档案由取档接口在后台去库里拿，取回后投递回 UI——
     /// 库被外部锁住时（#29 场景），busy 等待冻住的是后台线程，不是点了行的 UI。换行核对代数
-    /// （与泵循环同一规矩），慢档案取回时如果选中已经换了人就作废、不更新。取档案抛异常也停在取档处，不上抛到 UI。
+    /// （与演示循环同一规矩），慢档案取回时如果选中已经换了人就作废、不更新。取档案抛异常也停在取档处，不上抛到 UI。
     /// <see cref="Dispose"/> 退订事件流——feed 长命（单例引擎）而页面短命时由宿主调用。
     /// </summary>
     public sealed class AlarmListViewModel : BindableBase, IDisposable
@@ -29,25 +29,25 @@ namespace Framework.Alarm.UI
         /// <summary>档案接口：详情弹窗的 MADB 数据源（档案原样呈现，UI 不加工）。</summary>
         private readonly IAlarmDefinitionStore _store;
 
-        /// <summary>UI 上下文：事件编队到 UI 线程（摘要 §9.2）。</summary>
+        /// <summary>UI 上下文：事件投递到 UI 线程（摘要 §9.2）。</summary>
         private readonly SynchronizationContext _ui;
 
         /// <summary>读取时刻：喂给 AlarmFilters 比较（测试注入固定值控制时间）。</summary>
         private readonly Func<DateTimeOffset> _now;
 
-        /// <summary>取档接口（#31）：下单在后台跑——产品默认 Task.Run（线程池），测试注入内联委托即同步执行。</summary>
+        /// <summary>取档接口（#31）：取档在后台跑——产品默认 Task.Run（线程池），测试注入内联委托即同步执行。</summary>
         private readonly Action<Action> _runOffUiThread;
 
-        /// <summary>取档代数（#31）：每次下单自增——慢档案取回时核对代数，选中已换人就作废、不更新。</summary>
+        /// <summary>取档代数（#31）：每次发起自增——慢档案取回时核对代数，选中已换人就作废、不更新。</summary>
         private int _detailGen;
 
         /// <summary>行登记表：位号 → 行（事件只更新行，两个清单由 Refill 重切）。</summary>
         private readonly Dictionary<string, AlarmRow> _rows = new();
 
-        /// <summary>构造：订阅馈送事件流（Post 编队到 UI 线程），初始重切一次清单。</summary>
+        /// <summary>构造：订阅馈送事件流（Post 投递到 UI 线程），初始重切一次清单。</summary>
         /// <param name="feed">馈送接口：事件流与操作员动作的通道。</param>
         /// <param name="store">档案接口：详情弹窗的数据源（只在取档接口里于后台访问）。</param>
-        /// <param name="ui">UI 上下文：事件与取回的档案都编队回这里。</param>
+        /// <param name="ui">UI 上下文：事件与取回的档案都投递回这里。</param>
         /// <param name="now">读取时刻：测试控制时间用。</param>
         /// <param name="runOffUiThread">取档接口（#31）：默认 Task.Run 后台线程；测试注入内联委托即同步执行。</param>
         public AlarmListViewModel(IAlarmFeed feed, IAlarmDefinitionStore store, SynchronizationContext ui,
@@ -82,8 +82,8 @@ namespace Framework.Alarm.UI
         /// <summary>选中行的后端字段。</summary>
         private AlarmRow? _selectedRow;
 
-        /// <summary>选中行：详情弹窗的数据锚点。设置即下单取档案（后台，#31），置空即收起弹窗；
-        /// 重按同一行也下单——上次取档没回来（库忙/抛异常）时，再点一次就是重新下单。</summary>
+        /// <summary>选中行：详情弹窗的数据锚点。设置即发起取档案（后台，#31），置空即收起弹窗；
+        /// 重按同一行也发起——上次取档没回来（库忙/抛异常）时，再点一次就是重新发起。</summary>
         public AlarmRow? SelectedRow
         {
             get => _selectedRow;
@@ -168,9 +168,9 @@ namespace Framework.Alarm.UI
 
         #region 详情档案后台预取（#31）
 
-        /// <summary>下单取档（#31）：UI 线程只下单——档案由取档接口在后台去库里拿，取回后编队回 UI；
+        /// <summary>发起取档（#31）：UI 线程只发起——档案由取档接口在后台去库里拿，取回后投递回 UI；
         /// 换行时代数自增，慢档案归位时核对代数，选中已换人就作废、不更新。置空选中即收弹窗，
-        /// 在途的旧单随换代作废；取档抛异常停在取档处（故障不上抛 UI），弹窗空着——重按同一行即重新下单。</summary>
+        /// 在途的旧单随换代作废；取档抛异常停在取档处（故障不上抛 UI），弹窗空着——重按同一行即重新发起。</summary>
         private void FetchDetail(string? tag)
         {
             var gen = ++_detailGen;
@@ -190,7 +190,7 @@ namespace Framework.Alarm.UI
                 catch
                 {
                     // 库暂时进不去（busy 超时、磁盘抖动）：档没取到就当没取到，故障停在取档处——
-                    // 不许上抛到 UI 线程；弹窗空着，操作员重按同一行即重新下单
+                    // 不许上抛到 UI 线程；弹窗空着，操作员重按同一行即重新发起
                 }
 
                 _ui.Post(_ =>
@@ -207,8 +207,8 @@ namespace Framework.Alarm.UI
 
         #region 事件直译与清单重切
 
-        /// <summary>活跃快照对账：行登记表整体重建自 feed.Active（进页/回页时核对，事件流断档的兜底）。
-        /// 整体重建是行实例终生制的唯一例外，两个清单一并清空重填——Refill 的原位对账只认位号，
+        /// <summary>活跃快照核对：行登记表整体重建自 feed.Active（进页/回页时核对，事件流断档的兜底）。
+        /// 整体重建是行实例终生制的唯一例外，两个清单一并清空重填——Refill 的原位核对只认位号，
         /// 留着上一代的行会和新建的同位号行形成双行（#25 评审），所以这里不走 Refill 的留旧路径。
         /// 完成后按位号重新锚定选中（#25）。</summary>
         public void Reload()
@@ -233,7 +233,7 @@ namespace Framework.Alarm.UI
 
         /// <summary>重切两个清单：主列表/搁置清单 = AlarmFilters 对同一批行的两个视图
         /// （搁置到期在显示侧自然失效，这里是重算入口）。排序按档案 Priority（高优先级永远在顶），
-        /// 同优先级内按活跃起点先后；清单原位对账（见 <see cref="Refill"/>）。</summary>
+        /// 同优先级内按活跃起点先后；清单原位核对（见 <see cref="Refill"/>）。</summary>
         public void RefreshFilters()
         {
             var now = _now();
@@ -287,10 +287,10 @@ namespace Framework.Alarm.UI
 
                     break;
                 case AlarmShelved shelved:
-                    UpdateMark(shelved.Tag, shelved.ShelvedUntil);              // 带期限：退到搁置清单
+                    UpdateShelvedUntil(shelved.Tag, shelved.ShelvedUntil);              // 带期限：退到搁置清单
                     break;
                 case AlarmUnshelved:
-                    UpdateMark(e.Tag, null);                                    // 取消期限：回主列表
+                    UpdateShelvedUntil(e.Tag, null);                                    // 取消期限：回主列表
                     break;
             }
 
@@ -307,15 +307,15 @@ namespace Framework.Alarm.UI
         }
 
         /// <summary>搁置事件的原位修正（行不存在则忽略——升级事件随后会带上期限）。</summary>
-        private void UpdateMark(string tag, DateTimeOffset? until)
+        private void UpdateShelvedUntil(string tag, DateTimeOffset? until)
         {
             if (_rows.TryGetValue(tag, out var row))
             {
-                row.SetMark(until);
+                row.SetShelvedUntil(until);
             }
         }
 
-        /// <summary>清单原位对账：移除不在名单里的行、按快照次序插入或搬移——不 Clear 重填
+        /// <summary>清单原位核对：移除不在名单里的行、按快照次序插入或搬移——不 Clear 重填
         /// （容器不重建：闪烁动画不重启、ListView 选中不丢）。成员都来自行登记表，按位号直取。</summary>
         private void Refill(ObservableCollection<AlarmRow> target, IReadOnlyList<ActiveAlarm> source)
         {
@@ -345,7 +345,7 @@ namespace Framework.Alarm.UI
         #endregion
 
         /// <summary>收尾：作废在途取档（代数换代，慢档案归位不再更新）再退订事件流——
-        /// feed 长命而页面短命时由宿主调用，废弃的 VM 不再被引擎喂数据、也不被旧单复活。</summary>
+        /// feed 长命而页面短命时由宿主调用，废弃的 VM 不再被引擎喂数据、也不被在途旧取档更新。</summary>
         public void Dispose()
         {
             _detailGen++;

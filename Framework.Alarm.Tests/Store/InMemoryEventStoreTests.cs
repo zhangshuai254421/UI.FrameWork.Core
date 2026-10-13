@@ -16,7 +16,7 @@ namespace Framework.Alarm.Tests
         public void 查询_两种闭环_判别分立() => EventStoreContract.查询_两种闭环_判别分立(new InMemoryEventStore());
 
         [Fact]
-        public void 搁置事件与带标升级_往返保真() => EventStoreContract.搁置事件与带标升级_往返保真(new InMemoryEventStore());
+        public void 搁置事件与带期限升级_往返保真() => EventStoreContract.搁置事件与带期限升级_往返保真(new InMemoryEventStore());
 
         [Fact]
         public void 查询_窗口外不可见() => EventStoreContract.查询_窗口外不可见(new InMemoryEventStore());
@@ -37,7 +37,7 @@ namespace Framework.Alarm.Tests
         public void 查询_空种类_全类照旧() => EventStoreContract.查询_空种类_全类照旧(new InMemoryEventStore());
 
         [Fact]
-        public void 查询_未知种类_当庭退回() => EventStoreContract.查询_未知种类_当庭退回(new InMemoryEventStore());
+        public void 查询_未知种类_校验即抛() => EventStoreContract.查询_未知种类_校验即抛(new InMemoryEventStore());
 
         [Fact]
         public void 只进不改_重复追加_两条都留() => EventStoreContract.只进不改_重复追加_两条都留(new InMemoryEventStore());

@@ -20,7 +20,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- 模拟操作条：演示装置（AlarmDemoRig）每秒推一步剧本投喂真引擎 -->
+                <!-- 模拟操作条：演示装置（AlarmDemo）每秒推一步剧本投喂真引擎 -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,4">
                     <Button Content="开始模拟" Padding="16,4" Margin="0,0,8,0" Command="{Binding StartCommand}"/>
                     <Button Content="停止模拟" Padding="16,4" Margin="0,0,16,0" Command="{Binding StopCommand}"/>

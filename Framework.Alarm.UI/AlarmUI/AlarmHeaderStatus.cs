@@ -6,7 +6,7 @@ namespace Framework.Alarm.UI
 {
     /// <summary>
     /// 顶栏汇总状态的映射规则（词汇表「顶栏汇总状态」）：把活跃快照浓缩成顶栏按钮的三件套（级别/计数/文本）。
-    /// 规矩：搁置中的成员不参与汇总。搁置是限时闭嘴（哲学 §7），顶栏不替它喊。
+    /// 规矩：搁置中的成员不参与汇总。搁置是限时的（哲学 §7），顶栏不替它喊。
     /// 有未确认按优先级分档：含中/高优先级 → Alarm 红闪，仅低优先级 → Warning 黄闪。
     /// 无未确认但有已确认挂着 → AlarmAcknowledged 稳红，责任接管了但还没闭环。
     /// 只有 RTN → Solved 橙稳，等一个「看见了」。全无 → Normal。
@@ -21,7 +21,7 @@ namespace Framework.Alarm.UI
         /// <summary>活跃快照 → 顶栏三件套。now 用来剔除搁置已到期的成员（测试注入固定时刻）。</summary>
         public static Summary Summarize(IReadOnlyList<ActiveAlarm> active, DateTimeOffset now)
         {
-            // 搁置中的成员不参与汇总：期限没到的才算「闭嘴中」（引擎快照已把到期的置回 null）。
+            // 搁置中的成员不参与汇总：期限没到的才算「搁置中」（引擎快照已把到期的置回 null）。
             var live = active.Where(a => a.ShelvedUntil is null || a.ShelvedUntil > now).ToList();
 
             var unack = live.Where(a => a.State == AlarmState.Unacknowledged).ToList();

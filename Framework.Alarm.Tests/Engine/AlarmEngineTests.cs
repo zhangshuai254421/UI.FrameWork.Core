@@ -265,7 +265,7 @@ namespace Framework.Alarm.Tests
         /// 步 5 确认后降温闭环（Closed）→ 步 6 没人确认自行恢复（AutoReturned，闪绿留列表）。
         /// </summary>
         [Fact]
-        public void 集成_数据流走查六拍_两分支()
+        public void 集成_数据流走查六步_两分支()
         {
             var source = new FakeConditionSource();
             var engine = new AlarmEngine(source, StoreWithSample(), new FakeClock(HysteresisEvaluatorTests.T(0)));

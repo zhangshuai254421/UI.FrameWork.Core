@@ -7,7 +7,7 @@ namespace UI.FrameWork.Core.Main
     /// </summary>
     public enum HeaderAlarmLevel
     {
-        /// <summary>无活账：按钮灰显，不闪。</summary>
+        /// <summary>无未闭环报警：按钮灰显，不闪。</summary>
         Normal,
 
         /// <summary>有未确认的低优先级报警：黄闪，责任还没接管。</summary>

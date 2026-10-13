@@ -275,7 +275,7 @@ namespace SemiControl.Controls
         // ============ 公开方法 ============
 
         /// <summary>
-        /// 显示一帧图像。可跨线程调用（泵在采集线程上直接调它即可，无需自己写 Dispatcher）。
+        /// 显示一帧图像。可跨线程调用（推帧循环在采集线程上直接调它即可，无需自己写 Dispatcher）。
         /// <see cref="Frame"/> 属性本身受 WPF 线程亲和限制，跨线程赋帧请一律走本方法；XAML 绑定天然在 UI 线程，不受影响。
         /// </summary>
         public void Show(ImageFrame frame)

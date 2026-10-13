@@ -74,7 +74,7 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>操作动作必填（哲学 §6.1）：缺动作的档案增不进，校验不通过立即抛异常。</summary>
-        public static void 增_操作动作缺_当庭退回(IAlarmDefinitionStore store)
+        public static void 增_操作动作缺_校验即抛(IAlarmDefinitionStore store)
         {
             var def = AlarmDefinitionTests.Sample() with { OperatorAction = "" };
 
@@ -90,7 +90,7 @@ namespace Framework.Alarm.Tests
         }
 
         /// <summary>改档同样过全套校验：非法改档当场抛异常，原档不受影响。</summary>
-        public static void 改_操作动作缺_当庭退回(IAlarmDefinitionStore store)
+        public static void 改_操作动作缺_校验即抛(IAlarmDefinitionStore store)
         {
             store.Add(AlarmDefinitionTests.Sample());
             var bad = AlarmDefinitionTests.Sample() with { OperatorAction = "  " };
