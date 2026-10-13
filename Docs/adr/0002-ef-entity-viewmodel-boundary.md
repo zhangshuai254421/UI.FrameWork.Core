@@ -34,4 +34,4 @@ Status: accepted
 - **迁移序列（一次性，不留双轨）**：① 本文档 → ② RecipeContextViewModel 收尾（`GetForEdit`/`Save(Input)`，删手工回写）→ ③ RecipeHomeViewModel（复制配方变 `service.CopyRecipe(...)`，订阅事件）→ ④ LogViewerViewModel（分页只读，当前页内新增则 append，否则翻页自然重查）。
 - 迁移触到的 `.Result` 同步阻塞、ServiceLocator 顺手改（await 化 / 构造注入），不做全局专项。
 - .NET 项目引用是传递的："UI 看不见实体"靠约定 + review 守，不是编译器硬墙；将来需要硬约束时可加架构测试。
-- 树外旧账，另行处理：`EnsureCreated` 与 Migrations 混用（`FrameworkAppBase.cs`）。
+- 树外遗留问题，另行处理：`EnsureCreated` 与 Migrations 混用（`FrameworkAppBase.cs`）。
