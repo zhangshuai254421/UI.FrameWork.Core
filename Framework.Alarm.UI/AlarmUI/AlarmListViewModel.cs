@@ -239,20 +239,12 @@ namespace Framework.Alarm.UI
             var now = _now();
             var snapshot = _rows.Values
                 .Select(row => row.ToActiveAlarm())
-                .OrderBy(a => Rank(a.Priority))
+                .OrderBy(a => AlarmFilters.Rank(a.Priority))
                 .ThenBy(a => a.Since)
                 .ToList();
             Refill(MainRows, AlarmFilters.MainList(snapshot, now));
             Refill(ShelvedRows, AlarmFilters.Shelved(snapshot, now));
         }
-
-        /// <summary>优先级排序权重（呈现层排序，不定级）：高 0 / 中 1 / 低 2——高优先级永远在顶。</summary>
-        private static int Rank(AlarmPriority priority) => priority switch
-        {
-            AlarmPriority.High => 0,
-            AlarmPriority.Medium => 1,
-            _ => 2,
-        };
 
         /// <summary>事件直译（Apply 零判定）：只做集合变更，规矩全部来自引擎产出。</summary>
         private void Apply(AlarmEvent e)

@@ -35,24 +35,16 @@ namespace Framework.Alarm.UI
             {
                 // 有未确认：含中/高优先级 → 红闪；仅低 → 黄闪。文本给最高优先级那条的位号。
                 var hasMediumOrHigh = unack.Any(a => a.Priority is AlarmPriority.High or AlarmPriority.Medium);
-                var top = unack.OrderBy(a => Rank(a.Priority)).First();
+                var top = unack.OrderBy(a => AlarmFilters.Rank(a.Priority)).First();
                 var level = hasMediumOrHigh ? HeaderAlarmLevel.Alarm : HeaderAlarmLevel.Warning;
                 return new Summary(level, live.Count, top.Tag);
             }
 
             // 无未确认：已确认还挂着 → 稳红；只剩 RTN → 橙稳。文本给最高优先级活跃成员的位号。
             var stillHasAcknowledged = live.Any(a => a.State == AlarmState.Acknowledged);
-            var topLive = live.OrderBy(a => Rank(a.Priority)).First();
+            var topLive = live.OrderBy(a => AlarmFilters.Rank(a.Priority)).First();
             var steadyLevel = stillHasAcknowledged ? HeaderAlarmLevel.AlarmAcknowledged : HeaderAlarmLevel.Solved;
             return new Summary(steadyLevel, live.Count, topLive.Tag);
         }
-
-        /// <summary>优先级权重（汇总分档用）：高 0 / 中 1 / 低 2，数越小越代表顶栏。</summary>
-        private static int Rank(AlarmPriority priority) => priority switch
-        {
-            AlarmPriority.High => 0,
-            AlarmPriority.Medium => 1,
-            _ => 2,
-        };
     }
 }
