@@ -1,4 +1,3 @@
-using Framework.Alarm.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

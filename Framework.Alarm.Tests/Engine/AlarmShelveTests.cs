@@ -249,6 +249,8 @@ namespace Framework.Alarm.Tests
                 new[] { nameof(AlarmShelved) },
                 events.Select(e => e.GetType().Name));                    // 不留 Unshelved 假痕（KPI 的操作动作统计不掺水）
         }
+
+        /// <summary>没在搁置的解除静默（从未搁置、重复解除）：只有第一次真解除留痕。</summary>
         [Fact]
         public void 解除_未搁置位号_静默()
         {

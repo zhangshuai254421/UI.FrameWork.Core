@@ -320,24 +320,4 @@ namespace Framework.Alarm.Tests
                 events.Select(e => e.GetType().Name));       // 事件序列干净：非法时序没留假事件
         }
     }
-
-    /// <summary>采集层替身：测试直接喂条件序列，引擎不直连设备（摘要 §8.4 的接口）。</summary>
-    internal sealed class FakeConditionSource : IConditionSource
-    {
-        public event Action<string, ConditionSample>? ConditionChanged;
-
-        /// <summary>模拟采集层报事实。</summary>
-        public void Feed(string tag, ConditionSample sample) => ConditionChanged?.Invoke(tag, sample);
-    }
-
-    /// <summary>时钟替身：手动控制时间，不真等待（ADR-0009 规则 6）。</summary>
-    internal sealed class FakeClock : IAlarmClock
-    {
-        public DateTimeOffset Now { get; private set; }
-
-        public FakeClock(DateTimeOffset now) => Now = now;
-
-        /// <summary>把时钟向前拨。</summary>
-        public void Advance(TimeSpan by) => Now += by;
-    }
 }

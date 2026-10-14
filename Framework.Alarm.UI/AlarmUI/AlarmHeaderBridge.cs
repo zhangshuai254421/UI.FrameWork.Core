@@ -22,9 +22,6 @@ namespace Framework.Alarm.UI
         /// <summary>UI 上下文：快照重算与页头写入都投递回这里。</summary>
         private readonly SynchronizationContext _ui;
 
-        /// <summary>读取时刻：剔除搁置到期成员用（墙钟）。</summary>
-        private readonly Func<DateTimeOffset> _now;
-
         /// <summary>构造即订阅事件流；Connect 补初始快照。时刻用墙钟写死，不走可选参数：
         /// DryIoc 会把 Func 类型的可省参数当可解析依赖自动接管，注入出容器工厂，
         /// 一调用就炸（模块装载 NRE 的根因）。</summary>
@@ -32,7 +29,6 @@ namespace Framework.Alarm.UI
         {
             _feed = feed;
             _header = header;
-            _now = () => DateTimeOffset.Now;
             _ui = SynchronizationContext.Current ?? new SynchronizationContext();
             _feed.EventRaised += OnEventRaised;
         }
@@ -40,13 +36,13 @@ namespace Framework.Alarm.UI
         /// <summary>接通：补一次初始快照（模块装载时活跃列表可能已经有账，页头别空窗）。</summary>
         public void Connect()
         {
-            var summary = AlarmHeaderStatus.Summarize(_feed.Active, _now());
+            var summary = AlarmHeaderStatus.Summarize(_feed.Active, DateTimeOffset.Now);
             _ui.Post(_ => Apply(summary), null);
         }
 
         /// <summary>每条事件都全量重算汇总：规则只有一个出口（Summarize），不搞增量维护。</summary>
         private void OnEventRaised(AlarmEvent e) =>
-            _ui.Post(_ => Apply(AlarmHeaderStatus.Summarize(_feed.Active, _now())), null);
+            _ui.Post(_ => Apply(AlarmHeaderStatus.Summarize(_feed.Active, DateTimeOffset.Now)), null);
 
         /// <summary>把三件套写进页头（UI 线程）。</summary>
         private void Apply(AlarmHeaderStatus.Summary summary)

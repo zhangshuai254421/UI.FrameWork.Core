@@ -1,14 +1,6 @@
 ﻿using Framework.Alarm;
-using Framework.Core.Common;
 using PrismUI.Core;
-using SemiAppliaction.Core;
 using SemiAppliaction.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UI.FrameWork.Core.Main;
 
 namespace SemiAppliaction
 {
@@ -21,9 +13,7 @@ namespace SemiAppliaction
         public void OnInitialized(IContainerProvider containerProvider)
         {
             regionManager.RegisterViewWithRegion("MainRegion", typeof(MainView));
-            //IoC.Get<INavigationService>().NavigateToAsync(nameof(MainView));
             containerProvider.Resolve<INavigationService>().NavigateToAsync(nameof(MainView));
-
         }
 
         /// <summary>模块类型注册：把主视图与各测试页连同其 ViewModel 注册为可导航视图；
@@ -31,7 +21,6 @@ namespace SemiAppliaction
         /// 本宿主还没有真采集层，注册剧本源让演示报警点得亮顶栏（真宿主换成自己的采集层）。</summary>
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            //throw new NotImplementedException();
             containerRegistry.RegisterForNavigation<MainView, MainViewModel>();
             containerRegistry.RegisterForNavigation<TestView, TestViewModel>();
             containerRegistry.RegisterForNavigation<CameraTestView, CameraTestViewModel>();

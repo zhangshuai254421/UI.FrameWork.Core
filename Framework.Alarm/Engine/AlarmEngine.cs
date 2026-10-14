@@ -95,7 +95,7 @@ namespace Framework.Alarm
         {
             if (!_channels.TryGetValue(tag, out var channel))
             {
-                return; // 数据库没有对应的报警数据列表
+                return; // 没有档案的位号：静默
             }
 
             lock (_gate)

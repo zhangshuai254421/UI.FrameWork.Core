@@ -94,7 +94,7 @@ namespace Framework.Alarm
             _feed.EventRaised -= Enqueue;                      // 先停止接收：之后的事件不再进队列
             _queue.Writer.TryComplete();                       // 关闭通道：ReadAllAsync 写完存量后自然结束
             _stopping = true;                                  // 在途重试立即放弃
-            _drain.Wait(TimeSpan.FromMilliseconds(_retryDelay.TotalMilliseconds * 5)); // 限时等待，不拖宿主关屏
+            _drain.Wait(_retryDelay * 5);                      // 限时等待（5 个重试间隔），不拖宿主关屏
         }
     }
 }

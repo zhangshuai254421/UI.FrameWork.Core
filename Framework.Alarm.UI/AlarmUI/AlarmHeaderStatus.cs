@@ -24,12 +24,12 @@ namespace Framework.Alarm.UI
             // 搁置中的成员不参与汇总：期限没到的才算「搁置中」（引擎快照已把到期的置回 null）。
             var live = active.Where(a => a.ShelvedUntil is null || a.ShelvedUntil > now).ToList();
 
-            var unack = live.Where(a => a.State == AlarmState.Unacknowledged).ToList();
-
             if (live.Count == 0)
             {
                 return new Summary(HeaderAlarmLevel.Normal, 0, string.Empty);
             }
+
+            var unack = live.Where(a => a.State == AlarmState.Unacknowledged).ToList();
 
             if (unack.Count > 0)
             {

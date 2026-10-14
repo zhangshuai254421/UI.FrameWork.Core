@@ -1,5 +1,4 @@
 using Framework.Alarm.Infrastructure;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Framework.Alarm.Tests
